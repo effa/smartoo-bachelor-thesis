@@ -1,0 +1,251 @@
+%\documentclass[12pt,oneside]{fithesis2}		% pc version
+\documentclass[12pt,twoside]{fithesis2}		% print version
+
+% ===== LOADING PACKAGES =====
+% language settings, main documnet language last
+\usepackage[english]{babel}
+% enabling new fonts support (nicer)
+\usepackage{lmodern}
+% setting input encoding
+\usepackage[utf8]{inputenc}
+% setting output encoding
+\usepackage[T1]{fontenc}
+% fithesis2 requires csquotes
+\usepackage{csquotes}
+% set page margins
+%\usepackage[top=3.0cm, bottom=3.5cm, left=2.4cm, right=2.4cm]{geometry}	% pc version
+\usepackage[top=3.0cm, bottom=3.5cm, left=2.9cm, right=1.9cm]{geometry}	% print version
+% package to make bullet list nicer
+\usepackage{enumitem}
+% math symbols and environments
+\usepackage{mathtools}
+% packages for complex tables
+%\usepackage{tabularx}
+%\usepackage{multirow}
+%\usepackage{dcolumn}
+%\usepackage{array}
+
+% bibliography management
+\usepackage[backend=biber, 		% use biber as backend instead of BiBTeX
+	bibstyle=ieee-alphabetic, 	% bibliography style: IEEE with alphabetic citations
+	citestyle=alphabetic, 		% citation style
+	url=true, 			% display urls in bibliography
+	hyperref=auto,			% detect hyperref and create links
+	block=ragged 			% format bibliography into blocks, ragged on right
+]{biblatex}
+\addbibresource{thesis.bib}
+
+% setting custom colors for links
+\usepackage{xcolor}
+\definecolor{dark-red}{rgb}{0.6,0.15,0.15}
+\definecolor{dark-green}{rgb}{0.15,0.4,0.15}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+% generating hyperlinks in document
+\usepackage{url}
+\usepackage[plainpages=false, 	    % get the page numbering correctly
+            pdfpagelabels, 	    % write arabic labels to all pages
+            unicode,	 	    % allow unicode characters in links
+            colorlinks=true, 	    % use colored links instead of boxed (pc version)
+            %hidelinks, 		    % hide links (print version)
+            linkcolor={dark-red},
+            citecolor={dark-green},
+            urlcolor={medium-blue}
+			]{hyperref}
+
+% ===== FI THESIS SETTINGS =====
+
+\thesistitle{Automatic question generation\\and adaptive practice}
+\thesissubtitle{Bachelor thesis}
+\thesisstudent{Tomáš Effenberger}
+\thesiswoman{false}
+\thesisfaculty{fi}
+\thesisyear{spring 2015}
+\thesisadvisor{RNDr.\ Jan Rygl}
+\thesislang{en}
+
+% ===== LATEX DOCUMENT SETTINGS =====
+
+% adjusting hyphenation penalties
+\tolerance=10000
+\hyphenpenalty=500
+
+% renew command for shorter and nicer underscore
+\renewcommand{\_}{\leavevmode \kern0.0em\vbox{\hrule width0.4em}}
+
+% space between paragraphs
+\setlength{\parskip}{0.6em plus0.2em minus0.2em}
+
+% ===== COMMANDS =====
+
+% define square symbol
+\newcommand{\squarebullet}{\textcolor{black}{\raisebox{0.15em}{\rule{4pt}{4pt}}}}
+
+% define new itemize environment with squares and smaller spaces
+\newenvironment{myItemize}{
+  \begin{itemize}[leftmargin=2em,rightmargin=1em,itemsep=\parskip ,parsep=0em,topsep=0em,partopsep=0em]
+  \renewcommand{\labelitemi}{\squarebullet}
+  \renewcommand{\labelitemii}{$\diamond$}
+}{
+  \end{itemize}
+}
+
+% ===== CHEAT SHEET =====
+
+% == full width image
+
+%\begin{figure}[b!]
+%\centering
+%\includegraphics[width=\textwidth]{images/bla.bla}
+%\caption{bla bla bla}
+%\label{fig:bla-bla}
+%\end{figure}
+
+
+% == myItemize
+
+%\begin{myItemize}
+%\item \textbf{Bla}\\
+%  bla
+%\item \textbf{Bla}\\
+%  bla
+%\item \textbf{Bla}\\
+%  bla
+%\end{myItemize}
+
+
+% ===== BEGIN DOCUMENT =====
+\begin{document}
+
+\FrontMatter
+\ThesisTitlePage
+
+\begin{ThesisDeclaration}
+\DeclarationText
+\AdvisorName
+\end{ThesisDeclaration}
+
+\begin{ThesisThanks}
+
+  TODO (Sir, Papi, ALG, NLP)
+%I'd like to thank Petr for his guidance, enthusiasm and inspiring discussions.
+%I also owe much to my mom and brother for their continuous support. Thank you.
+
+%\noindent
+%Further thanks goes to all my friends who had to put up with my enthusiasm
+%and numerous research details they may have never asked for $\ddot\smile$.
+
+%\noindent
+%Last but not least, I'd like to acknowledge the Laboratory of Security and Applied Cryptography and
+%the National Grid Infrastructure MetaCentrum for providing access to their computing and storage facilities.
+\end{ThesisThanks}
+
+\begin{ThesisAbstract}
+When studying, it is more efficient not just to read about the topic, but also to practice the knowledge, e.g. by answering some multiple choice questions. Today, there is a huge amount of information to study (consider Wikipedia) and it is not possible to create a set of question for all topics manually. However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing. This thesis explores the state-of-the-art approaches to question generation and describes their advantages and disadvantages. The thesis also suggests a design of the general framework for practicing knowledge from articles. This framework is implemented and publicly accessible through a web interface.
+\end{ThesisAbstract}
+
+\begin{ThesisKeyWords}
+artificial intelligence, natural language processing,
+knowledge representation, question generation, practicing
+\end{ThesisKeyWords}
+
+\MainMatter
+\tableofcontents
+
+% ===========================  CHAPTER ===========================
+\chapter{Introduction}
+\label{chap:intro}
+
+TODO... (inspirace uvodem k BP ze ZOSu)
+
+The Smartoo framework is licensed under
+the GNU General Public License, version 2 The MIT License.
+The source code is available from project's page on
+\textit{GitHub} \parencite{smartoo-github}.
+
+%The thesis text was typeset in \LaTeX{} using the \textit{fithesis2} package created by Stanislav Filipčík \parencite{fithesis}.
+
+TODO: popis fazi (a vzdy v jake kapitole bude popsano)
+
+%TODO: (?) The text of the thesis is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+% ===========================  CHAPTER ===========================
+\chapter{Knowledge building}
+\label{chap:knowledge}
+
+TODO...
+
+% ===========================  CHAPTER ===========================
+\chapter{Question generation}
+\label{chap:questions}
+
+TODO...
+
+% ===========================  CHAPTER ===========================
+\chapter{Adaptive practice}
+\label{chap:practice}
+
+TODO...
+
+% ===========================  CHAPTER ===========================
+\chapter{Smartoo framework}
+\label{chap:smartoo}
+
+TODO...
+
+podkapitoly pro jednotlive komponenty
+
+\section{Knowledge building}
+\label{sec:smartoo-knowledge}
+
+TODO...
+
+\section{Exercise creating}
+\label{sec:smartoo-exercises}
+
+TODO...
+
+\section{Adaptive practice}
+\label{sec:smartoo-practice}
+
+
+TODO...
+
+\section{Web interface}
+\label{sec:smartoo-web}
+
+
+TODO...
+
+% ===========================  CHAPTER ===========================
+\chapter{Evaluation}
+\label{chap:evaluation}
+
+TODO...
+
+performace of each component
+
+\chapter{Future plans}
+\label{chap:future}
+
+TODO...
+
+what to improve (... in diploma thesis)
+
+
+
+
+
+% ===== APPENDIX AND BIBLIOGRAPHY =====
+\appendix
+
+% include citations not cited specifically
+%\nocite{*}
+
+% print complete bibliography
+\printbibliography
+
+\chapter{Data attachment}
+
+TODO: data attachment structure description
+
+\end{document}
