@@ -1,5 +1,5 @@
 %\documentclass[12pt,oneside]{fithesis2}		% pc version
-\documentclass[12pt,twoside]{fithesis2}		% print version
+\documentclass[a4paper, 12pt, twoside]{fithesis2}		% print version
 
 % ===== LOADING PACKAGES =====
 % language settings, main documnet language last
@@ -72,8 +72,10 @@
 % renew command for shorter and nicer underscore
 \renewcommand{\_}{\leavevmode \kern0.0em\vbox{\hrule width0.4em}}
 
+% vertical space between paragrahps, no indentation
+\usepackage[parfill]{parskip}  % TODO: nefunguje -> zfunkcnit
 % space between paragraphs
-\setlength{\parskip}{0.6em plus0.2em minus0.2em}
+%\setlength{\parskip}{0.6em plus0.2em minus0.2em}
 
 % ===== COMMANDS =====
 
@@ -155,16 +157,49 @@ knowledge representation, question generation, practicing
 \chapter{Introduction}
 \label{chap:intro}
 
-TODO... (inspirace uvodem k BP ze ZOSu)
+TODO: intro, goal of the thesis (dodelat podle oficialniho zadani / abstraktu)
 
-The Smartoo framework is licensed under
-the GNU General Public License, version 2 The MIT License.
-The source code is available from project's page on
-\textit{GitHub} \parencite{smartoo-github}.
+Mere repeated reading of the text which one is traying to learn is unefficient method of learning, while answering to related questions leads to [better long-term knowledge / dlouhodobemu zapamatovani] \parencite{edu-improve}.
+
+In spite of active and [dlouhodoby nebo tak neco] research of question generation (e.g. \parencite{questions-wolfe, questions-eval}) [mozna pridat dalsi, pripadne rozepsat - priklad early research a recent research],
+there is still no publicly available web application to solve this task.
+And I am sure that such application would be really useful. Typical example is to make self-studying more efficient by answering a few generated questions after reading an article to verify and consolidate the new knowledge.
+[overit aktualnost a jasne urcit moment o kterem mluvim (neexistuje tady a ted)]
+
+That is why I have implemented \textit{Smartoo, Smart Artificially Intelligent Tutor}, modular and extensible framework for question generation and adaptive practice
+of knowledge from Wikipedia [taky citovat!] articles.
+The Smartoo Framework is licensed under the GNU General Public License, version 2 [citovat?, licenci rozmyslet].
+The source code is available from project's page on \textit{GitHub} \parencite{smartoo-github}.
+I have used the framework to create a simple [instance/demo/prototype?] of the web application for practicing knowledge from Wikipedia articles \parencite{smartoo-web}.
+
+The whole practicing process consists of four steps.
+First step is to extract facts from given article (often reffered to as \textit{knowledge mining}).
+Besides the knowledge extraction itself, knowledge representation is an important issue as well.
+Extraction and representation of the knowledge will be the topic of chapter \ref{chap:knowledge}.
+
+In chapter \ref{chap:exercises}, excercises generation will be discussed.
+Usually, exercises will be just multiple choice questions, but other exercises types are possible as well.
+In this step major concerns are: selection of a fact (or set of facts) from which the exercise will be generated, transformation from the fact (or facts) to the exercise and in case of multiple choice questions selection of good \textit{distractors} (false answers).
+
+Although we could stop here and submit all generated questions to the user, it has been proven to be useful to make two more steps.
+In chapter \ref{chap:exercises-grading}, I will talk about exercises grading.
+We can be interested in various parameters, such as difficulty, relevance to the article or probability that the question is gramatically [?].
+
+Having the exercises graded, we can filter them and only present these with reasonable difficulty, relevance and correctness probability.
+But again, we can introduce one more step to make learning more efficient -- adaptive practice.
+According to the user performance, we can choose easier or more difficult questions. I will talk about some common strategies for this task in chapter \ref{chap:practice}.
+
+In chapter \ref{chap:smartoo}, I will describe the Smartoo Framework in detail
+and we will see how these four steps are transparently glued and how a component for each step should look like.
+I will also mention how each of the four components is implemented in the online prototype system.
+
+Smartoo is designed to collect both implicit and explicit feedback from users.
+I will analyze feedback from about one month testing period in chapter \ref{chap:evaluation}.
+
+Finally, in the chapter \ref{chap:future}, I will present planned future development of Smartoo application.
+
 
 %The thesis text was typeset in \LaTeX{} using the \textit{fithesis2} package created by Stanislav Filipčík \parencite{fithesis}.
-
-TODO: popis fazi (a vzdy v jake kapitole bude popsano)
 
 %TODO: (?) The text of the thesis is licensed under a Creative Commons Attribution 3.0 Unported License.
 
@@ -175,10 +210,16 @@ TODO: popis fazi (a vzdy v jake kapitole bude popsano)
 TODO...
 
 % ===========================  CHAPTER ===========================
-\chapter{Question generation}
-\label{chap:questions}
+\chapter{Exercises generation}
+\label{chap:exercises}
 
 TODO...
+
+% ===========================  CHAPTER ===========================
+\chapter{Exercises grading}
+\label{chap:exercises-grading}
+
+NOTE: mozna neni na samostatnou kapitolu (v tom pripade spojit s predchozi, ale je to tak vice konzistentni
 
 % ===========================  CHAPTER ===========================
 \chapter{Adaptive practice}
@@ -199,8 +240,13 @@ podkapitoly pro jednotlive komponenty
 
 TODO...
 
-\section{Exercise creating}
+\section{Exercises creating}
 \label{sec:smartoo-exercises}
+
+TODO...
+
+\section{Exercises grading}
+\label{sec:smartoo-exercises-grading}
 
 TODO...
 
