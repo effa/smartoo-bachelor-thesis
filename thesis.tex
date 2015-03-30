@@ -19,19 +19,25 @@
 \usepackage{enumitem}
 % math symbols and environments
 \usepackage{mathtools}
+\usepackage{amsmath}
 % packages for complex tables
 %\usepackage{tabularx}
 %\usepackage{multirow}
 %\usepackage{dcolumn}
 %\usepackage{array}
+% package for defining new floating environments
+\usepackage{float}
+\usepackage[labelfont=]{caption}
+%\usepackage{newfloat}
 
 % bibliography management
 \usepackage[backend=biber, 		% use biber as backend instead of BiBTeX
+        %dashed=false                    % when there is an author twice, still write his/her name
 	bibstyle=ieee-alphabetic, 	% bibliography style: IEEE with alphabetic citations
 	citestyle=alphabetic, 		% citation style
 	url=true, 			% display urls in bibliography
 	hyperref=auto,			% detect hyperref and create links
-	block=ragged 			% format bibliography into blocks, ragged on right
+	%block=ragged, 			% format bibliography into blocks, ragged on right
 ]{biblatex}
 \addbibresource{thesis.bib}
 
@@ -79,10 +85,14 @@
 
 % ===== COMMANDS =====
 
+%--------------------------------------------------------------------
 % define square symbol
+%--------------------------------------------------------------------
 \newcommand{\squarebullet}{\textcolor{black}{\raisebox{0.15em}{\rule{4pt}{4pt}}}}
 
+%--------------------------------------------------------------------
 % define new itemize environment with squares and smaller spaces
+%--------------------------------------------------------------------
 \newenvironment{myItemize}{
   \begin{itemize}[leftmargin=2em,rightmargin=1em,itemsep=\parskip ,parsep=0em,topsep=0em,partopsep=0em]
   \renewcommand{\labelitemi}{\squarebullet}
@@ -90,6 +100,49 @@
 }{
   \end{itemize}
 }
+
+%--------------------------------------------------------------------
+% exercise environment
+%--------------------------------------------------------------------
+\newcounter{choice}
+\renewcommand\thechoice{\Alph{choice}}
+\newcommand\choicelabel{\thechoice.}
+
+\newenvironment{choices}%
+  {\vspace{0.2em}\list{\choicelabel}%
+     {\usecounter{choice}\def\makelabel##1{\hss\llap{##1}}%
+       \settowidth{\leftmargin}{W.\hskip\labelsep\hskip 0.01em}%
+       \def\choice{%
+         \item
+       } % choice
+       \labelwidth\leftmargin\advance\labelwidth-\labelsep
+       \topsep=0pt
+       \partopsep=0pt
+     }%
+  }%
+  {\vspace{-0.7em}\endlist}
+
+%\setlength{\abovecaptionskip}{25pt plus 3pt minus 2pt}
+\floatstyle{boxed}
+\newfloat{exercise}{thp}{exrcs}[chapter]
+\floatname{exercise}{Exercise}
+
+\newenvironment{question}
+{
+  \begin{center}
+  \begin{tabular}{p{0.9\textwidth}}
+  \vskip 0.05em
+}
+{
+  \\
+  \end{tabular}
+  \end{center}
+}
+
+% gap in the sentence (bottom line)
+\newcommand{\sentenceGap}{\rule{1.5cm}{0.4pt}~}
+
+%--------------------------------------------------------------------
 
 % ===== CHEAT SHEET =====
 
@@ -146,8 +199,8 @@ When studying, it is more efficient not just to read about the topic, but also t
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
-artificial intelligence, natural language processing,
-knowledge representation, question generation, practicing
+knowledge representation, question generation, adaptive practice, learning,
+artificial intelligence, natural language processing
 \end{ThesisKeyWords}
 
 \MainMatter
@@ -173,7 +226,7 @@ The source code is available from project's page on \textit{GitHub} \parencite{s
 I have used the framework to create a simple [instance/demo/prototype?] of the web application for practicing knowledge from Wikipedia articles \parencite{smartoo-web}.
 
 The whole practicing process consists of four steps.
-First step is to extract facts from given article (often reffered to as \textit{knowledge mining}).
+First step is to extract facts from the given article.
 Besides the knowledge extraction itself, knowledge representation is an important issue as well.
 Extraction and representation of the knowledge will be the topic of chapter \ref{chap:knowledge}.
 
@@ -204,16 +257,81 @@ Finally, in the chapter \ref{chap:future}, I will present planned future develop
 %TODO: (?) The text of the thesis is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 % ===========================  CHAPTER ===========================
-\chapter{Knowledge building}
+\chapter{Knowledge extraction}
 \label{chap:knowledge}
 
 TODO...
+
+Knowledge extraction is well-studied aria \parencite{triples-acquisition}.
+
+\section{Knowledge bases}
+\label{sec:knowledge-bases}
+
+TODO...
+Besides the text itself external knowledge bases can be used.
+Examples of popular knowledge bases are DBpedia \parencite{dbpedia} and Freebase [citovat!].
+DBpedia was built by extracting structured information from Wikipedia.
+Facts are stored in the form of \textit{RDF} (\textit{Resource Description Framework}) graph [citovat],
+which is a collection of subject -- predicate -- object triples \parencite[][63]{semantic-web}.
+
+RDF graph is often used for knowledge representation.
+This format is suitable for exercise genereation, as there is a tool for convenient querying RDF graph,
+\textit{SPARQL}%
+\footnote{The name of this query language is a recursive acronym of \textit{SPARQL Protocol and RDF Query Language}.}
+language \parencite[][84]{semantic-web}.
+
+
 
 % ===========================  CHAPTER ===========================
 \chapter{Exercises generation}
 \label{chap:exercises}
 
 TODO...
+
+\section{Distractors}
+\label{sec:distractors}
+
+It is important to present a multiple-choice question with competitive \textit{distractors} (incorrect alternatives).
+As shown by experiments described in \cite{optimizing-multiple-choice}, multiple-choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple-choice question:
+
+\begin{exercise}
+\caption{Question with noncompetitive alternatives}%\label{table:somename}
+  \begin{question}
+  Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
+  \begin{choices}
+    \choice Emancipation Proclamation
+    \choice John Wilkes Booth
+    \choice Illinois
+    \choice Department of Agriculture
+  \end{choices}
+  \end{question}
+\end{exercise}
+
+Clearly, the student does not need to remember who assasinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
+Of course, this was an extreme example to illustrate the point -- you definitely would not come accross such poor distractors in manually created multiple-choice questions.
+Now take a look at the following question:
+
+\begin{exercise}
+\caption{Question with competitive alternatives}%\label{table:somename}
+  \begin{question}
+  Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
+  \begin{choices}
+    \choice Thomas N. Conrad
+    \choice Robert E. Lee
+    \choice John Wilkes Booth
+    \choice Ward Hill Lamon
+  \end{choices}
+  \end{question}
+\end{exercise}
+
+This questions is much more likely to force student to retrieve knowledge about John Wilkes Booth as well as about other alternatives.
+
+\cite{optimizing-multiple-choice} also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
+
+The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
+
+
+
 
 % ===========================  CHAPTER ===========================
 \chapter{Exercises grading}
