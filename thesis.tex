@@ -199,8 +199,9 @@ When studying, it is more efficient not just to read about the topic, but also t
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
+  % TODO: profiltrovat na ty opravdu relevantni
 knowledge representation, question generation, adaptive practice, learning,
-artificial intelligence, natural language processing
+artificial intelligence, natural language processing, multiple choice questions
 \end{ThesisKeyWords}
 
 \MainMatter
@@ -213,6 +214,8 @@ artificial intelligence, natural language processing
 TODO: intro, goal of the thesis (dodelat podle oficialniho zadani / abstraktu)
 
 Mere repeated reading of the text which one is traying to learn is unefficient method of learning, while answering to related questions leads to [better long-term knowledge / dlouhodobemu zapamatovani] \parencite{edu-improve}.
+
+[neco o tom, ze vytvaret testy manualne je time-consuming, takze by bylo fajn to autmatizovat]
 
 In spite of active and [dlouhodoby nebo tak neco] research of question generation (e.g. \parencite{questions-wolfe, questions-eval}) [mozna pridat dalsi, pripadne rozepsat - priklad early research a recent research],
 there is still no publicly available web application to solve this task.
@@ -228,28 +231,28 @@ I have used the framework to create a simple [instance/demo/prototype?] of the w
 The whole practicing process consists of four steps.
 First step is to extract facts from the given article.
 Besides the knowledge extraction itself, knowledge representation is an important issue as well.
-Extraction and representation of the knowledge will be the topic of chapter \ref{chap:knowledge}.
+Extraction and representation of the knowledge is the topic of chapter \ref{chap:knowledge}.
 
-In chapter \ref{chap:exercises}, excercises generation will be discussed.
+In chapter \ref{chap:exercises}, excercises generation is discussed.
 Usually, exercises will be just multiple choice questions, but other exercises types are possible as well.
 In this step major concerns are: selection of a fact (or set of facts) from which the exercise will be generated, transformation from the fact (or facts) to the exercise and in case of multiple choice questions selection of good \textit{distractors} (false answers).
 
 Although we could stop here and submit all generated questions to the user, it has been proven to be useful to make two more steps.
-In chapter \ref{chap:exercises-grading}, I will talk about exercises grading.
+In chapter \ref{chap:exercises-grading}, I talk about exercises grading.
 We can be interested in various parameters, such as difficulty, relevance to the article or probability that the question is gramatically [?].
 
 Having the exercises graded, we can filter them and only present these with reasonable difficulty, relevance and correctness probability.
 But again, we can introduce one more step to make learning more efficient -- adaptive practice.
-According to the user performance, we can choose easier or more difficult questions. I will talk about some common strategies for this task in chapter \ref{chap:practice}.
+According to the user performance, we can choose easier or more difficult questions. I talk about some common strategies for this task in chapter \ref{chap:practice}.
 
-In chapter \ref{chap:smartoo}, I will describe the Smartoo Framework in detail
+In chapter \ref{chap:smartoo}, I describe the Smartoo Framework in detail
 and we will see how these four steps are transparently glued and how a component for each step should look like.
-I will also mention how each of the four components is implemented in the online prototype system.
+I also mention how each of the four components is implemented in the online prototype system.
 
 Smartoo is designed to collect both implicit and explicit feedback from users.
-I will analyze feedback from about one month testing period in chapter \ref{chap:evaluation}.
+I analyze feedback from about one month testing period in chapter \ref{chap:evaluation}.
 
-Finally, in the chapter \ref{chap:future}, I will present planned future development of Smartoo application.
+Finally, in the chapter \ref{chap:future}, I present planned future development of Smartoo application.
 
 
 %The thesis text was typeset in \LaTeX{} using the \textit{fithesis2} package created by Stanislav Filipčík \parencite{fithesis}.
@@ -260,10 +263,96 @@ Finally, in the chapter \ref{chap:future}, I will present planned future develop
 \chapter{Knowledge extraction}
 \label{chap:knowledge}
 
-TODO...
-
 Knowledge extraction is well-studied aria \parencite{triples-acquisition}.
 
+TODO... rozebrat ruzne pistupy
+
+
+TODO: zminit omezeni na zachyceni faktu, ne "procedural knowledge" jako je napr. pocitani prikladu a dalsi "higher order cognitive skills"
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Lexico-syntactic patterns}
+\label{sec:lexico-syntactic-patterns}
+
+NOTE: Mozna presunout / rozlozit i do kapitoly o generovani cviceni
+
+NOTE jeden z moznych pristupu, bootstraping lexikalne syntaktickych vzoru
+
+... The approach of bootstrapping lexico-syntactic patterns was used
+in \textit{The Mentor} system \cite{mentor}, created by Technical University of Lisbon.
+
+There are 2 steps.
+First, the system learns patterns in sentences which describe a relation between a question and an answer.
+After this preparatory offline step, these patterns are used for question generation from texts submitted by users (which is the second step).
+
+The first step uses a few question-answer pairs as seeds.
+New sentence-question patterns are boostrapped ....
+
+TODO: popsat blize, co znamena ten bootstrapping
+
+... they are using \textit{QuestionBank} a corpus of 4000 parse-annotated questions \cite{question-bank}.
+
+TODO: svuj vlastni priklad
+
+As an example, consider sentence "Botticelli has painted the Birth of Venus".
+
+General form of pattern is: [TODO, je tam nekde odoved, nejaka pevna cast (*), ktera muze byt pouze jedna, libovolne dlouha a na zbytku jsou urcene vetne cleny (VBD, NP, ...)]
+
+Which of the [uvazovanych] patterns are correct is decided by
+Google search of phrase [ktera fraze presne?].
+
+The derived pattern is \texttt{<ANSWER> has VBD NP}.
+
+
+
+In the online step, each sentence of given text (after parsing) is matched against boostrapped patterns
+and may produce question-answer pair.
+Then some filters are applied to discard questions of poor quality. Two main filters are:
+
+\begin{enumerate}
+  \item matching question-answer category:
+    The category of the question and the category of the answer have to be same (e.g. individual or location). Example: "Who was Abraham Lincoln?" -- "16th president of the United States": both \textit{Abraham Lincoln} and \textit{president} has the semantic category \textit{individual}.
+    To find that president is individual, WordNet [citovat] is used (BFS).
+  \item Discarding Anaphoric References: e.g. "Where is there?"
+\end{enumerate}
+
+As the system generates multiple-choice questions,
+it also needs to find appropriate distractors.
+For this purpose, all named entites are find in the text
+(using several techniques -- regular expression, gazetteers [odkaz na vysvetleni jinam do textu] and a machine learning-base recognizer as well)
+
+
+NOTE: asi docela uspesne, i kdyz mnoho otazek potreba rucne opravit (nepredpokladalo se online nasazeni)
+
+TODO: jasne dat najevo (diagram), ze tato faze neni v zasade nutna (napr. do uvodu)
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Ontologies}
+\label{sec:ontologies}
+
+TODO: asi nasledovane rozdeleni: obecne info o ontologiich (a jak je generovat) v knowledge kapitole; v kaptiole exercises pak generovani otazek z ontologii
+
+O co jde: hierarchie trid, (mezi tridou a podtridou je "is-a" relationship)
+
+TODO: ukazka ontologie OWL pouzite v DBpedii (Thing, Agent, Person, ...)
+
+- generovani otazek s vyuzitim ontologii:
+\cite{question-gen-domain-ontologies} -- popisuje ruzne strategie, jak z hotoveho grafu generovat otazky (coz je v nejjednodussim pripade proste vyber jednoho faktu) a k nim distraktory (i distraktory jen na urovni celych vet, zadani bylo vzdy "Choose the correct sentence"; priklady:
+- pro RDF trojici A-B-C vytvor distraktor A-B-D, kde D je typu, ktery je podtridou typu C
+- pro RDF trojici A-B-C, pokud je C numericka hodnota, vytvor distraktory jako nasobky (a podnasobky) dane hodnoty;
+
+NOTE: jeste na tom clanku je zajimava tabulku udavajici pocet syntakticky bezchybne vygenerovanych otazek pro ruzne clanky (velky rozptyl... od 5 do 85 procent spravnych otazek ... ale je to relativne stary clanek z pocatku jejich vyzkumu, v tom nasledovnem jiz reportuji, ze 90 procent otazek bylo oznaceno jako "dobrych")
+
+\textit{OntoQue} \cite{ontoque}, a system generating questions from a domain ontology.
+Various question types: multiple choice questions, true/false, fill-in the blanks.
+True/False: chybne vety jsou ze spravne vety vytvoreny nahrazenim subjektu nebo objektu za term, ktery je semanticky blizko (je ze stejne tridy).
+
+
+
+
+% ---------------------------  SECTION  ---------------------------
 \section{Knowledge bases}
 \label{sec:knowledge-bases}
 
@@ -286,13 +375,23 @@ language \parencite[][84]{semantic-web}.
 \chapter{Exercises generation}
 \label{chap:exercises}
 
+[Intro, TODO: nejcasteji multiple-choice question, definice, distractory, ukazka]
+
 TODO...
+
+... obecny popis multiple choice questions a souvisejici terminologie (TODO: nejake obecne intro, ze jsou oblibene, maji sve vyhody a nevyhody):
+
+Multiple choice questions consists of a question text (called \textit{stem})
+and a few (e.g. four) choices, from which one is the correct answer
+and the rest are incoreect alternatives (called \textit{distractors}).
+
+
 
 \section{Distractors}
 \label{sec:distractors}
 
-It is important to present a multiple-choice question with competitive \textit{distractors} (incorrect alternatives).
-As shown by experiments described in \cite{optimizing-multiple-choice}, multiple-choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple-choice question:
+It is important to present a multiple-choice question with competitive \textit{distractors}.
+As shown by experiments described in \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple choice question:
 
 \begin{exercise}
 \caption{Question with noncompetitive alternatives}%\label{table:somename}
@@ -333,6 +432,15 @@ The consequences are clear -- when creating a multiple-choice question, we shoul
 
 
 
+
+..........................
+
+TODO: Jeden z moznych postupu (Mitkov, 2006) -- bez potreby vytvaret graf znalosti:
+extrakce pojmu z textu (pomoci frekvenci), otazky transformaci vet s pojmy (vzory predem dane), vyber distraktoru (snaha o semantickou blizkost odpovedi ... pomoci WordNetu)
+
+
+
+
 % ===========================  CHAPTER ===========================
 \chapter{Exercises grading}
 \label{chap:exercises-grading}
@@ -343,7 +451,26 @@ NOTE: mozna neni na samostatnou kapitolu (v tom pripade spojit s predchozi, ale 
 \chapter{Adaptive practice}
 \label{chap:practice}
 
+
 TODO...
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Bayesian network}
+\label{sec:bayesian-network}
+
+Jeden z moznych pristupu pro adaptabilni procvnicovani (ptani se relevantnich otazek)
+
+\cite{question-gen-adapt-bayes}
+
+- domenove nezavisle
+
+- Baysovska sit k popisu konceptu a jejich nauceni (2 stavy: known and unknown) a zavislosti mezi kocpety a spravnou odpovedi na otazku (pritom se uvazuje i moznot uhadnuti i kdyz koncept neumim (guess) a spatnou odpovedi, i kdyz koncept umim (slip).
+
+- vyber tematu otazky: least known concept
+
+- vyber konkretni otazky: bere se v uvahu primerena obtiznost a pestrost typu otazek
+
 
 % ===========================  CHAPTER ===========================
 \chapter{Smartoo framework}
