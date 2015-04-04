@@ -235,28 +235,28 @@ I have used the framework to create a simple [instance/demo/prototype?] of the w
 The whole practicing process consists of four steps.
 First step is to extract facts from the given article.
 Besides the knowledge extraction itself, knowledge representation is an important issue as well.
-Extraction and representation of the knowledge is the topic of chapter \ref{chap:knowledge}.
+Extraction and representation of the knowledge is the topic of \autoref{chap:knowledge}.
 
-In chapter \ref{chap:exercises}, excercises generation is discussed.
+In \autoref{chap:exercises}, excercises generation is discussed.
 Usually, exercises will be just multiple choice questions, but other exercises types are possible as well.
-In this step major concerns are: selection of a fact (or set of facts) from which the exercise will be generated, transformation from the fact (or facts) to the exercise and in case of multiple choice questions selection of good \textit{distractors} (false answers).
+In this step major concerns are: selection of a fact (or set of facts) from which the exercise will be generated, transformation from the fact (or facts) to the exercise and in case of multiple choice questions selection of good \textit{distractors} (incorrect choices).
 
-Although we could stop here and submit all generated questions to the user, it has been proven to be useful to make two more steps.
-In chapter \ref{chap:exercises-grading}, I talk about exercises grading.
+TODO: upravit podle aktualniho rozdeleni na kapitoly: Although we could stop here and submit all generated questions to the user, it has been proven to be useful to make two more steps.
+In \autoref{chap:exercises-grading}, I talk about exercises grading.
 We can be interested in various parameters, such as difficulty, relevance to the article or probability that the question is gramatically [?].
 
 Having the exercises graded, we can filter them and only present these with reasonable difficulty, relevance and correctness probability.
 But again, we can introduce one more step to make learning more efficient -- adaptive practice.
-According to the user performance, we can choose easier or more difficult questions. I talk about some common strategies for this task in chapter \ref{chap:practice}.
+According to the user performance, we can choose easier or more difficult questions. I talk about some common strategies for this task in \autoref{chap:practice}.
 
-In chapter \ref{chap:smartoo}, I describe the Smartoo Framework in detail
+In \autoref{chap:smartoo}, I describe the Smartoo Framework in detail
 and we will see how these four steps are transparently glued and how a component for each step should look like.
 I also mention how each of the four components is implemented in the online prototype system.
 
 Smartoo is designed to collect both implicit and explicit feedback from users.
-I analyze feedback from about one month testing period in chapter \ref{chap:evaluation}.
+I analyze feedback from about one month testing period in \autoref{chap:evaluation}.
 
-Finally, in the chapter \ref{chap:future}, I present planned future development of Smartoo application.
+Finally, in the \autoref{chap:future}, I present planned future development of Smartoo application.
 
 
 %The thesis text was typeset in \LaTeX{} using the \textit{fithesis2} package created by Stanislav Filipčík \parencite{fithesis}.
@@ -626,6 +626,8 @@ Dalsi takovy system je
 
 TODO...
 
+TODO: diagram systemu, terminologie: komponenta = behavior + parameters, framework x prototype (deployed)
+
 podkapitoly pro jednotlive komponenty
 
 rozebrat komponenty obecne, pozadovane rozhrani (to by mela byt vzdy jedna podsekce) a pak strucne o vlastni implementaci
@@ -643,13 +645,90 @@ TODO...
 \section{Exercises Grading}
 \label{sec:smartoo-exercises-grading}
 
-TODO...
+TODO... obecne
+
+\subsection{Component Interface}
+
+TODO ...
+
+\subsection{Prototype Behavior}
+
+Grading is done via simple heuristics.
+
+Difficulty of the exercise is estimated as the average similarity between all term pairs which can be mistaken (TODO: popsat prenos semanticke informace) (TODO: priklad paru u nejake otazky) (TODO: popis vypocu podobnosti 2 pojmu - bude vyse, takze jen odkazat).
+
+(TODO: proc bylo zvoleno toto, vyhody, nevyhody.)
+
+Relevance of the exercise is estimated as the cosine similarity meassure between the exercise and the article.
+(TODO: popsat poradne, jak chapeme reprezentujem cviceni a clanek jako dokumenty, ze bereme jen pojmy...)
+
+Cosine similarity between two documents (in our case one document is the article $A$ and another is the exercise $E$) is given by the following formula:
+$$
+similarity(A, E)
+= \frac{A \cdot E}{|A| |E|}
+= \frac{\sum_{i=1}^{n} A_i E_i}{\sqrt{\sum_{i=1}^{n} A_i^2}\sqrt{\sum_{i=1}^{n} E_i^2}}
+$$
+where $A_i$ ($E_i$) denotes numbers of occurences of the $i$-th term in article (exercise).
+(TODO: odkaz na popis, interpretaci a zduvodneni cosine similarity, napr. z IRT)
+(TODO: proc "cosine" -- jedna se cosinus uhlu mezi vektory 2 dokumentu)
+(TODO: proc bylo zvoleno toto (napr. mezi 0 a 1, normalizace vzhledem k ruznym delkem, vyhody, nevyhody.)
 
 \section{Adaptive Practice}
 \label{sec:smartoo-practice}
 
+TODO... obecne
 
-TODO...
+\subsection{Component Interface}
+
+TODO ...
+
+\subsection{Prototype Behavior}
+
+Implemented behavior of adaptive practicer is a .... (jak modeluje studenta... spis nijak, proste se snazim cilit na pozadovanou pravdepodobnost uspechu / simple heuristic...)
+
+To select the most suitable exercise, three attributes of exercises are considered:
+
+\begin{myItemize}
+  \item relevance to the article,
+  \item difficulty (compared to the so far success of the user),
+  \item repetitiveness (to not ask about one term over and over again).
+\end{myItemize}
+
+Weights of these three attributes as well as the target success
+are given by the behavior parameters.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| l | c | r | r |  r  |  r |  r |}
+  \hline
+  parameter & symbol & \multicolumn{5}{|c|}{used values} \\
+  \hline \hline
+  target success & $\tau$           & $0.75$ & $0.75$ & $0.75$ & $0.75$ & $0.75$\\ \hline
+  relevance weight & $\alpha$      & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$\\ \hline
+  difficulty weight & $\beta$      & $1.00$ & $1.00$ & $1.25$ & $1.00$ & $1.00$\\ \hline
+  repetitiveness weight & $\gamma$ & $0.25$ & $0.25$ & $0.25$ & $0.50$ & $0.50$\\ \hline
+\end{tabular}
+\end{center}
+\caption{Parameters of prototype adaptive practice behavior}
+\end{table}
+
+Relevance of the exercise was computed by \textit{ExercisesGrade} (see (TODO: odkaz)).
+
+Difficulty penalization is based on the difference between the target difficulty and the exercise difficulty.
+Target difficulty is not exactly $(1 - \tau)$ as it is adjusted according to
+so far success of the user -- if the correct ratio of the user is higher than the target success,
+the target difficulty is set higher than $(1 - \tau)$ and vice versa.
+(TODO: odkaz na experimenty na slepych mapach, kde se tohle ukazalo jako uzitecne)
+(TODO: konkretni vzorec podle zdrojaku)
+
+Repetitiveness penalization is based on the cosine similarity between the scored exercise and the exercises already used in the current session (TODO: odkaz na vysvetleni cosine similarity drive).
+
+The total score is given as weighted sum of the three individual scores described above.
+$$
+\text{totalScore} = \alpha \cdot \text{relevanceScore} + \beta \cdot \text{difficultyPenalty} + \gamma \cdot \text{repetitivenessPenalty}
+$$
+An exercise with the highest score is chosen.
+
 
 \section{Web Interface}
 \label{sec:smartoo-web}
