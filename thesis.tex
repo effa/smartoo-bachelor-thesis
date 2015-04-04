@@ -60,7 +60,7 @@
 
 % ===== FI THESIS SETTINGS =====
 
-\thesistitle{Automatic question generation\\and adaptive practice}
+\thesistitle{Automatic Question Generation\\and Adaptive Practice}
 \thesissubtitle{Bachelor thesis}
 \thesisstudent{Tomáš Effenberger}
 \thesiswoman{false}
@@ -199,9 +199,10 @@ When studying, it is more efficient not just to read about the topic, but also t
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
-  % TODO: profiltrovat na ty opravdu relevantni
+% TODO: profiltrovat na ty opravdu relevantni
 knowledge representation, question generation, adaptive practice, learning,
-artificial intelligence, natural language processing, multiple choice questions
+multiple choice questions
+%artificial intelligence, natural language processing,
 \end{ThesisKeyWords}
 
 \MainMatter
@@ -215,7 +216,9 @@ TODO: intro, goal of the thesis (dodelat podle oficialniho zadani / abstraktu)
 
 Mere repeated reading of the text which one is traying to learn is unefficient method of learning, while answering to related questions leads to [better long-term knowledge / dlouhodobemu zapamatovani] \parencite{edu-improve}.
 
-[neco o tom, ze vytvaret testy manualne je time-consuming, takze by bylo fajn to autmatizovat]
+TODO: 2 ruzne cile: procvicovani (uceni) tematu vs. testovani; i pri procvicovani tematu muzu chtit i to testovani (abych vedel, jak na tom jsem) (budu se venovat obema (?) a v implementovanem systemu to bude nekde na pomezi)
+
+TODO: neco o tom, ze vytvaret testy manualne je time-consuming, takze by bylo fajn to autmatizovat
 
 In spite of active and [dlouhodoby nebo tak neco] research of question generation (e.g. \parencite{questions-wolfe, questions-eval}) [mozna pridat dalsi, pripadne rozepsat - priklad early research a recent research],
 there is still no publicly available web application to solve this task.
@@ -260,7 +263,7 @@ Finally, in the chapter \ref{chap:future}, I present planned future development 
 %TODO: (?) The text of the thesis is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 % ===========================  CHAPTER ===========================
-\chapter{Knowledge extraction}
+\chapter{Knowledge Extraction}
 \label{chap:knowledge}
 
 Knowledge extraction is well-studied aria \parencite{triples-acquisition}.
@@ -272,7 +275,7 @@ TODO: zminit omezeni na zachyceni faktu, ne "procedural knowledge" jako je napr.
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Lexico-syntactic patterns}
+\section{Lexico-syntactic Patterns}
 \label{sec:lexico-syntactic-patterns}
 
 NOTE: Mozna presunout / rozlozit i do kapitoly o generovani cviceni
@@ -353,7 +356,7 @@ True/False: chybne vety jsou ze spravne vety vytvoreny nahrazenim subjektu nebo 
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Knowledge bases}
+\section{Knowledge Bases}
 \label{sec:knowledge-bases}
 
 TODO...
@@ -372,8 +375,10 @@ language \parencite[][84]{semantic-web}.
 
 
 % ===========================  CHAPTER ===========================
-\chapter{Exercises generation}
+\chapter{Exercises Creating}
 \label{chap:exercises}
+
+TODO: jasne rict (a mozna diagram), ze jsou 2 zakladni moznosti: bud jsou cviceni generovana primo z textu, nebo je tam ten mezikrok, kdyz se stavi knowledge graph
 
 [Intro, TODO: nejcasteji multiple-choice question, definice, distractory, ukazka]
 
@@ -428,97 +433,176 @@ This questions is much more likely to force student to retrieve knowledge about 
 \cite{optimizing-multiple-choice} also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
 
 The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
+NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy).
 
 
-
+TODO (mozna sekce, mozna vice sekci): o tom, jak z grafu znalosti dostat otazky
 
 
 ..........................
 
-TODO: Jeden z moznych postupu (Mitkov, 2006) -- bez potreby vytvaret graf znalosti:
+TODO: Jeden z moznych postupu (Mitkov, 2006) \cite{question-gen-mitkov} -- bez potreby vytvaret graf znalosti:
 extrakce pojmu z textu (pomoci frekvenci), otazky transformaci vet s pojmy (vzory predem dane), vyber distraktoru (snaha o semantickou blizkost odpovedi ... pomoci WordNetu)
 
 
 
 
 % ===========================  CHAPTER ===========================
-\chapter{Exercises grading}
+\chapter{Exercises Grading}
 \label{chap:exercises-grading}
 
 NOTE: mozna neni na samostatnou kapitolu (v tom pripade spojit s predchozi, ale je to tak vice konzistentni
 
 % ===========================  CHAPTER ===========================
-\chapter{Adaptive practice}
+\chapter{Adaptive Practice}
 \label{chap:practice}
+
+TODO popis stavu: mame vygenerovane otazky (prip. i s ohodnocenim?), ted je chceme studentovi predkladat, v nasem settings: obvykle mame spousty otazek (destiky nebo stovky) ale predlozit jich ma cenu je nekolik (napr. 10 nebo 20, prip. dalsi na zadost uzivatele) ... je tedy dulezite umet vybrat ty nejvice pro studenta relevantni otazky a zaroven vyvazovat prumernou uspesnost (pokud by uzivatel nevedel nikdy spravnou odpoved, tak by ho to deprimovalo)
+
+TODO o co jde: poskytovani tech otazek, ktere jsou pro uzivatele co nejuzitecnejsi ... tj. zamereni na to, co student jeste moc dobre neumi, ale na druhou stranu vyvazovat uspesnost (pokud by uzivatel nevedel na zadnou otazku spravnou odpoved, tak by ho to deprimovalo.
+
+(TODO: mozne rozdeleni na 3 casti: odhad prior knowledge (nejspis na urovni jednoho faktu), odhad aktualni znalosti (ma smysl pri opakovanych otazkach na 1 fakt, napr. slepe mapy, ale nikoliv Smartoo), selection of a suitable question (podle odhadu znalosti a historie odpovedi).)
+
+
+Takze napred projdu nekolik nejznamejsich zpusobu modelovani skillu studenta a obtiznosti faktu (IRT/Rash, PFA, ELO, PFAE, BKT), pak se zamerim na samotny vyber otazky.
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Item Response Theory}
+\label{sec:irt}
 
 
 TODO...
 
+NOTE: Mozna zvlast sekce o IRT a Rash Modelu?
+
+Napr. Rash Model, coz je logisticky model, predpoklad konstantni znalosti studenta (neuvazuje uceni). Pro multiple choice questions with $n$ options (tj. pravdepodobnost nahodneho uhadnuti je $\frac{1}{n}$), znalost studenta daneho faktu dana parametrem $s$ a obtiznost tematu dana parametrem $d$, vypada odhad spravne odpovedi nasledovne:
+
+$$
+P(correct \mid k, d) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(s - d)}}
+$$
+
+(Mozne TODO: graf)
+
+TODO: uceni parametru: joint maximum likelihood estimation (odkaz), offline, potreba dost dat a je to pomale a obzvlaste nevhodne pro online aplikace, kde je idealni kontinualni update
+
 
 % ---------------------------  SECTION  ---------------------------
-\section{Bayesian network}
+\section{Performance Factor Analysis}
+\label{sec:pfa}
+
+NOTE: Performance Factor Analysis = rozsireni Rash modelu, aby uvazoval meninic se znalost skillu; pravdepodbnost odpovedi je stale dana logaritmickou funkci, ale neni zavisla na konstantnim rozdilu znalosti studenta a obtiznosti faktu, ale na linearni kombinaci obtiznosti a poctu studentovych spravnych a poctu chybnych odpovedi na prislusnou otazku ($m = d + \alpha \cdot correctCount + \beta \cdot incorrectCount$).
+Vsimneme si, ze v uvahu nebere poradi spravnych a spatnych odpovedi, pouze jejich obsolutni pocet (tj. neumi rozlisit mezi tim, ze jsem 10 krat odpovedel spatne a pak 10 krat dobre a mezi tim, ze odpovidam jednou dobre a jednou spatne.)
+
+Dalsi problem je, ze nebere v uvahu moznost tipovani (coz je potreba u multiple choice otazek).
+
+% ---------------------------  SECTION  ---------------------------
+\section{Elo System}
+\label{sec:elo}
+
+
+TODO: inspirovane hodnocenim sachovych hracu \cite{elo-rating}, mozna i napred trochu popsat, jak to funguje tam a pak teprve ta analogie na nasi situaci
+
+Je to dalsi zpusob, jak rozsirit Rash model o uceni, odhad spravne odpovedi zustava stejny logisticky model (odkaz na ten vzorecek). Skill se updatuje po "zapasu" mezi studentem a otazkou (faktem) nasledovne,
+kde $s$ je skill studenta, $R$ je result (1 if the answer was correct, 0 if incorrect).
+
+$$
+s \gets s + K \cdot (R - P(R = 1))
+$$
+
+NOTE: Lze pouzit (a ve Slepych mapach \cite{slepe-mapy} se pouziva) i pro odhad prior knowledge (a global difficulty faktu)
+(Oproti Rash modelu asi nema v tomto ohledu tak dobrou semantiku (viz clanek slepe-mapy), ale zato se lepe pocita, vhodny pro online system; navic experimenty ukazuji, ze se to chova podobne (odkaz opet v clanku ve slepe-mapy).
+Pak je ale problem with constant K: kdyz je moc mala, tak je uceni pomale, kdyz je velke, tak nestabilni, je tedy vhodne (a pouziva se v Slepe mapy -- viz \cite{slepe-mapy}, mozna odkaz spis primo na system) pouzit misto konstanty
+uncertainty function, e.g. $K = \frac{a}{1 + bn}$, kde $n$ je kolik otazek uz uzivatel zodpovedel (nebo obracene, kolik otazek na dane misto jiz bylo zodpovezeno) a $a$ a $b$ jsou fixne zvolene parametry.
+
+Moznost zkombinovat PFA a Elo (viz \cite{slepe-mapy}, nazyvaji to PFAE, kde E muze znamenat bude Elo nebo Extended), porad stejna logisticka funkce, nyni vzhledem k $K_{sf}$, coz je odhad, ze student $s$ zna fakt $f$. Tato promenna (odhad) se updatuje po kazde otazce studenta $s$ na otazku na fakt $f$ podle vzorce pro Elo (odkaz), akort misto jedne konstanty $K$ se pouzivaji 2 ruzne pri spravne vs. spatne odpovedi.
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Bayesian Knowledge Tracing}
 \label{sec:bayesian-network}
 
-Jeden z moznych pristupu pro adaptabilni procvnicovani (ptani se relevantnich otazek)
+TODO: Baysovska sit (HMM) k popisu konceptu (skill) a jejich nauceni (2 stavy: known (learned) and unknown (unlearned)), 4 parametry modelu: pravdepodobnost, ze je koncept known hned od zacatku, pravdepodobnost nauceni v 1 kroku, pravdepodobnost spravne odpovedi, kdyz koncept neumim (guess) a pravdepodobnost spatne odpovedi, kdyz koncept umim (slip).
+Update skillu po odpovedi na otazku: s pouzitim Bayesova pravidla.
+Odhad parametru: napr. pomoci Expectation Maximization na existujicich datech.
 
-\cite{question-gen-adapt-bayes}
+Predpoklad je diskretni prechod z neumim do umim (coz je obvykle dost zjednodusujici, zapamatovani deklarativnich faktu je postupne).
 
-- domenove nezavisle
+TODO: Dalsi clanky viz odkazy v clanku slepe-mapy.
 
-- Baysovska sit k popisu konceptu a jejich nauceni (2 stavy: known and unknown) a zavislosti mezi kocpety a spravnou odpovedi na otazku (pritom se uvazuje i moznot uhadnuti i kdyz koncept neumim (guess) a spatnou odpovedi, i kdyz koncept umim (slip).
 
-- vyber tematu otazky: least known concept
+% ---------------------------  SECTION  ---------------------------
+\section{Question selection}
+\label{sec:question-selection}
 
-- vyber konkretni otazky: bere se v uvahu primerena obtiznost a pestrost typu otazek
+NOTE: predchozi sekce (mozna to mely byt jen podsekce, ale to je jedno) se zabyvaji, tim, jak modelovat znalost studenta a obtiznost konceptu/faktu. To je jedna z komponent, kterou pro vyber vhodne otazky potrebujeme.
+
+Kriteria, ktera jsou dulezita pro vyber vhodne otazky:
+
+\begin{myItemize}
+  \item relevance -- obecne relevance pro studenta, v nasem kontextu hlavne relevance k danemu tematu, v jinem to muze znamenat vice aktualni relevanci - co zrovna ted potrebuje student procvicit nejvice (least known concept -- napr. \cite{question-gen-adapt-bayes} ... neni potreba uplne resit pokud cekam, ze tam bude uzivatel dost dlouho a casem se dostnane ke vsemu)
+  \item difficulty -- pro testovani je nejvhodnejsi, pokud je pravdepodobnost spravne odpovedi 50 procent (takova otazka pak poskytuje nejvice informaci o studentovych znalostech), ale pro procvicovani je je 50 procent uz dost malo a pusobi spise deprimacne, takze je dobre mirit vyse (napr. ve slepych mapach je 75 procent, zase by se hodil nejaky odkaz), rozhodne ne zas moc lehke, je to potreba vybalancovat (flow).
+  \item variability -- to muze v ruznych kontextech znamenat ruzne veci, napr. stridat typy otazek, nebo neptat se na jeden pojem 2 krat za sebou (i kdyz jinou otazkou)
+\end{myItemize}
+
+Casty pristup je takovyto: tato (pripadne i nejaka dalsi) kriteria se pak mohou podili nejakou vahou na skore otazky, vybrana je pak otazka s nejvyssim skore (napr. slepe mapy -- citovat)
+
+Dalsi takovy system je
+\cite{question-gen-adapt-bayes}, vyuziva BKT pro modelovani studentovych znalosti a obtiznosti konceptu,  domenove nezavisle, vyber tematu otazky: least known concept, vyber konkretni otazky: bere se v uvahu primerena obtiznost a pestrost typu otazek.
+
+
 
 
 % ===========================  CHAPTER ===========================
-\chapter{Smartoo framework}
+\chapter{Smartoo Framework}
 \label{chap:smartoo}
 
 TODO...
 
 podkapitoly pro jednotlive komponenty
 
-\section{Knowledge building}
+\section{Knowledge Building}
 \label{sec:smartoo-knowledge}
 
 TODO...
 
-\section{Exercises creating}
+\section{Exercises Creating}
 \label{sec:smartoo-exercises}
 
 TODO...
 
-\section{Exercises grading}
+\section{Exercises Grading}
 \label{sec:smartoo-exercises-grading}
 
 TODO...
 
-\section{Adaptive practice}
+\section{Adaptive Practice}
 \label{sec:smartoo-practice}
 
 
 TODO...
 
-\section{Web interface}
+\section{Web Interface}
 \label{sec:smartoo-web}
 
 
 TODO...
 
 % ===========================  CHAPTER ===========================
-\chapter{Evaluation}
+\chapter{Deployment and Evaluation}
 \label{chap:evaluation}
 
 TODO...
 
 performace of each component
 
-\chapter{Future plans}
+TODO: bylo by pekne, kdybych mohl ze ziskanych dat take zmerit RMSE tech 6 ruznych pracitce komponent (resp. te jejich casti, ktera modeluje studenta, tj. jak moc dobre ohdaduji, ze to uzivatel zvladne)
+
+\chapter{Conclusions and Future Plans}
 \label{chap:future}
 
-TODO...
+TODO: strucne shrnuti a hlavne zavery na zaklade statistik a strucne budouci plany...
+
 
 what to improve (... in diploma thesis)
 
