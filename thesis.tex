@@ -263,6 +263,7 @@ Finally, in the chapter \ref{chap:future}, I present planned future development 
 
 %TODO: (?) The text of the thesis is licensed under a Creative Commons Attribution 3.0 Unported License.
 
+
 % ===========================  CHAPTER ===========================
 \chapter{Knowledge Extraction and Representation}
 \label{chap:knowledge}
@@ -292,6 +293,19 @@ O co jde: hierarchie trid, (mezi tridou a podtridou je "is-a" relationship)
 TODO: ukazka ontologie OWL pouzite v DBpedii (Thing, Agent, Person, ...)
 
 - v dalsi kapitole (odkaz) bude rozebrano, jak generovat otazky s vyuzitim ontologii
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Terms extraction}
+\label{sec:terms-extraction}
+
+Pristupy k Terms extraction: napred se text prozene nejakym parserem, ktery identifikuje nouns and noun phrases, spocita se jejich frekvence a ty ktere presahnou nejakou mez, tak se povazuji za pojmy. Tohle teda jako pojmy muze zvolit i obecna casto pouzivana podstatna jmena, ale tohle se pri vyhodnoceni neukazalo jako zasadni problem (naopak varianty jako TF-IDF zahazovali i nemalo pojmu, pokud se tyto casto pouzivaji -- coz bylo u nich docela caste, vzhledem k tomu, ze to testovali na nejakych lingvistickych textech)
+\cite{question-gen-mitkov}
+
+Dalsi pristupy (pouzite napr. v \textit{The Mentor} \cite{mentor}): all named entites are find in the text
+(using several techniques -- regular expression, gazetteers [odkaz na vysvetleni jinam do textu] and a machine learning-base recognizer as well) (TODO: rozebrat, ukazat priklady)
+
+TODO: dalsi mozne pristpuy
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -329,78 +343,29 @@ Multiple choice questions consists of a question text (called \textit{stem})
 and a few (e.g. four) choices, from which one is the correct answer
 and the rest are incoreect alternatives (called \textit{distractors}).
 
-
-
-\section{Distractors}
-\label{sec:distractors}
-
-It is important to present a multiple-choice question with competitive \textit{distractors}.
-As shown by experiments described in \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple choice question:
-
-\begin{exercise}
-\caption{Question with noncompetitive alternatives}%\label{table:somename}
-  \begin{question}
-  Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
-  \begin{choices}
-    \choice Emancipation Proclamation
-    \choice John Wilkes Booth
-    \choice Illinois
-    \choice Department of Agriculture
-  \end{choices}
-  \end{question}
-\end{exercise}
-
-Clearly, the student does not need to remember who assasinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
-Of course, this was an extreme example to illustrate the point -- you definitely would not come accross such poor distractors in manually created multiple-choice questions.
-Now take a look at the following question:
-
-\begin{exercise}
-\caption{Question with competitive alternatives}%\label{table:somename}
-  \begin{question}
-  Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
-  \begin{choices}
-    \choice Thomas N. Conrad
-    \choice Robert E. Lee
-    \choice John Wilkes Booth
-    \choice Ward Hill Lamon
-  \end{choices}
-  \end{question}
-\end{exercise}
-
-This questions is much more likely to force student to retrieve knowledge about John Wilkes Booth as well as about other alternatives.
-
-\cite{optimizing-multiple-choice} also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
-
-The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
-A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov, slepe-mapy}
-NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy).
+NOTE: asi napred o pristupech ke generovani otazek a distraktory spolecne na konec
 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Syntactic Approach}
 \label{sec:questions-syntactically}
 
+TODO: citovat priklady: \textit{AutoQuest} \cite{questions-wolfe}, prehistorie (70. leta), aktualnejsi pak napr. (Mitkov 2006) \cite{question-gen-mitkov}.
+
 TODO popsat: Prvni system jiz v 70. letech -- \textit{AutoQuest} \cite{questions-wolfe}.
 
-
-TODO: Jeden z moznych postupu (Mitkov, 2006) \cite{question-gen-mitkov} -- bez potreby vytvaret graf znalosti:
-extrakce pojmu z textu (pomoci frekvenci), otazky transformaci vet s pojmy (vzory predem dane), vyber distraktoru (snaha o semantickou blizkost odpovedi ... pomoci WordNetu):
+TODO: Jeden z moznych postupu (Mitkov, 2006) \cite{question-gen-mitkov}:
+extrakce pojmu z textu (pomoci frekvenci), otazky transformaci vet s pojmy (vzory predem dane), vyber distraktoru (snaha o semantickou blizkost odpovedi ... pomoci WordNetu ... viz sekce distractors):
 1) terms extraction: identifikace klicovych (domain-specific) pojmu (to budou odpovedi na otazky)
 2) stem generation: pretvoreni vety (uvazovany pouze jednoduche vety) v o otazku (step) pomoci jednoduchych transformacnich pravidel
 3) distractor selection: z ostatnich pojmu, snaha o co nejvetsi semantickou blizkost (za timto ucelem pouzili WordNet)
 
-Podrobneji:
-
-Terms extraction: napred se text prozene nejakym parserem, ktery identifikuje nouns and noun phrases, spocita se jejich frekvence a ty ktere presahnou nejakou mez, tak se povazuji za pojmy. Tohle teda jako pojmy muze zvolit i obecna casto pouzivana podstatna jmena, ale tohle se pri vyhodnoceni neukazalo jako zasadni problem (naopak varianty jako TF-IDF zahazovali i nemalo pojmu, pokud se tyto casto pouzivaji -- coz bylo u nich docela caste, vzhledem k tomu, ze to testovali na nejakych lingvistickych textech)
 
 Stem generation: z vety se tvori otazka, pokud obsahuje nejaky pojem a navic ma urcitou strukturu, napr.
 $$
 S V O \text{.} \longrightarrow \text{Which } H V O \text{?}
 $$
 where $S$, $V$, $O$ stand for \textit{subject}, \textit{verb} and \textit{object} and $H$ is the hypernym of the subject (found using WordNet). (TODO: uvest priklad)
-
-
-Selection of distractors: pomoci WordNetu: coordinates (= terms sharing at least one hypernym with the correct answer). Pokud se jich ve WordNetu najde mnoho, preferuji se ty, ktere se vyskytuji i v dokumentu. Pokud naopak WordNet nevrati nic, pouziji se jmenne fraze z textu, ktere maji stejnou hlavu (leading noun) jako sparvna odpoved. (Pokud ani toto neexistuje, tak se otazka nevytvori.)
 
 Zajimavost: prvni verze systemu dosahovali komem 5 procent otazek, ktere byly relevantni a bez chyby (tj. ktere se dali pouzit bez uprav).
 
@@ -459,11 +424,6 @@ Then some filters are applied to discard questions of poor quality. Two main fil
   \item Discarding Anaphoric References: e.g. "Where is there?"
 \end{enumerate}
 
-As the system generates multiple-choice questions,
-it also needs to find appropriate distractors.
-For this purpose, all named entites are find in the text
-(using several techniques -- regular expression, gazetteers [odkaz na vysvetleni jinam do textu] and a machine learning-base recognizer as well)
-
 
 NOTE: asi docela uspesne, i kdyz mnoho otazek potreba rucne opravit (nepredpokladalo se online nasazeni)
 
@@ -490,6 +450,64 @@ True/False: chybne vety jsou ze spravne vety vytvoreny nahrazenim subjektu nebo 
 
 
 TODO: popsat jak se daji vytvaret zajimavejsi otazky s vyuzitim knowledge graphs (viz Procvicnik, napr. Mohli se potkat?)
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Distractors}
+\label{sec:distractors}
+
+It is important to present a multiple-choice question with competitive \textit{distractors}.
+As shown by experiments described in \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple choice question:
+
+\begin{exercise}
+\caption{Question with noncompetitive alternatives}%\label{table:somename}
+  \begin{question}
+  Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
+  \begin{choices}
+    \choice Emancipation Proclamation
+    \choice John Wilkes Booth
+    \choice Illinois
+    \choice Department of Agriculture
+  \end{choices}
+  \end{question}
+\end{exercise}
+
+Clearly, the student does not need to remember who assasinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
+Of course, this was an extreme example to illustrate the point -- you definitely would not come accross such poor distractors in manually created multiple-choice questions.
+Now take a look at the following question:
+
+\begin{exercise}
+\caption{Question with competitive alternatives}%\label{table:somename}
+  \begin{question}
+  Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
+  \begin{choices}
+    \choice Thomas N. Conrad
+    \choice Robert E. Lee
+    \choice John Wilkes Booth
+    \choice Ward Hill Lamon
+  \end{choices}
+  \end{question}
+\end{exercise}
+
+This questions is much more likely to force student to retrieve knowledge about John Wilkes Booth as well as about other alternatives.
+
+\cite{optimizing-multiple-choice} also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
+
+The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
+A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov, slepe-mapy}
+NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy).
+
+TODO: konkretni strategie:
+
+1] pokud mam pojmenovane entity textu (odkaz na sekci terms extraction v predchozi kapitole), tak vybrat z nich, a to stejneho typu (napr. osoby, mista atp.) -- citovat pouziti, myslim, ze to bylo v Mentorovi (2 stupnova hierarhcie termu)
+
+2] \cite{question-gen-mitkov}:
+pomoci WordNetu: coordinates (= terms sharing at least one hypernym with the correct answer). Pokud se jich ve WordNetu najde mnoho, preferuji se ty, ktere se vyskytuji i v dokumentu. Pokud naopak WordNet nevrati nic, pouziji se jmenne fraze z textu, ktere maji stejnou hlavu (leading noun) jako sparvna odpoved. (Pokud ani toto neexistuje, tak se otazka nevytvori.)
+
+
+3] distraktory z Knowledge Graphu (ontologii) [presunout povidani ze sekce vyse]
+
+
 
 
 % ===========================  CHAPTER ===========================
