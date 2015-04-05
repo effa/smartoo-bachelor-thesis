@@ -30,6 +30,21 @@
 \usepackage[labelfont=]{caption}
 %\usepackage{newfloat}
 
+% indentation
+% vertical space between paragrahps, no indentation
+%\usepackage[parfill]{parskip}  % TODO: nefunguje -> zfunkcnit
+% space between paragraphs
+\setlength{\parskip}{0.6em plus0.2em minus0.2em} % zkraceni vzdalenosti mezi odstavci
+
+% listings for SPARQL
+\usepackage{listings}
+\lstset{%
+  language=SQL,%
+  morekeywords={PREFIX,LIMIT},%
+  basicstyle=\small\ttfamily,
+  frame=single%
+}
+
 % bibliography management
 \usepackage[backend=biber, 		% use biber as backend instead of BiBTeX
         %dashed=false                    % when there is an author twice, still write his/her name
@@ -72,16 +87,15 @@
 % ===== LATEX DOCUMENT SETTINGS =====
 
 % adjusting hyphenation penalties
-\tolerance=10000
-\hyphenpenalty=500
+%\tolerance=10000
+%\hyphenpenalty=500
+
+% hyphenations settings
+\hyphenation{DBpedia}
 
 % renew command for shorter and nicer underscore
 \renewcommand{\_}{\leavevmode \kern0.0em\vbox{\hrule width0.4em}}
 
-% vertical space between paragrahps, no indentation
-\usepackage[parfill]{parskip}  % TODO: nefunguje -> zfunkcnit
-% space between paragraphs
-%\setlength{\parskip}{0.6em plus0.2em minus0.2em}
 
 % ===== COMMANDS =====
 
@@ -227,10 +241,14 @@ And I am sure that such application would be really useful. Typical example is t
 [overit aktualnost a jasne urcit moment o kterem mluvim (neexistuje tady a ted)]
 
 That is why I have implemented \textit{Smartoo, Smart Artificially Intelligent Tutor}, modular and extensible framework for question generation and adaptive practice
-of knowledge from Wikipedia [taky citovat!] articles.
+of knowledge from \emph{Wikipedia}%
+\footnote{\url{http://en.wikipedia.org/}}
+articles.
 The Smartoo Framework is licensed under the GNU General Public License, version 2 [citovat?, licenci rozmyslet].
-The source code is available from project's page on \textit{GitHub} \parencite{smartoo-github}.
-I have used the framework to create a simple [instance/demo/prototype?] of the web application for practicing knowledge from Wikipedia articles \parencite{smartoo-web}.
+The source code is available from project's page on \textit{GitHub}.%
+\footnote{\url{http://github.com/effa/smartoo}}
+I have used the framework to create a simple [instance/demo/prototype?] of the web application for practicing knowledge from Wikipedia articles.%
+\footnote{\url{http://smartoo.thran.cz}}
 
 The whole practicing process consists of four steps.
 First step is to extract facts from the given article.
@@ -281,16 +299,131 @@ TODO: jasne dat najevo (diagram), ze tato faze neni v zasade nutna (napr. do uvo
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Ontologies (Knowledge graphs)}
-\label{sec:ontologies}
+\section{RDF graph}
+\label{sec:rdf-graph}
 
-TODO: ontologie vs. knowledge graphs
+TODO: o co jde (obvykly zpusob reprezentace znalosti)
+
+
+RDF graph is often used for knowledge representation.
+
+Facts are stored in the form of \textit{RDF} (\textit{Resource Description Framework}) graph [citovat],
+which is a collection of subject -- predicate -- object triples \parencite[][63]{semantic-web}. Simple example of few facts about Alan Turing and Alonzo Church:
+
+
+\begin{verbatim}
+Alan Turing - type - person
+Alan Turing - birthdate - 23 June 1912
+Alan Turing - nationality - British
+Alan Turing - doctoral advisor - Alonzo Church
+\end{verbatim}
+
+\begin{verbatim}
+Alonzo Church - type - person
+Alonzo Church - nationality - American
+Alonzo Church - birthdate - 14 June 1903
+\end{verbatim}
+
+The collection of RDF triples can be thought of as a graph,
+where vertices correspond to subjects and objects
+and edges represent relations between them.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/rdf-graph.pdf}
+  \caption{Simple RDF graph}
+  \label{fig:simple-rdf-graph}
+\end{figure}
+
+To avoid possible ambiguity (e.g. between two people who have both name "Alan Turing")
+we will use unique URIs%
+\footnote{\emph{Uniform Resource Identifier}, TODO: odkaz/vysvetleni}
+to represent terms (subjects and objects) and properties (predicates).
+URI is composed from a prefix and a name.
+
+\begin{tabular}{ l  l }
+  %\hline
+  URI & \texttt{http://dbpedia.org/resource/Alan\_Turing}\\
+  \hline
+  prefix & \texttt{http://dbpedia.org/resource/}\\
+  name & \texttt{Alan\_Turing}\\
+  %\hline
+\end{tabular}
+
+\noindent
+Objects can be either URIs or literals, such as number, string or date. (Maybe TODO: priklady)
+Simple example with prefixes (part of the graph above):
+
+\begin{verbatim}
+<http://dbpedia.org/resource/Alan_Turing>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+    <http://xmlns.com/foaf/0.1/Person> .
+<http://dbpedia.org/resource/Alan_Turing>
+    <http://dbpedia.org/ontology/birthDate>
+    1912-06-23+02:00
+<http://dbpedia.org/resource/Alan_Turing>
+   <http://dbpedia.org/property/nationality>
+   "British"@en
+\end{verbatim}
+
+Or, with the use of seperated definition of URI prefixes (so called \emph{Turtle syntax}):
+
+\begin{verbatim}
+@prefix rsrc: <http://dbpedia.org/resource/>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+@prefix dbpedia-owl: <http://dbpedia.org/ontology/>
+@prefix dbprop: <http://dbpedia.org/property/>
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+rsrc:Alan_Turing
+  rdf:type foaf:person ;
+  dbpedia-owl:birthDate 1912-06-23+02:00 ;
+  dbprop:nationality "British"@en .
+\end{verbatim}
+
+% ---------------------------  SECTION  ---------------------------
+\section{SPARQL}
+\label{sec:sparql}
+
+\textit{SPARQL}%
+\footnote{The name of this query language is a recursive acronym of \textit{SPARQL Protocol and RDF Query Language}.}
+is query language for convenient querying of RDF graphs. \parencite[][84]{semantic-web}.
+
+% TODO: seznam ala Martin Ukrop
+%SPARQL query resembles SQL query.
+The main parts of the query are
+\begin{description}
+  \item[PREFIX] -- definition of prefixes and assosiated shortcuts
+  \item[FROM] -- dataset (RDF graph) on which to run the query
+  \item[SELECT] -- which information to return
+  \item[WHERE] -- condition on returned data
+  \item[ORDER BY] -- ordering of results
+\end{description}
+
+As an example, the following SPARQL query would return the birthdate and birthplace of Alan Turing:
+
+\begin{lstlisting}
+PREFIX rsrc: <http://dbpedia.org/resource/>
+PREFIX owl: <http://dbpedia.org/ontology/>
+SELECT ?date ?place
+WHERE {
+  rsrc:Alan_Turing owl:birthDate ?date ;
+                   owl:birthPlace ?place .
+}
+\end{lstlisting}
+
+% ---------------------------  SECTION  ---------------------------
+\section{Ontology}
+\label{sec:ontology}
+
+TODO: ontologie - co to je, k cemu to je
 
 TODO: asi nasledovane rozdeleni: obecne info o ontologiich (a jak je generovat) v knowledge kapitole; v kaptiole exercises pak generovani otazek z ontologii
 
-O co jde: hierarchie trid, (mezi tridou a podtridou je "is-a" relationship)
+O co jde: ontologií se rozumí popis vlastností, tříd a jejich hierarchie
+(mezi tridou a podtridou je "is-a" relationship)
 
-TODO: ukazka ontologie OWL pouzite v DBpedii (Thing, Agent, Person, ...)
+TODO: ukazka ontologie OWL pouzite v DBpedii (Thing, Agent, Person, ...) - to je spis hierarchie trid...
 
 - v dalsi kapitole (odkaz) bude rozebrano, jak generovat otazky s vyuzitim ontologii
 
@@ -299,33 +432,68 @@ TODO: ukazka ontologie OWL pouzite v DBpedii (Thing, Agent, Person, ...)
 \section{Terms extraction}
 \label{sec:terms-extraction}
 
+TODO: co chapeme termy (named entities), priklady
+
 Pristupy k Terms extraction: napred se text prozene nejakym parserem, ktery identifikuje nouns and noun phrases, spocita se jejich frekvence a ty ktere presahnou nejakou mez, tak se povazuji za pojmy. Tohle teda jako pojmy muze zvolit i obecna casto pouzivana podstatna jmena, ale tohle se pri vyhodnoceni neukazalo jako zasadni problem (naopak varianty jako TF-IDF zahazovali i nemalo pojmu, pokud se tyto casto pouzivaji -- coz bylo u nich docela caste, vzhledem k tomu, ze to testovali na nejakych lingvistickych textech)
 \cite{question-gen-mitkov}
 
 Dalsi pristupy (pouzite napr. v \textit{The Mentor} \cite{mentor}): all named entites are find in the text
 (using several techniques -- regular expression, gazetteers [odkaz na vysvetleni jinam do textu] and a machine learning-base recognizer as well) (TODO: rozebrat, ukazat priklady)
 
-TODO: dalsi mozne pristpuy
+TODO: dalsi mozne pristupy
 
+% ---------------------------  SECTION  ---------------------------
+\section{Relations extraction}
+\label{sec:relations-extraction}
+
+TODO... (viz knizka a dalsi clanky)
 
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Bases}
 \label{sec:knowledge-bases}
 
-TODO...
-Besides the text itself external knowledge bases can be used.
-Examples of popular knowledge bases are DBpedia \parencite{dbpedia} and Freebase [citovat!].
-DBpedia was built by extracting structured information from Wikipedia.
-Facts are stored in the form of \textit{RDF} (\textit{Resource Description Framework}) graph [citovat],
-which is a collection of subject -- predicate -- object triples \parencite[][63]{semantic-web}.
+There are several huge publicly available knowledge bases,
+which try to capture as many facts about the world as possible.
+Examples of popular knowledge bases are
+\textit{DBpedia}\footnote{\url{http://dbpedia.org/}}
+and \textit{Freebase}.\footnote{\url{https://www.freebase.com/}}
+Knowledge bases are used form many task in natural lanuage processing,
+such as named entity recognition (TODO: coz by se melo rozebirat v predhozi kapitole ?!),
+desambiguation,
+semantic search (Maybe TODO: co to znamena, citovat Google)
+and question answering -- several knowledge bases (including DBpedia) were used in \emph{DeepQA project} to create \emph{IBM Watson} computer, which won the \emph{Jeopardy!} quiz game against two human champions in 2011 \cite{watson}. And we can make use of information in these knowledge bases to create better exercises as well. [TODO: upravit posledni vetu, zpresnit, kdy a k cemu budeme bazi znalosti vyuzivat]
 
-RDF graph is often used for knowledge representation.
-This format is suitable for exercise genereation, as there is a tool for convenient querying RDF graph,
-\textit{SPARQL}%
-\footnote{The name of this query language is a recursive acronym of \textit{SPARQL Protocol and RDF Query Language}.}
-language \parencite[][84]{semantic-web}.
+DBpedia was built by extracting structured information from Wikipedia,
+such as titles, links between articles, external links, information from infoboxes and categories.
+Facts are stored in the form of an RDF graph.
+Whole knowledge base (TODO: zhruba velikost) can be be downloaded.%
+\footnote{\url{http://wiki.dbpedia.org/Downloads}, %
+(data available under \emph{Creative Commons Attribution-ShareAlike License}
+and \emph{GNU Free Documentation License}}
+It also possible to use public \textit{DBpedia SPARQL endpoint}.%
+\footnote{\url{http://dbpedia.org/sparql}}
 
+\emph{DBpedia Version 2014}%
+\footnote{\url{http://wiki.dbpedia.org/Downloads2014}}
+contains approximately 580 million facts (RDF triples) retrieved from the English Wikipedia
+\parencite{dbpedia} describing 4.5 million of things.
+Ontology of DBpedia includes more than 650 classes and 2700 properties.
 
+TODO: ukazka hierarchie trid, neco na styl nasledujiciho, akorat grafove (obrazkove):
+
+\begin{verbatim}
+- Thing
+  - Activity
+    - Game
+    - Sport
+  - Agent
+    - Deity
+    - Family
+    - Organization
+    - Person
+      ...
+    ...
+\end{verbatim}
 
 % ===========================  CHAPTER ===========================
 \chapter{Question Generation}
@@ -570,7 +738,6 @@ TODO: inspirovane hodnocenim sachovych hracu \cite{elo-rating}, mozna i napred t
 
 Je to dalsi zpusob, jak rozsirit Rash model o uceni, odhad spravne odpovedi zustava stejny logisticky model (odkaz na ten vzorecek). Skill se updatuje po "zapasu" mezi studentem a otazkou (faktem) nasledovne,
 kde $s$ je skill studenta, $R$ je result (1 if the answer was correct, 0 if incorrect).
-
 $$
 s \gets s + K \cdot (R - P(R = 1))
 $$
@@ -631,6 +798,31 @@ TODO: diagram systemu, terminologie: komponenta = behavior + parameters, framewo
 podkapitoly pro jednotlive komponenty
 
 rozebrat komponenty obecne, pozadovane rozhrani (to by mela byt vzdy jedna podsekce) a pak strucne o vlastni implementaci
+
+\begin{figure}[h]
+  \centering
+  %\includegraphics[width=0.66\textwidth]{images/client-server-communication.pdf}
+  DONE
+  \caption{Client-server communication}
+  \label{fig:client-server-communication}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  %\includegraphics[width=0.66\textwidth]{images/client-server-communication.pdf}
+  TODO ...
+  \caption{Data flow diagram}
+  \label{fig:data-flow-diagram}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  %\includegraphics[width=0.66\textwidth]{images/client-server-communication.pdf}
+  TODO ...
+  \caption{Smartoo architecture}
+  \label{fig:smartoo-architecture}
+\end{figure}
+
 
 \section{Knowledge Building}
 \label{sec:smartoo-knowledge}

@@ -1,3 +1,7 @@
 literature/
 local/
 TODO
+
+# Exception for PDF images
+!images/*.pdf
+
