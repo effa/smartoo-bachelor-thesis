@@ -299,7 +299,7 @@ TODO: jasne dat najevo (diagram), ze tato faze neni v zasade nutna (napr. do uvo
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{RDF graph}
+\section{RDF Graph}
 \label{sec:rdf-graph}
 
 TODO: o co jde (obvykly zpusob reprezentace znalosti)
@@ -429,7 +429,7 @@ TODO: ukazka ontologie OWL pouzite v DBpedii (Thing, Agent, Person, ...) - to je
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Terms extraction}
+\section{Terms Extraction}
 \label{sec:terms-extraction}
 
 TODO: co chapeme termy (named entities), priklady
@@ -443,7 +443,7 @@ Dalsi pristupy (pouzite napr. v \textit{The Mentor} \cite{mentor}): all named en
 TODO: dalsi mozne pristupy
 
 % ---------------------------  SECTION  ---------------------------
-\section{Relations extraction}
+\section{Relations Extraction}
 \label{sec:relations-extraction}
 
 TODO... (viz knizka a dalsi clanky)
@@ -598,7 +598,7 @@ NOTE: asi docela uspesne, i kdyz mnoho otazek potreba rucne opravit (nepredpokla
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Generating exercises from knowledge graphs}
+\section{Generating Exercises from Knowledge Graphs}
 \label{sec:irt}
 
 TODO: definovani a sjednoceni terminologie: ontologies vs. knowledge graphs
@@ -766,7 +766,7 @@ TODO: Dalsi clanky viz odkazy v clanku slepe-mapy.
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Question selection}
+\section{Question Selection}
 \label{sec:question-selection}
 
 NOTE: predchozi sekce (mozna to mely byt jen podsekce, ale to je jedno) se zabyvaji, tim, jak modelovat znalost studenta a obtiznost konceptu/faktu. To je jedna z komponent, kterou pro vyber vhodne otazky potrebujeme.
@@ -801,16 +801,7 @@ rozebrat komponenty obecne, pozadovane rozhrani (to by mela byt vzdy jedna podse
 
 \begin{figure}[h]
   \centering
-  %\includegraphics[width=0.66\textwidth]{images/client-server-communication.pdf}
-  DONE
-  \caption{Client-server communication}
-  \label{fig:client-server-communication}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  %\includegraphics[width=0.66\textwidth]{images/client-server-communication.pdf}
-  TODO ...
+  \includegraphics[width=\textwidth]{images/data-flow-diagram.pdf}
   \caption{Data flow diagram}
   \label{fig:data-flow-diagram}
 \end{figure}
@@ -823,17 +814,51 @@ rozebrat komponenty obecne, pozadovane rozhrani (to by mela byt vzdy jedna podse
   \label{fig:smartoo-architecture}
 \end{figure}
 
+TODO: A odkaz dopredu na \autoref{fig:client-server-communication}
 
+% ---------------------------  SECTION  ---------------------------
+\section{Articles Parsing}
+%\label{sec:smartoo-knowledge}
+
+TODO... o parsovani clanku, hledani pojmu a tak
+
+% ---------------------------  SECTION  ---------------------------
 \section{Knowledge Building}
 \label{sec:smartoo-knowledge}
 
-TODO...
+TODO... obecne
 
+\subsection{Component Interface}
+
+TODO ...
+
+\subsection{Prototype Behavior}
+
+TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne komplikovane grafy. Algoritmus:
+
+\begin{enumerate}
+  \item vytvorime prazdy graf a pripademe do neho related global knowledge = graf z DBpedie o danem pojmu, termy v clanku v okoli pojmu spolecne s jeich typy a labely)
+  \item postupne prochazime vsechny vety v clanku, filtrujeme pomoci jednoduche heuristiky ty bezkontextove (Maybe TODO: upresnit) a obsahujici alespon 1 pojem
+  \item Pro kazdou takovou vetu vytvorime "kvazifakt" (tj. fakt, ktery lze pouzit jen k vygenerovani cviceni, neni jendoduse strojove interpretovatelny...), coz je vrchol, na ktery jsou navesene: part before term, term in sentence, part after term ... uvest priklad (ale mozna staci rovnou na obrazku)
+\end{enumerate}
+
+TODO: graf (priklad vygenerovane grafy s kvazi vrcholy
+
+% ---------------------------  SECTION  ---------------------------
 \section{Exercises Creating}
 \label{sec:smartoo-exercises}
 
+TODO... obecne
+
+\subsection{Component Interface}
+
+TODO ...
+
+\subsection{Prototype Behavior}
+
 TODO...
 
+% ---------------------------  SECTION  ---------------------------
 \section{Exercises Grading}
 \label{sec:smartoo-exercises-grading}
 
@@ -922,6 +947,7 @@ $$
 An exercise with the highest score is chosen.
 
 
+% ---------------------------  SECTION  ---------------------------
 \section{Web Interface}
 \label{sec:smartoo-web}
 
@@ -939,6 +965,13 @@ TODO...
   \includegraphics[width=0.9\textwidth]{images/answered-correctly.png}
   \caption{Correctly answered question}
   \label{fig:correctly-answered-question}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.66\textwidth]{images/client-server-communication.pdf}
+  \caption{Client-server communication}
+  \label{fig:client-server-communication}
 \end{figure}
 
 
