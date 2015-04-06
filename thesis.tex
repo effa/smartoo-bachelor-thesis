@@ -5,9 +5,7 @@
 % language settings, main documnet language last
 \usepackage[english]{babel}
 % enabling new fonts support (nicer)
-\usepackage{lmodern}
-% setting input encoding
-\usepackage[utf8]{inputenc}
+\usepackage{lmodern} % setting input encoding \usepackage[utf8]{inputenc}
 % setting output encoding
 \usepackage[T1]{fontenc}
 % fithesis2 requires csquotes
@@ -123,7 +121,7 @@
 \newcommand\choicelabel{\thechoice.}
 
 \newenvironment{choices}%
-  {\vspace{0.2em}\list{\choicelabel}%
+  {\vspace{0.8em}\list{\choicelabel}%
      {\usecounter{choice}\def\makelabel##1{\hss\llap{##1}}%
        \settowidth{\leftmargin}{W.\hskip\labelsep\hskip 0.01em}%
        \def\choice{%
@@ -842,7 +840,12 @@ TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne
   \item Pro kazdou takovou vetu vytvorime "kvazifakt" (tj. fakt, ktery lze pouzit jen k vygenerovani cviceni, neni jendoduse strojove interpretovatelny...), coz je vrchol, na ktery jsou navesene: part before term, term in sentence, part after term ... uvest priklad (ale mozna staci rovnou na obrazku)
 \end{enumerate}
 
-TODO: graf (priklad vygenerovane grafy s kvazi vrcholy
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{images/quasi-fact-lincoln.pdf}
+  \caption{Example of a quasi-fact}
+  \label{fig:quasi-fact}
+\end{figure}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Exercises Creating}
@@ -857,6 +860,46 @@ TODO ...
 \subsection{Prototype Behavior}
 
 TODO...
+
+
+Example -- question generated from the the quasi fact shown on \autoref{fig:quasi-fact}.
+
+Data:
+
+\begin{verbatim}
+{'question': 'Six days after the surrender of Confederate commanding
+              general Robert E. Lee, _______ was assassinated by John
+              Wilkes Booth, a Confederate sympathizer.',
+'choices': ['Andrew Johnson', 'James Buchanan',
+            'Abraham Lincoln', 'Franklin D. Roosevelt'],
+'correct-answer': 'Abraham Lincoln'}
+\end{verbatim}
+
+Semantic info:
+
+\begin{verbatim}
+{ u'term-pairs': [['Abraham Lincoln', 'Franklin D. Roosevelt'],
+    ['Abraham Lincoln', 'James Buchanan'],
+    ['Abraham Lincoln', 'Andrew Johnson']]}
+\end{verbatim}
+
+Question:
+
+\begin{exercise}
+\caption{Example of a created question}
+  \begin{question}
+  Six days after the surrender of Confederate commanding general Robert E. Lee
+  \sentenceGap
+  was assassinated by John Wilkes Booth, a Confederate sympathizer.
+
+  \begin{choices}
+    \choice Andrew Johnson
+    \choice James Buchanan
+    \choice Abraham Lincoln
+    \choice Franklin D. Roosevelt
+  \end{choices}
+  \end{question}
+\end{exercise}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Exercises Grading}
