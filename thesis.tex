@@ -841,7 +841,8 @@ Stored content of an article looks like this:
 \begin{verbatim}
 {'terms': [
     ['Abraham Lincoln', [['Abraham', 'NNP'], ['Lincoln', 'NNP']]],
-    ['Andrew Johnson', [['Andrew', 'NNP'], ['Johnson', 'NNP']]],
+    ['Robert E. Lee', [['Robert', 'NNP'], ['E.', 'NNP'], ['Lee', 'NNP']]],
+    ['John Wilkes Booth', ['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP']]],
     ...],
 
 'sentences': [
@@ -858,10 +859,18 @@ Stored content of an article looks like this:
 }
 \end{verbatim}
 
+TODO: For the purpose of knowledge building, t
 
 TODO: terms inference
 
-TODO: ukazka stromu
+Ukazka stromu pro 1 vetu:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{images/sentence-tree.pdf}
+  \caption{Sentence tree}
+  \label{fig:sentence-tree}
+\end{figure}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Building}
