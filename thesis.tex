@@ -797,6 +797,8 @@ podkapitoly pro jednotlive komponenty
 
 rozebrat komponenty obecne, pozadovane rozhrani (to by mela byt vzdy jedna podsekce) a pak strucne o vlastni implementaci
 
+TODO: k nasledujicimu obrazku povidani o architekture, itemize jednotlivych baliku (vc. common, abstract-component), zduraznit modularitu
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\textwidth]{images/architecture.pdf}
@@ -820,6 +822,47 @@ TODO: A odkaz dopredu na \autoref{fig:client-server-communication}
 
 TODO... o parsovani clanku, hledani pojmu a tak
 
+Postup parsovani textu:
+
+\begin{myItemize}
+  \item text preprocessing: discarded uniteresting sections such as "See also" or "External links"
+  \item split text into sentences
+  \item tokenize each sentence to words (tokens)
+  \item assign part-of-speach (POS) tag to each word (TODO: poznamka o pouzitem TagSetu, odkaz/citace)
+\end{myItemize}
+
+TODO: odkaz na knihovnu nltk a citace knizky o NLP v Pythonu (podobne jinde odkaz na knihovnu pro Wikipedii?)
+
+TODO: o pouzitym TAGsetu, par prikladu (CD, NNP, NN, DT)
+
+TODO: taky ze se zjisti pojmy a i kazdy pojem se shallow-parsne
+
+Stored content of an article looks like this:
+\begin{verbatim}
+{'terms': [
+    ['Abraham Lincoln', [['Abraham', 'NNP'], ['Lincoln', 'NNP']]],
+    ['Andrew Johnson', [['Andrew', 'NNP'], ['Johnson', 'NNP']]],
+    ...],
+
+'sentences': [
+    ...,
+    [['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
+     ['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
+     ['commanding', 'NN'], ['general', 'NN'], ['Robert', 'NNP'],
+     ['E.', 'NNP'], ['Lee', 'NNP'], [',', ','], ['Lincoln', 'NNP'],
+     ['was', 'VBD'], ['assassinated', 'VBN'], ['by', 'IN'],
+     ['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP'],
+     [',', ','], ['a', 'DT'], ['Confederate', 'NNP'],
+     ['sympathizer', 'NN'], ['.', '.']],
+    ...]
+}
+\end{verbatim}
+
+
+TODO: terms inference
+
+TODO: ukazka stromu
+
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Building}
 \label{sec:smartoo-knowledge}
@@ -836,7 +879,7 @@ TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne
 
 \begin{enumerate}
   \item vytvorime prazdy graf a pripademe do neho related global knowledge = graf z DBpedie o danem pojmu, termy v clanku v okoli pojmu spolecne s jeich typy a labely)
-  \item postupne prochazime vsechny vety v clanku, filtrujeme pomoci jednoduche heuristiky ty bezkontextove (Maybe TODO: upresnit) a obsahujici alespon 1 pojem
+  \item postupne prochazime vsechny vety v clanku, filtrujeme pomoci jednoduche heuristiky ty bezkontextove (Maybe TODO: upresnit: konci teckou, rozumna delka(5-50), neobsahuje prounouns, parenthesis or quotations) a obsahujici alespon 1 pojem
   \item Pro kazdou takovou vetu vytvorime "kvazifakt" (tj. fakt, ktery lze pouzit jen k vygenerovani cviceni, neni jendoduse strojove interpretovatelny...), coz je vrchol, na ktery jsou navesene: part before term, term in sentence, part after term ... uvest priklad (ale mozna staci rovnou na obrazku)
 \end{enumerate}
 
