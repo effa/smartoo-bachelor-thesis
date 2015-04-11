@@ -5,7 +5,9 @@
 % language settings, main documnet language last
 \usepackage[english]{babel}
 % enabling new fonts support (nicer)
-\usepackage{lmodern} % setting input encoding \usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+% setting input encoding
+\usepackage[utf8]{inputenc}
 % setting output encoding
 \usepackage[T1]{fontenc}
 % fithesis2 requires csquotes
@@ -34,14 +36,9 @@
 % space between paragraphs
 \setlength{\parskip}{0.6em plus0.2em minus0.2em} % zkraceni vzdalenosti mezi odstavci
 
-% listings for SPARQL
+% listings
 \usepackage{listings}
-\lstset{%
-  language=SQL,%
-  morekeywords={PREFIX,LIMIT},%
-  basicstyle=\small\ttfamily,
-  frame=single%
-}
+%\usepackage{verbatim}
 
 % bibliography management
 \usepackage[backend=biber, 		% use biber as backend instead of BiBTeX
@@ -59,6 +56,7 @@
 \definecolor{dark-red}{rgb}{0.6,0.15,0.15}
 \definecolor{dark-green}{rgb}{0.15,0.4,0.15}
 \definecolor{medium-blue}{rgb}{0,0,0.5}
+\definecolor{light-gray}{rgb}{0.93,0.93,0.93}
 % generating hyperlinks in document
 \usepackage{url}
 \usepackage[plainpages=false, 	    % get the page numbering correctly
@@ -83,6 +81,10 @@
 \thesislang{en}
 
 % ===== LATEX DOCUMENT SETTINGS =====
+
+% only put chapters and sections into the TOC
+\setcounter{tocdepth}{2}   % nefunguje (podle navodu by melo fungovat s 1, ale neni tomu tak)
+
 
 % adjusting hyphenation penalties
 %\tolerance=10000
@@ -112,6 +114,28 @@
 }{
   \end{itemize}
 }
+
+%--------------------------------------------------------------------
+% define new environment for Python code
+%--------------------------------------------------------------------
+
+%\lstset{%
+%  language=SQL,%
+%  morekeywords={PREFIX,LIMIT},%
+%  basicstyle=\small\ttfamily,
+%  frame=single%
+%}
+
+\lstnewenvironment{code}{%
+  \lstset{backgroundcolor=\color{light-gray},
+  frame=lines,
+  %framerule=1pt,
+  rulecolor=\color{black},
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  showspaces=false,
+  showstringspaces=false
+  }}{}
 
 %--------------------------------------------------------------------
 % exercise environment
@@ -193,7 +217,7 @@
 
 \begin{ThesisThanks}
 
-  TODO (Sir, Papi, ALG, NLP)
+  TODO (Sir, NLP a ALG)
 %I'd like to thank Petr for his guidance, enthusiasm and inspiring discussions.
 %I also owe much to my mom and brother for their continuous support. Thank you.
 
@@ -308,19 +332,15 @@ RDF graph is often used for knowledge representation.
 Facts are stored in the form of \textit{RDF} (\textit{Resource Description Framework}) graph [citovat],
 which is a collection of subject -- predicate -- object triples \parencite[][63]{semantic-web}. Simple example of few facts about Alan Turing and Alonzo Church:
 
-
-\begin{verbatim}
+\begin{code}
 Alan Turing - type - person
 Alan Turing - birthdate - 23 June 1912
 Alan Turing - nationality - British
 Alan Turing - doctoral advisor - Alonzo Church
-\end{verbatim}
-
-\begin{verbatim}
 Alonzo Church - type - person
 Alonzo Church - nationality - American
 Alonzo Church - birthdate - 14 June 1903
-\end{verbatim}
+\end{code}
 
 The collection of RDF triples can be thought of as a graph,
 where vertices correspond to subjects and objects
@@ -352,7 +372,7 @@ URI is composed from a prefix and a name.
 Objects can be either URIs or literals, such as number, string or date. (Maybe TODO: priklady)
 Simple example with prefixes (part of the graph above):
 
-\begin{verbatim}
+\begin{code}
 <http://dbpedia.org/resource/Alan_Turing>
     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
     <http://xmlns.com/foaf/0.1/Person> .
@@ -362,11 +382,11 @@ Simple example with prefixes (part of the graph above):
 <http://dbpedia.org/resource/Alan_Turing>
    <http://dbpedia.org/property/nationality>
    "British"@en
-\end{verbatim}
+\end{code}
 
 Or, with the use of seperated definition of URI prefixes (so called \emph{Turtle syntax}):
 
-\begin{verbatim}
+\begin{code}
 @prefix rsrc: <http://dbpedia.org/resource/>
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 @prefix dbpedia-owl: <http://dbpedia.org/ontology/>
@@ -377,7 +397,7 @@ rsrc:Alan_Turing
   rdf:type foaf:person ;
   dbpedia-owl:birthDate 1912-06-23+02:00 ;
   dbprop:nationality "British"@en .
-\end{verbatim}
+\end{code}
 
 % ---------------------------  SECTION  ---------------------------
 \section{SPARQL}
@@ -400,7 +420,7 @@ The main parts of the query are
 
 As an example, the following SPARQL query would return the birthdate and birthplace of Alan Turing:
 
-\begin{lstlisting}
+\begin{code}
 PREFIX rsrc: <http://dbpedia.org/resource/>
 PREFIX owl: <http://dbpedia.org/ontology/>
 SELECT ?date ?place
@@ -408,7 +428,7 @@ WHERE {
   rsrc:Alan_Turing owl:birthDate ?date ;
                    owl:birthPlace ?place .
 }
-\end{lstlisting}
+\end{code}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Ontology}
@@ -789,15 +809,19 @@ Dalsi takovy system je
 \chapter{Smartoo Framework}
 \label{chap:smartoo}
 
-TODO...
+TODO: obecny uvod, framework x prototype (deployed), modularita (zduraznit) - decomposition into the following components:
+\begin{myItemize}
+\item \textbf{KnowledgeBuilder} -- takes an article as the input and builds knowledge graph -- RDF graph of facts contained in the article.
+\item \textbf{ExercisesCreator} -- creates a set of questions (or other types of exercises) using the built knowledge graph.
+\item \textbf{ExercisesGrader} -- evaluates exercises with respect to attributes such as difficulty or relevance to the original article.
+\item \textbf{Practicer} -- controls the practice session itself, i.e. gives the student one exercise at a time based on previous exercises and answers.
+\end{myItemize}
+Each component (e.g. \textit{KnowledgeBuilder}) has variable behavior (e.g. \textit{KnowledgeBuilderBehavior}), which is a parametrised code, i.e. an implementation of the behavior (the code) and a set of parameters which the code uses.
+Component itself is just a wrapper around the behavior which performs common tasks, most importantly persistence management.
+%(For example \textit{KnowledgeBuilder} stores the knowledge graph built byt its behavior.)
+At the beginning of a new session, random 4-tuple of components with behaviors is chosen.%
+\footnote{The selection is not actualy completely random, behaviors with better performance in the past are preferred over the behaviors with worse performance, see section \autoref{sec:smartoo-behaviors-selection} for details.} The described relationships are visualized on \autoref{fig:smartoo-architecture}.
 
-TODO: diagram systemu, terminologie: komponenta = behavior + parameters, framework x prototype (deployed)
-
-podkapitoly pro jednotlive komponenty
-
-rozebrat komponenty obecne, pozadovane rozhrani (to by mela byt vzdy jedna podsekce) a pak strucne o vlastni implementaci
-
-TODO: k nasledujicimu obrazku povidani o architekture, itemize jednotlivych baliku (vc. common, abstract-component), zduraznit modularitu
 
 \begin{figure}[h]
   \centering
@@ -806,6 +830,12 @@ TODO: k nasledujicimu obrazku povidani o architekture, itemize jednotlivych bali
   \label{fig:smartoo-architecture}
 \end{figure}
 
+Except from \textit{ExercisesCreator} and \textit{ExercisesGrader}
+the components does not communicate with each other directly,
+but via results (knowledge graphs and exercises) stored in the database.
+The communication and the flow of data is depicted on \autoref{fig:data-flow-diagram}.
+Individual processes are triggered by signals from client.
+Time ordering of the signals and processes is showed on \autoref{fig:client-server-communication}.
 
 \begin{figure}[h]
   \centering
@@ -814,56 +844,115 @@ TODO: k nasledujicimu obrazku povidani o architekture, itemize jednotlivych bali
   \label{fig:data-flow-diagram}
 \end{figure}
 
-TODO: A odkaz dopredu na \autoref{fig:client-server-communication}
+% ---------------------------  SECTION  ---------------------------
+\section{Behaviors selection}
+\label{sec:smartoo-behaviors-selection}
+
+Each session has assigned a \textit{performance} which is computed as a weighted sum of the user final rating and the number of exercises marked as invalid or irrelevant. [Maybe TODO: presny vzorec]
+As we know which behaviors participated in each session, we can compute the average performance of a 4-tuple of behaviors $p(x_1, x_2, x_3, x_4)$.
+
+At the beginning of each new session, 4-tuple of behaviors $(k_1, k_2, k_3, k_4)$ ($k_1$ is knowledge builder, $k_2$ exercises creator, etc.) is chosen in a partially random way
+which prioritizes behaviors with better performance in the past.
+Ideally, the probability of a certain 4-tuple being selected would be proportional to its expected relative performance
+(relative with respect to the expected performance of other 4-tuples).
+As we do not know the future, our best guess for expected performance is the performance in the past.
+Using conditional probability we can easily derive formulae for probability $P$ of components $(x_1, x_2, x_3, x_4)$ being selected.
+I use asterisk ($*$) to denote "any behavior", so e.g. $p((x_1, *, *, *))$ means average performance of all sessions where knowledge builder was $x_1$.
+$$
+P(k_1 = x_1) = p((x_1, *, *, *)),
+$$
+$$
+P(k_2 = x_2 \mid k_1 = x_1)
+  = \frac{P(k_1 = x_1 \land k_2 = x_2)}{P(k_1 = x_1)}
+  = \frac{p((x_1, x_2, *, *))}{p((x_1, *, *, *))},
+$$
+$$
+P(k_3 = x_3 \mid k_1 = x_1 \land k_2 = x_2)
+  = \frac{P(k_1 = x_1 \land k_2 = x_2 \land k_3 = x_3)}{P(k_1 = x_1 \land k_2 = x_2)}
+  = \frac{p((x_1, x_2, x_3, *))}{p((x_1, x_2, *, *))},
+$$
+and similarly for the fourth component.
+
+
+
+TODO: Rozepsat a odargumentovat poradneji. (Bayes...)
+
 
 % ---------------------------  SECTION  ---------------------------
 \section{Articles Parsing}
 %\label{sec:smartoo-knowledge}
 
-TODO... o parsovani clanku, hledani pojmu a tak
+If the user requests topic which were never requested before,
+the corresponding article is looked up and retrieved from Wikipedia.
+Some text preprocessing is performed, e.g. sections without useful content, such as "See also", "External links" or "References", are discarded.
+Then the article is parsed into sentence trees with marked terms occurences.
 
-Postup parsovani textu:
+\subsection*{Shallow Parsing}
+Text is split into sentences and each sentence is tokenized (tokens are words, but also puctuation).
+    Each token is assigned \textit{part-of-speech tag}.
+    Part-of-speech tag denotes lexical category (also known as word class) of the word, such as noun, verb, adjective or determiner.
+    For these natural language processing tasks I have used the \textit{NLTK} (Natural Language Toolkit) library \cite{nlp-python}. NLTK uses \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset}.
 
-\begin{myItemize}
-  \item text preprocessing: discarded uniteresting sections such as "See also" or "External links"
-  \item split text into sentences
-  \item tokenize each sentence to words (tokens)
-  \item assign part-of-speach (POS) tag to each word (TODO: poznamka o pouzitem TagSetu, odkaz/citace)
-\end{myItemize}
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| l | l | l |}
+  \hline
+  Tag & Description & Example \\
+  \hline \hline
+  NN & common noun, singular & house         \\ \hline
+  NNP & proper noun, singular & Lincoln     \\ \hline
+  DT & determiner & the \\ \hline
+  VB & verb, base form & eat \\ \hline
+  JJ & adjective & popular \\ \hline
+\end{tabular}
+\end{center}
+\caption{Part-of-speech tags examples \cite{penn-tagset} }
+\end{table}
 
-TODO: odkaz na knihovnu nltk a citace knizky o NLP v Pythonu (podobne jinde odkaz na knihovnu pro Wikipedii?)
+As an example, consider sentence \textit{"Six days after the surrender of Confederate commaning general Robert E. Lee, Lincoln was assassinated byt John Wilkes Booth, a Confederate sympathizer."} This sentence would be tokenized and tagged as follows:
+\begin{code}
+[['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
+['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
+['commanding', 'NN'], ['general', 'NN'], ['Robert', 'NNP'],
+['E.', 'NNP'], ['Lee', 'NNP'], [',', ','], ['Lincoln', 'NNP'],
+['was', 'VBD'], ['assassinated', 'VBN'], ['by', 'IN'],
+['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP'],
+[',', ','], ['a', 'DT'], ['Confederate', 'NNP'],
+['sympathizer', 'NN'], ['.', '.']],
+\end{code}
 
-TODO: o pouzitym TAGsetu, par prikladu (CD, NNP, NN, DT)
+\subsection*{Terms Occurences Inference}
+In addition to text of the article, I also retrieve lists of titles of \textit{internal links}, i.e. links to another page on the Wikipedia.
+These link titles can be thought of as a terms (as they have their page on the Wikipedia).
+This terms are shallowed-parsed (tokenized and tagged)
+and then I try to infer their occurences in the text.
+In order to make the inference fast (meaning time complexity of $\mathcal{O}(n)$, where $n$ is the number of tokens in text), I first build a trie [TODO: vysvetlit nebo aspon odkaz] from all terms and then make a single pass through the text searching for longest matching terms in the trie. [TODO: urcite jde o nejaky znamy algoritmus nad retezci (nebo jeho variaci), pak by bylo fajn zminit jeho jmeno]
+[TODO: uvest odkaz nebo odargumentovat casovou slozitost: sestaveni trie: celkovy soucet tokenu termu < delka textu, pak staci jediny pruchod textem]
 
-TODO: taky ze se zjisti pojmy a i kazdy pojem se shallow-parsne
+%Stored content of an article looks like this:
+%\begin{code}
+%{'terms': [
+%    ['Abraham Lincoln', [['Abraham', 'NNP'], ['Lincoln', 'NNP']]],
+%    ['Robert E. Lee', [['Robert', 'NNP'], ['E.', 'NNP'], ['Lee', 'NNP']]],
+%    ... ],
+%'sentences': [ ...,
+%    [['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
+%     ['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
+%     ['commanding', 'NN'], ['general', 'NN'], ['Robert', 'NNP'],
+%     ['E.', 'NNP'], ['Lee', 'NNP'], [',', ','], ['Lincoln', 'NNP'],
+%     ['was', 'VBD'], ['assassinated', 'VBN'], ['by', 'IN'],
+%     ['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP'],
+%     [',', ','], ['a', 'DT'], ['Confederate', 'NNP'],
+%     ['sympathizer', 'NN'], ['.', '.']],
+%    ... ]
+%}
+%\end{code}
 
-Stored content of an article looks like this:
-\begin{verbatim}
-{'terms': [
-    ['Abraham Lincoln', [['Abraham', 'NNP'], ['Lincoln', 'NNP']]],
-    ['Robert E. Lee', [['Robert', 'NNP'], ['E.', 'NNP'], ['Lee', 'NNP']]],
-    ['John Wilkes Booth', ['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP']]],
-    ...],
+[Maybe TODO: terms inference podrobneji (a diagram)]
 
-'sentences': [
-    ...,
-    [['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
-     ['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
-     ['commanding', 'NN'], ['general', 'NN'], ['Robert', 'NNP'],
-     ['E.', 'NNP'], ['Lee', 'NNP'], [',', ','], ['Lincoln', 'NNP'],
-     ['was', 'VBD'], ['assassinated', 'VBN'], ['by', 'IN'],
-     ['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP'],
-     [',', ','], ['a', 'DT'], ['Confederate', 'NNP'],
-     ['sympathizer', 'NN'], ['.', '.']],
-    ...]
-}
-\end{verbatim}
-
-TODO: For the purpose of knowledge building, t
-
-TODO: terms inference
-
-Ukazka stromu pro 1 vetu:
+To represent shallowed parsed sentces with marked terms occurences,
+I use shallow sentence trees.
+You can see an example of a sentence tree on \autoref{fig:sentence-tree}.
 
 \begin{figure}[h]
   \centering
@@ -878,11 +967,13 @@ Ukazka stromu pro 1 vetu:
 
 TODO... obecne
 
-\subsection{Component Interface}
+%\subsection{Component Interface}
 
-TODO ...
+\paragraph{Component Interface}
+method \texttt{build\_knowledge\_graph}, input: an article, output: knowledge graph
+(odkaz do prislusnych sekci)
 
-\subsection{Prototype Behavior}
+\subsection*{Prototype Behavior}
 
 TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne komplikovane grafy. Algoritmus:
 
@@ -905,35 +996,43 @@ TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne
 
 TODO... obecne
 
-\subsection{Component Interface}
+TODO Component Interface
 
-TODO ...
-
-\subsection{Prototype Behavior}
+\subsection*{Prototype Behavior}
 
 TODO...
 
+
+Terms similarity heuristics is based on the number of commont types
+$C(t_1, t_2) = |types(t_1) \cap types(t_2)|$:
+$$
+sim(t_1, t_2) = 2 \left( \frac{1}{1 + \exp({-|C(t_1, t_2)| / \kappa})} \right) - 1
+$$
+
+TODO: vysvetlit konstanty, 2 konkretni priklady podle poctu spolecnych typu
+
+Maybe TODO: graf teto funkce v zavislosti na poctu spolecnych typu
 
 Example -- question generated from the the quasi fact shown on \autoref{fig:quasi-fact}.
 
 Data:
 
-\begin{verbatim}
-{'question': 'Six days after the surrender of Confederate commanding
-              general Robert E. Lee, _______ was assassinated by John
-              Wilkes Booth, a Confederate sympathizer.',
+\begin{code}
+{'question': 'Six days after the surrender of Confederate commanding \
+              general Robert E. Lee, _______ was assassinated by \
+              John Wilkes Booth, a Confederate sympathizer.',
 'choices': ['Andrew Johnson', 'James Buchanan',
             'Abraham Lincoln', 'Franklin D. Roosevelt'],
 'correct-answer': 'Abraham Lincoln'}
-\end{verbatim}
+\end{code}
 
 Semantic info:
 
-\begin{verbatim}
+\begin{code}
 { u'term-pairs': [['Abraham Lincoln', 'Franklin D. Roosevelt'],
     ['Abraham Lincoln', 'James Buchanan'],
     ['Abraham Lincoln', 'Andrew Johnson']]}
-\end{verbatim}
+\end{code}
 
 Question:
 
@@ -959,11 +1058,10 @@ Question:
 
 TODO... obecne
 
-\subsection{Component Interface}
+TODO Component Interface
 
-TODO ...
 
-\subsection{Prototype Behavior}
+\subsection*{Prototype Behavior}
 
 Grading is done via simple heuristics.
 
@@ -990,11 +1088,9 @@ where $A_i$ ($E_i$) denotes numbers of occurences of the $i$-th term in article 
 
 TODO... obecne
 
-\subsection{Component Interface}
+TODO: Component Interface
 
-TODO ...
-
-\subsection{Prototype Behavior}
+\subsection*{Prototype Behavior}
 
 Implemented behavior of adaptive practicer is a .... (jak modeluje studenta... spis nijak, proste se snazim cilit na pozadovanou pravdepodobnost uspechu / simple heuristic...)
 
@@ -1011,14 +1107,14 @@ are given by the behavior parameters.
 
 \begin{table}[h]
 \begin{center}
-\begin{tabular}{| l | c | r | r |  r  |  r |  r |}
+\begin{tabular}{| l | c | r | r |  r  |  r |  r | r |}
   \hline
-  parameter & symbol & \multicolumn{5}{|c|}{used values} \\
+  parameter & symbol & \multicolumn{6}{|c|}{used values} \\
   \hline \hline
-  target success & $\tau$           & $0.75$ & $0.75$ & $0.75$ & $0.75$ & $0.75$\\ \hline
-  relevance weight & $\alpha$      & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$\\ \hline
-  difficulty weight & $\beta$      & $1.00$ & $1.00$ & $1.25$ & $1.00$ & $1.00$\\ \hline
-  repetitiveness weight & $\gamma$ & $0.25$ & $0.25$ & $0.25$ & $0.50$ & $0.50$\\ \hline
+  target success & $\tau$          & $0.75$ & $0.75$ & $0.75$ & $0.75$ & $0.75$ & $0.75$\\ \hline
+  relevance weight & $\alpha$      & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$ & $1.25$\\ \hline
+  difficulty weight & $\beta$      & $1.00$ & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$\\ \hline
+  repetitiveness weight & $\gamma$ & $0.30$ & $0.30$ & $0.30$ & $0.60$ & $0.60$ & $0.60$\\ \hline
 \end{tabular}
 \end{center}
 \caption{Parameters of prototype adaptive practice behavior}
