@@ -115,6 +115,12 @@
   \end{itemize}
 }
 
+\newenvironment{myEnumerate}{
+  \begin{enumerate}[leftmargin=2em,rightmargin=1em,itemsep=\parskip ,parsep=0em,topsep=0em,partopsep=0em]
+}{
+  \end{enumerate}
+}
+
 %--------------------------------------------------------------------
 % define new environment for Python code
 %--------------------------------------------------------------------
@@ -658,7 +664,7 @@ As shown by experiments described in \cite{optimizing-multiple-choice}, multiple
   \end{question}
 \end{exercise}
 
-Clearly, the student does not need to remember who assasinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
+Clearly, the student does not need to remember who assassinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
 Of course, this was an extreme example to illustrate the point -- you definitely would not come accross such poor distractors in manually created multiple-choice questions.
 Now take a look at the following question:
 
@@ -820,7 +826,7 @@ Each component (e.g. \textit{KnowledgeBuilder}) has variable behavior (e.g. \tex
 Component itself is just a wrapper around the behavior which performs common tasks, most importantly persistence management.
 %(For example \textit{KnowledgeBuilder} stores the knowledge graph built byt its behavior.)
 At the beginning of a new session, random 4-tuple of components with behaviors is chosen.%
-\footnote{The selection is not actualy completely random, behaviors with better performance in the past are preferred over the behaviors with worse performance, see section \autoref{sec:smartoo-behaviors-selection} for details.} The described relationships are visualized on \autoref{fig:smartoo-architecture}.
+\footnote{The selection is not actualy completely random, behaviors with better performance in the past are preferred over the behaviors with worse performance, see section \autoref{sec:smartoo-behaviors-selection} for details.} The described relationships are visualized in \autoref{fig:smartoo-architecture}.
 
 
 \begin{figure}[h]
@@ -833,9 +839,9 @@ At the beginning of a new session, random 4-tuple of components with behaviors i
 Except from \textit{ExercisesCreator} and \textit{ExercisesGrader}
 the components does not communicate with each other directly,
 but via results (knowledge graphs and exercises) stored in the database.
-The communication and the flow of data is depicted on \autoref{fig:data-flow-diagram}.
+The communication and the flow of data is depicted in \autoref{fig:data-flow-diagram}.
 Individual processes are triggered by signals from client.
-Time ordering of the signals and processes is showed on \autoref{fig:client-server-communication}.
+Time ordering of the signals and processes is showed in \autoref{fig:client-server-communication}.
 
 \begin{figure}[h]
   \centering
@@ -952,7 +958,7 @@ In order to make the inference fast (meaning time complexity of $\mathcal{O}(n)$
 
 To represent shallowed parsed sentces with marked terms occurences,
 I use shallow sentence trees.
-You can see an example of a sentence tree on \autoref{fig:sentence-tree}.
+You can see an example of a sentence tree in \autoref{fig:sentence-tree}.
 
 \begin{figure}[h]
   \centering
@@ -965,23 +971,21 @@ You can see an example of a sentence tree on \autoref{fig:sentence-tree}.
 \section{Knowledge Building}
 \label{sec:smartoo-knowledge}
 
-TODO... obecne
+\textit{KnowledgeBuilder} component is responsible for building knowledge graph from given article.
+Knowledge graph is RDF graph of facts contained in the article.
 
-%\subsection{Component Interface}
+%\subsection*{Prototype Behavior}
 
-\paragraph{Component Interface}
-method \texttt{build\_knowledge\_graph}, input: an article, output: knowledge graph
-(odkaz do prislusnych sekci)
+Prototype behavior creates graph of \textit{quasi facts} about terms in sentences.
+By the term \textit{quasi fact} I mean some information usable for creating exercises, but not really an elementary unit of knowledge, which ordinary facts should be. The algorithm is simple:
+\begin{myEnumerate}
+  \item Firstly, an empty graph is created (let us call it $G$).
+  \item If it was not already in the past, knowledge graph of the topic term is retrieved from DBpedia (\autoref{sec:knowledge-bases}). All terms in this retrieved knowledge graph and also all terms in the article are added into the graph $G$ together with their types and labels (which are also found using DBpedia).
+  \item Then we take each sentence in the article and check if it contains a term and is understandable without a context. The used heurisic is: it contains between 5 and 35 tokens (or 50, depending on the selected parameters), does not contain pronouns, parentheses or quotations or some typical anaphoric words (reffering to the context) such as "this".
+  \item For each setence which satisfies these conditions, we create an quasi fact about the term in this sentence (and add it to $G$). Each quasi fact consists of several pieces of information: text before the term, text after the term and the term itself (and its label and types). An example of a created quasi fact can be seen in \autoref{fig:quasi-fact}.
+  \item Graph $G$ is returned.
+\end{myEnumerate}
 
-\subsection*{Prototype Behavior}
-
-TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne komplikovane grafy. Algoritmus:
-
-\begin{enumerate}
-  \item vytvorime prazdy graf a pripademe do neho related global knowledge = graf z DBpedie o danem pojmu, termy v clanku v okoli pojmu spolecne s jeich typy a labely)
-  \item postupne prochazime vsechny vety v clanku, filtrujeme pomoci jednoduche heuristiky ty bezkontextove (Maybe TODO: upresnit: konci teckou, rozumna delka(5-50), neobsahuje prounouns, parenthesis or quotations) a obsahujici alespon 1 pojem
-  \item Pro kazdou takovou vetu vytvorime "kvazifakt" (tj. fakt, ktery lze pouzit jen k vygenerovani cviceni, neni jendoduse strojove interpretovatelny...), coz je vrchol, na ktery jsou navesene: part before term, term in sentence, part after term ... uvest priklad (ale mozna staci rovnou na obrazku)
-\end{enumerate}
 
 \begin{figure}[h]
   \centering
@@ -994,49 +998,53 @@ TODO: protoze vytvarime pouze otazky doplnovani slov, nepotrebujeme tvorit zadne
 \section{Exercises Creating}
 \label{sec:smartoo-exercises}
 
-TODO... obecne
+\textit{ExerciseCreator} component uses built knowledge graph to generate a set of exercises.
+Exercises consists of presentaion data and semantic information.
+\begin{myItemize}
+  \item \textbf{presentation data}\\
+    Currently the only supported type of exercise is a multiple choice question. Presentation data for multple choice question consists of the a question string, a list of choices labels and a correct answer label (which must be one of the choices labels).
+  \item \textbf{semantic information}\\
+    Semantic information is used for exercises graders. For this purpose I decided to use a list of term pairs for which holds, that if the user confuses them, it can lead to an incorrect answer.
+    For a multiple choice question which correct answer $A$ and distractors $B$, $C$ and $D$,
+    the semantic pairs are $(A, B)$, $(A, C)$ and $(A, D)$.
+\end{myItemize}
 
-TODO Component Interface
 
-\subsection*{Prototype Behavior}
+Protype behavior uses all the quasi facts about terms in a sentence and creates "fill in the gap" questions with multiple options.
+All quasi facts about terms in sentence can be retrieved from the knowledge graph with the following simple SPARQL query:
+\begin{code}
+SELECT ?before ?term ?after
+WHERE {
+    ?quasifact a "term-in-sentence" .
+    ?quasifact smartoo:part-before-term ?before .
+    ?quasifact smartoo:part-after-term ?after .
+    ?quasifact smartoo:term ?term .
+}
+\end{code}
 
-TODO...
-
-
-Terms similarity heuristics is based on the number of commont types
+As we have multple choice question, we also need to select appropriate distractors.
+Guided by the results about distractors presented in \autoref{sec:distractors},
+the most similar terms to the correct answer are chosen.
+Terms similarity heuristics is based on the number of common types
 $C(t_1, t_2) = |types(t_1) \cap types(t_2)|$:
 $$
 sim(t_1, t_2) = 2 \left( \frac{1}{1 + \exp({-|C(t_1, t_2)| / \kappa})} \right) - 1
 $$
+The constants $\kappa$ influences the speed of convergence to $1$.
+Terms without any common type would have $0$ similarity and the more common types they have, the more close to $1$ the similarity is. [Maybe TODO: 2 konkretni priklady podle poctu spolecnych typu, graf teto funkce v zavislosti na poctu spolecnych typu]
 
-TODO: vysvetlit konstanty, 2 konkretni priklady podle poctu spolecnych typu
-
-Maybe TODO: graf teto funkce v zavislosti na poctu spolecnych typu
-
-Example -- question generated from the the quasi fact shown on \autoref{fig:quasi-fact}.
-
-Data:
-
+As an example, let us look at the exercise created from the quasi fact in \autoref{fig:quasi-fact}. The presentation data looks like this:
 \begin{code}
-{'question': 'Six days after the surrender of Confederate commanding \
-              general Robert E. Lee, _______ was assassinated by \
+{'question': 'Six days after the surrender of Confederate commanding
+              general Robert E. Lee, _______ was assassinated by
               John Wilkes Booth, a Confederate sympathizer.',
 'choices': ['Andrew Johnson', 'James Buchanan',
             'Abraham Lincoln', 'Franklin D. Roosevelt'],
 'correct-answer': 'Abraham Lincoln'}
 \end{code}
-
-Semantic info:
-
-\begin{code}
-{ u'term-pairs': [['Abraham Lincoln', 'Franklin D. Roosevelt'],
-    ['Abraham Lincoln', 'James Buchanan'],
-    ['Abraham Lincoln', 'Andrew Johnson']]}
-\end{code}
-
-Question:
-
+It corresponds to the following presentation of the exercise:
 \begin{exercise}
+\label{exrc:assassination}
 \caption{Example of a created question}
   \begin{question}
   Six days after the surrender of Confederate commanding general Robert E. Lee
@@ -1052,26 +1060,28 @@ Question:
   \end{question}
 \end{exercise}
 
+And the respective semantic information is following:
+\begin{code}
+{'term-pairs': [
+    ['Abraham Lincoln', 'Franklin D. Roosevelt'],
+    ['Abraham Lincoln', 'James Buchanan'],
+    ['Abraham Lincoln', 'Andrew Johnson']]}
+\end{code}
+
 % ---------------------------  SECTION  ---------------------------
 \section{Exercises Grading}
 \label{sec:smartoo-exercises-grading}
 
-TODO... obecne
+\textit{ExerciseGrader} takes an exercise (in particular the semantic part) and assigns it grades for difficulty, relevance to the article and possibly any other attributes, e.g. syntactic and grammatical correctness probability. All grades are numbers between $0$ and $1$. For the relevance, $1$ means the most relevant, for the difficulty $1$ means the most difficult.
 
-TODO Component Interface
+In prototype behavior, grading is done via simple heuristics.
+Difficulty of an exercise is estimated as the average similarity between all term pairs which can be mistaken.
+Similarity of two terms is measured in the same way as in exercise creating (\autoref{sec:smartoo-exercises}).
+[Maybe TODO: priklad paru u nejake otazky] [Maybe TODO: pro bylo zvoleno, vlastnosti, vyhody, nevyhody]
 
-
-\subsection*{Prototype Behavior}
-
-Grading is done via simple heuristics.
-
-Difficulty of the exercise is estimated as the average similarity between all term pairs which can be mistaken (TODO: popsat prenos semanticke informace) (TODO: priklad paru u nejake otazky) (TODO: popis vypocu podobnosti 2 pojmu - bude vyse, takze jen odkazat).
-
-(TODO: proc bylo zvoleno toto, vyhody, nevyhody.)
-
-Relevance of the exercise is estimated as the cosine similarity meassure between the exercise and the article.
-(TODO: popsat poradne, jak chapeme reprezentujem cviceni a clanek jako dokumenty, ze bereme jen pojmy...)
-
+Relevance of the exercise is estimated as the \textit{cosine similarity} meassure between the exercise and the article,
+i.e. cosine of an angle between the article and the exercise represented as sparse vectors mapping terms to their frequency in the article or the exercise
+\cite[][121]{information-retrieval}.
 Cosine similarity between two documents (in our case one document is the article $A$ and another is the exercise $E$) is given by the following formula:
 $$
 similarity(A, E)
@@ -1079,32 +1089,23 @@ similarity(A, E)
 = \frac{\sum_{i=1}^{n} A_i E_i}{\sqrt{\sum_{i=1}^{n} A_i^2}\sqrt{\sum_{i=1}^{n} E_i^2}}
 $$
 where $A_i$ ($E_i$) denotes numbers of occurences of the $i$-th term in article (exercise).
-(TODO: odkaz na popis, interpretaci a zduvodneni cosine similarity, napr. z IRT)
-(TODO: proc "cosine" -- jedna se cosinus uhlu mezi vektory 2 dokumentu)
-(TODO: proc bylo zvoleno toto (napr. mezi 0 a 1, normalizace vzhledem k ruznym delkem, vyhody, nevyhody.)
+This measure is commonly used in the information retrieval for estimating similarity between two documents of arbitrary length. The cosine similarity is a real number between $0$ and $1$, the higher it is, the smaller is the angle between documents in the vector space and the more similar the documents are. [Maybe TODO: obrazek s grafickym znazornenim onoho uhlu mezi article a exercise]
+
 
 \section{Adaptive Practice}
 \label{sec:smartoo-practice}
 
-TODO... obecne
+Task of the \textit{Practicer} is to control the practice session itself, i.e. to give the student one exercise at a time based on previous exercises and answers.
 
-TODO: Component Interface
-
-\subsection*{Prototype Behavior}
-
-Implemented behavior of adaptive practicer is a .... (jak modeluje studenta... spis nijak, proste se snazim cilit na pozadovanou pravdepodobnost uspechu / simple heuristic...)
-
+Prototype behavior of adaptive practicer is a .... [TODO: jak modeluje studenta... spis nijak, proste se snazim cilit na pozadovanou pravdepodobnost uspechu / simple heuristic...]
 To select the most suitable exercise, three attributes of exercises are considered:
-
 \begin{myItemize}
   \item relevance to the article,
   \item difficulty (compared to the so far success of the user),
   \item repetitiveness (to not ask about one term over and over again).
 \end{myItemize}
-
 Weights of these three attributes as well as the target success
 are given by the behavior parameters.
-
 \begin{table}[h]
 \begin{center}
 \begin{tabular}{| l | c | r | r |  r  |  r |  r | r |}
@@ -1120,17 +1121,20 @@ are given by the behavior parameters.
 \caption{Parameters of prototype adaptive practice behavior}
 \end{table}
 
-Relevance of the exercise was computed by \textit{ExercisesGrade} (see (TODO: odkaz)).
+\begin{myItemize}
+  \item Relevance of the exercise was computed by \textit{ExercisesGrader}
+(\autoref{sec:smartoo-exercises-grading}).
 
-Difficulty penalization is based on the difference between the target difficulty and the exercise difficulty.
+  \item Difficulty penalization is based on the difference between the target difficulty and the exercise difficulty.
 Target difficulty is not exactly $(1 - \tau)$ as it is adjusted according to
 so far success of the user -- if the correct ratio of the user is higher than the target success,
 the target difficulty is set higher than $(1 - \tau)$ and vice versa.
 (TODO: odkaz na experimenty na slepych mapach, kde se tohle ukazalo jako uzitecne)
 (TODO: konkretni vzorec podle zdrojaku)
 
-Repetitiveness penalization is based on the cosine similarity between the scored exercise and the exercises already used in the current session (TODO: odkaz na vysvetleni cosine similarity drive).
-
+  \item Repetitiveness penalization is based on the cosine similarity between the scored exercise and the exercises already used in the current session
+(see \autoref{sec:smartoo-exercises-grading} for the explanation and formula of the cosine similarity).
+\end{myItemize}
 The total score is given as weighted sum of the three individual scores described above.
 $$
 \text{totalScore} = \alpha \cdot \text{relevanceScore} + \beta \cdot \text{difficultyPenalty} + \gamma \cdot \text{repetitivenessPenalty}
@@ -1142,7 +1146,14 @@ An exercise with the highest score is chosen.
 \section{Web Interface}
 \label{sec:smartoo-web}
 
-TODO...
+I have created a simple web interface for Smartoo,
+using \textit{Boostrap}%
+\footnote{\url{http://getbootstrap.com/}},
+HTML and CSS framework for responsive design,
+and {\textit{AngularJS}%
+\footnote{\url{https://angularjs.org/}},
+JavaScript framework for \textit{MVC} (Model -- View -- Controller) design%
+\footnote{Actually, AngularJS states it is \textit{MVW} (Model -- View -- Whatever) framework, as it supports more aprroaches than just MVC.}.
 
 \begin{figure}[h]
   \centering
@@ -1157,6 +1168,9 @@ TODO...
   \caption{Correctly answered question}
   \label{fig:correctly-answered-question}
 \end{figure}
+
+The typical sequence of client requests and server responses is shown in
+\autoref{fig:client-server-communication}
 
 \begin{figure}[h]
   \centering
