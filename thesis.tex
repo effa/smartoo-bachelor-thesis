@@ -497,16 +497,20 @@ A solution to this problem is to apply \textit{tf-idf weighting} which normalize
   The most difficult, but also the most powerful method is to train a machine learning recognizer.
   [TODO: podrobneji, napr. \cite[][283]{nlp-python}]
 \end{myItemize}
-Often, several of these approaches are combined (e.g. \cite{mentor}).
+Often, several of these approaches are combined (e.g. in \textit{The Mentor} they use regular experssions, gazetteers and machine learning recognizer \cite{mentor}).
 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Relations Extraction}
 \label{sec:relations-extraction}
 
-TODO... (viz knizka a dalsi clanky)
+TODO... nlp-knizka
 
 TODO: \parencite{triples-acquisition}
+
+TODO: dalsi clanky
+
+TODO: + inspirace Procvicnikem-v1
 
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Bases}
@@ -566,19 +570,13 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
 \chapter{Question Generation}
 \label{chap:exercises}
 
-TODO: jasne rict (a mozna diagram), ze jsou 2 zakladni moznosti: bud jsou cviceni generovana primo z textu, nebo je tam ten mezikrok, kdyz se stavi knowledge graph
-
 [Intro, TODO: nejcasteji multiple-choice question, definice, distractory, ukazka]
-
-TODO...
 
 ... obecny popis multiple choice questions a souvisejici terminologie (TODO: nejake obecne intro, ze jsou oblibene, maji sve vyhody a nevyhody):
 
 Multiple choice questions consists of a question text (called \textit{stem})
 and a few (e.g. four) choices, from which one is the correct answer
 and the rest are incoreect alternatives (called \textit{distractors}).
-
-NOTE: asi napred o pristupech ke generovani otazek a distraktory spolecne na konec
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -668,9 +666,8 @@ NOTE: asi docela uspesne, i kdyz mnoho otazek potreba rucne opravit (nepredpokla
 \section{Generating Exercises from Knowledge Graphs}
 \label{sec:gen-exrc-from-kg}
 
-TODO: definovani a sjednoceni terminologie: ontologies vs. knowledge graphs
+TODO: o tom, jak z grafu znalosti dostat otazky
 
-TODO (mozna sekce, mozna vice sekci): o tom, jak z grafu znalosti dostat otazky
 
 - generovani otazek s vyuzitim ontologii:
 \cite{question-gen-domain-ontologies} -- popisuje ruzne strategie, jak z hotoveho grafu generovat otazky (coz je v nejjednodussim pripade proste vyber jednoho faktu) a k nim distraktory (i distraktory jen na urovni celych vet, zadani bylo vzdy "Choose the correct sentence"; priklady:
@@ -730,17 +727,20 @@ This questions is much more likely to force student to retrieve knowledge about 
 
 The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
 A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov, slepe-mapy}
-NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy).
+NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy). Common strategies for distractor selection are:
+\begin{myItemize}
+\item \textbf{Named entities from the text}\\
+  One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, choose named entities of the same type (e.g. if the correct answer is person, choose people as distractors). This approach was used in \cite{mentor} and \cite{ontoque}. If one term can have many types, select terms which has most types common with the correct answer.
+  [Maybe TODO: jeste alternativa k typum, okrajove: pouziji se jmenne fraze z textu, ktere maji stejnou hlavu (leading noun) jako sparvna odpoved; Mitkov]
 
-TODO: konkretni strategie:
+\item \textbf{Named entities from external sources}\\
+  Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in Wordnet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordnNet, the ones which occur in the text are preffered.
 
-1] pokud mam pojmenovane entity textu (odkaz na sekci terms extraction v predchozi kapitole), tak vybrat z nich, a to stejneho typu (napr. osoby, mista atp.) -- citovat pouziti, myslim, ze to bylo v Mentorovi (2 stupnova hierarhcie termu)
-
-2] \cite{question-gen-mitkov}:
-pomoci WordNetu: coordinates (= terms sharing at least one hypernym with the correct answer). Pokud se jich ve WordNetu najde mnoho, preferuji se ty, ktere se vyskytuji i v dokumentu. Pokud naopak WordNet nevrati nic, pouziji se jmenne fraze z textu, ktere maji stejnou hlavu (leading noun) jako sparvna odpoved. (Pokud ani toto neexistuje, tak se otazka nevytvori.)
-
-
-3] distraktory z Knowledge Graphu (ontologii) [presunout povidani ze sekce vyse]
+\item \textbf{Correct answer modification}\\
+  If the correct answer is a date or a numerical value, we can easily obtain distractors by changing the date or value by some partially random relative shift
+\cite{question-gen-domain-ontologies}.
+Maybe TODO: priklad]
+\end{myItemize}
 
 
 
