@@ -325,7 +325,7 @@ i.e. convert the text into the structured data.
 This process is called \textit{information extraction} \cite[][262]{nlp-python}.
 Information extraction has several subtasks, the two most relevant for us are:
 \begin{myItemize}
-  \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{"Abraham Lincoln"}) and other interesting entities (e.g. dates and numerical values) from the text,
+  \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{"Abraham Lincoln"}) and numeric expressions from the text,
 \item \textit{relation recognition} -- extraction of relations between the entities.
 \end{myItemize}
 
@@ -474,30 +474,37 @@ WHERE {
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Named Entities Recognition}
+\section{Named Entity Recognition}
 \label{sec:terms-extraction}
-\textit{Named entities} are terms (e.g. \textit{"Abraham Lincoln"})
-but also other interesting entities such as dates, times and numerical values.
+\textit{Named entities}
+are "information units like names, including person, organization and location names, and numeric expressions including time, date, money and percent expressions" \autocite{named-entity-recognition}.
+Sometimes I will specifically refer to \textit{terms}, which are named entities other than numeric expressions.
+Es an example, \textit{"Abraham Lincoln"} is a term, while \textit{"21 March 2015"} is a numeric expression
+(and both are named entities).
 The aim of the \textit{named entity recognion} is to discover all named entities in a text and and label them with their types. Common types of named entites are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
 \begin{myItemize}
 \item \textbf{Regular expressions}\\
-  Regular expressions are good for some types of named entities, such as dates, types and money.
+  Regular expressions are especially good for numeric expressions as they typical follow reasonably simple rules.
   [Maybe TODO: nejake konkretni ukazky zjednodusenych regexu]
 \item \textbf{List of terms}\\
   A simple way to find if some word or phrase is a named entity is to try to look it up in a list of named entities. There are for example publicly available \textit{gazetteers} -- lists of well-known geographical locations. However, this method is quite limited as it is impossible to have complete lists of all named entities.
+(In particular there is infinitely many numeric expressions.)
+Another problem is ambiguity of words, e.g. \textit{"Reading"} is a town in the United Kingdom, but not in the sentence \textit{"Reading is important for everyone's personal development."}
   [TODO: podobne lze pouzit i bazi znalosti ... a mozna Wordnet?]
-  There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I have used this fact in the Smartoo (\autoref{sec:articles-parsing}).
+  There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
 \item \textbf{Frequency counting}\\
   After identifying nouns and noun phrases in the text, we count their frequencies and these which exceed some given threshold are considered as terms.
-  This method is used for example in \cite{question-gen-mitkov}. It works reasonable well for terms recognition, but it can't discover literals (dates, numerical values etc.).
+  This method is used for example in \cite{question-gen-mitkov}. It works reasonable well for terms recognition, but it can't discover numeric expressions.
 This method can label as terms also common names which are frequently used.
 A solution to this problem is to apply \textit{tf-idf weighting} which normalizes term frequency in the document by its frequency in all documents (or in common texts) \cite[][118]{information-retrieval}.
-[Maybe TODO: citovat, kde se na NE recognition pouzivat TF-IDF nebo neco podobneho]
+[Maybe TODO: citovat, kde se na NE recognition pouziva TF-IDF nebo neco podobneho]
 \item \textbf{Machine learning}\\
   The most difficult, but also the most powerful method is to train a machine learning recognizer.
-  [TODO: podrobneji, napr. \cite[][283]{nlp-python}]
+  [TODO: podrobneji, napr. \cite[][283]{nlp-python}, \autocite{named-entity-recognition}]
 \end{myItemize}
-Often, several of these approaches are combined (e.g. in \textit{The Mentor} they use regular experssions, gazetteers and machine learning recognizer \cite{mentor}).
+Often, several of these approaches are combined (e.g. in \textit{The Mentor} they use regular experssions, gazetteers and a machine learning recognizer \cite{mentor}).
+
+TODO: clanek "A survey of named entity recognition and classification" \autocite{named-entity-recognition}
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -737,9 +744,9 @@ NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze
   Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in Wordnet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordnNet, the ones which occur in the text are preffered.
 
 \item \textbf{Correct answer modification}\\
-  If the correct answer is a date or a numerical value, we can easily obtain distractors by changing the date or value by some partially random relative shift
+  If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift
 \cite{question-gen-domain-ontologies}.
-Maybe TODO: priklad]
+[TODO: priklad s letopoctem]
 \end{myItemize}
 
 
@@ -906,7 +913,7 @@ Ideally, the probability of a certain 4-tuple being selected would be proportion
 (relative with respect to the expected performance of other 4-tuples).
 As we do not know the future, our best guess for expected performance is the performance in the past.
 Using conditional probability we can easily derive formulae for probability $P$ of components $(x_1, x_2, x_3, x_4)$ being selected.
-I use asterisk ($*$) to denote "any behavior", so e.g. $p((x_1, *, *, *))$ means average performance of all sessions where knowledge builder was $x_1$.
+I use asterisk ($*$) to denote "any behavior", so e.g. $p((x_1, *, *, *))$ means average performance of all sessions in which knowledge builder was $x_1$.
 $$
 P(k_1 = x_1) = p((x_1, *, *, *)),
 $$
@@ -1183,6 +1190,8 @@ $$
 \text{totalScore} = \alpha \cdot \text{relevanceScore} + \beta \cdot \text{difficultyPenalty} + \gamma \cdot \text{repetitivenessPenalty}
 $$
 An exercise with the highest score is chosen.
+
+TODO: priklad 1 session, otazek a odpovidani na, aby bylo videt prizpusobovani -- takze mozna jen pomoci nejakeho grafu s vyznacenymi dobrymi a spatnymi odpovedmi a aktualni target difficulty.
 
 
 % ---------------------------  SECTION  ---------------------------
