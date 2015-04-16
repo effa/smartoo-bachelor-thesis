@@ -577,122 +577,112 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
 \chapter{Question Generation}
 \label{chap:exercises}
 
-[Intro, TODO: nejcasteji multiple-choice question, definice, distractory, ukazka]
+TODO: Obecny uvod, o co nam ted jde
 
-... obecny popis multiple choice questions a souvisejici terminologie (TODO: nejake obecne intro, ze jsou oblibene, maji sve vyhody a nevyhody):
+Maybe TODO: da se zminit, ze je tezke pristupy navzajem porovnat, protoze jsou hodne ruznorode v cily (uceni ciziho jazyka, uceni se lingivistiky, reading comprehension, fakta z ucenbice biologie -- asi by to chtelo ocitovat), zdrojich a tedy ve vyhodnoceni; kazdopadne existuje nekolik asi pouzitelnych systemu, vzdy jsou ale zamysleny jako "ucitel nahraje text, system vyplivne radu otazek, ucitel je profiltruje a opravi pripadne chyby a pak ty otazky pouzije" ... vyhodnoceni casto formou, 2 lide (studenti lingvistiky/biologie) o kazde otazce reknou, jestli je ok, potrebuje upravy, nebo je totalne na nic... vybiraji ruzne pocty otazek (napr. 15 procent) - to taky samozrejme vyrazne ovlivnuje vysledek (ale tak zas mohli vybrat proste tak, aby byl vhodny pomer pokryti a presnosti, vetsi problem je asi v tom, ze je proste fittovane napr. na tu ucebnici biolobie)
+Konkretne: ucebnice biologie \parencite{question-gen-textbooks}
 
-Multiple choice questions consists of a question text (called \textit{stem})
-and a few (e.g. four) choices, from which one is the correct answer
+Maybe TODO: snazime se tedy aspon systematizovat ruzne pristupy a identifikovat spolecne ukoly -- content selection, question formation, distractor selection, qustion grading and filtering
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Content Selection}
+%\label{sec:}
+
+First step in exercises generation is to decide what are we going to ask about, i.e. what content (knowledge) we want to test (or practice).
+Ideally we would like to select the most important and relevant content, but it is not easy.
+Some possible approaches to the content selection are listed and described below.
+
+\begin{myItemize}
+\item kazda veta, ze ktere lze vytvorit otazku
+  (muzou byt i souveti), (nejake pravidlo, ktere vetu transformuje na otazku + odpoved, viz nasledujici sekce)
+
+\item vyber vet podle relavance (machine learning)
+pristup by Agarwal \parencite{question-gen-textbooks}:
+1) nalezeni vet, ktere jsou dostatecne informativni a maji dostatek kontextu (features: frekvence tokenu z nadpisu, obsahuje zkratku, obsahuje superlativum, pocet slov, pocet podstatnych jmen, ...)\\
+2) vyber klice (tj. kam se da mezera) (features: pocet vyskytu slova v dokumentu, zda je obsazene v nadpisu, hloubka v syntaktckem stromu dane vety)\\
+
+\item vyber skupiny vet a z nich vytvorit otazku (aspon myslim, ze to nekde bylo.. jak bylo 6 otazek z jednoho odstavce???
+
+\item z grafu znalosti  -- v nejjednodusim pripade 1 fakt (A -- narodil se -- 1970. Zeptame se na to, kdy se narodil A), ale lze i kombinovat (napr. mohli se potkat? vymyslet nekolik peknych prikladu)... umoznuje ptat se na otazky ktere spanuji cely text, odkaz na knowledge extraction, graf  a sparql a vzdy souvislost a ukazku - ano i ukazku dotazu!
+\end{myItemize}
+
+TODO: do tohoto kroku zaradit i vyber toho, na co se chceme zeptat (moznost popisovat uz v prubehu, napr. v grafu je to prirozene), jinakt to lze to delat ruzne (bude je to nektera pojmenovana entita - odkaz na named entities recognition, nebo pomoci strojoveho uceni (Argawal)
+
+
+Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Question Formation}
+%\label{sec:}
+
+Pote, co vybereme, na co se chceme zeptat, je potreba vytvorit vhodnou otazku, nebo obecneji cviceni na procviceni dane znalosti
+
+There are many types of exercises, but we restrict our attention to the multiple choice questions as these are the most popular in automatic question generator tools.
+\textit{Multiple choice questions} (MCQ) consists of a question text (called \textit{stem})
+and a few (e.g. four) \textit{choices}, from which one is the \textit{correct answer}
 and the rest are incoreect alternatives (called \textit{distractors}).
+Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question} (FMCQ),
+in which the stem is simply sentence with a blank space to which the correct answer should be put [preformulovat].
+
+Maybe TODO: MCQ -- ze jsou oblibene, maji sve vyhody a nevyhody, vyjmenovat
+
+TODO: odkaz na priklad, nebo jeste lepe priklad rovnou uvest (muze to byt nejaky, na ktery se zpetne odkaze sem)
+
+- souvisi s otazkou exercise type (MCQ) a question type (FMCQ), takze tady popsat ty pojmy
 
 
-% ---------------------------  SECTION  ---------------------------
-\section{Syntactic Approach}
-\label{sec:questions-syntactically}
+TODO: note -- zalezi, co je vystupem content selection -- veta, souveti, skupina vet, skupina faktu
 
-TODO: citovat priklady: \textit{AutoQuest} \cite{questions-wolfe}, prehistorie (70. leta), aktualnejsi pak napr. (Mitkov 2006) \cite{question-gen-mitkov}.
-
-TODO popsat: Prvni system jiz v 70. letech -- \textit{AutoQuest} \cite{questions-wolfe}.
-
-TODO: Jeden z moznych postupu (Mitkov, 2006) \cite{question-gen-mitkov}:
-extrakce pojmu z textu (pomoci frekvenci), otazky transformaci vet s pojmy (vzory predem dane), vyber distraktoru (snaha o semantickou blizkost odpovedi ... pomoci WordNetu ... viz sekce distractors):
-1) terms extraction: identifikace klicovych (domain-specific) pojmu (to budou odpovedi na otazky)
-2) stem generation: pretvoreni vety (uvazovany pouze jednoduche vety) v o otazku (step) pomoci jednoduchych transformacnich pravidel
-3) distractor selection: z ostatnich pojmu, snaha o co nejvetsi semantickou blizkost (za timto ucelem pouzili WordNet)
+- gap fill is easy, ale bezne typy otazek potrebuji vetne transformce.
+- ty se daji zapsat pomoci nejakych pravidel z vet/faktu do vet - jak ziskat takova pravidla -- vetsina pristupu (citovat) rucne, nektere se snazi pouzit strojove uceni (bootstraping - the-mentor, citovat)
 
 
-Stem generation: z vety se tvori otazka, pokud obsahuje nejaky pojem a navic ma urcitou strukturu, napr.
-$$
-S V O \text{.} \longrightarrow \text{Which } H V O \text{?}
-$$
-where $S$, $V$, $O$ stand for \textit{subject}, \textit{verb} and \textit{object} and $H$ is the hypernym of the subject (found using WordNet). (TODO: uvest priklad)
+[Each sentence of given text (after parsing) is matched against patterns
+and may produce question-answer pair.]
 
-Zajimavost: prvni verze systemu dosahovali komem 5 procent otazek, ktere byly relevantni a bez chyby (tj. ktere se dali pouzit bez uprav).
+Approaches to stem generation can be divided according to how much they use the meaning (semantic information) (pro transformaci z vet, ale pro fakta z knowledge graphu by ty pristupy byly podobne):
+\begin{myItemize}
+\item \textbf{Syntactic approach}\\
+  * z vety se tvori otazka, pokud obsahuje nejaky pojem a navic ma urcitou strukturu, napr.
+    $$
+    S V O \text{.} \longrightarrow \text{Which } H V O \text{?}
+    $$
+    where $S$, $V$, $O$ stand for \textit{subject}, \textit{verb} and \textit{object} and $H$ is the hypernym of the subject (found using WordNet). (TODO: uvest priklad)
+  * TODO: dalsi priklady (i bez Wordnetu)
+  * rozdelit a citovat pripady s harcoded rules vs. pravidla v externich sablonach
+  * hardcoded transformation rules (overit):
+    - Wolfe, 70. leta, \textit{AutoQuest} \cite{questions-wolfe};
+    - Mitkov, 2006, \cite{question-gen-mitkov}:
 
+  * i souveti (spojky): delal jsem taky neco podobneho loni (napr. X because Y), ze par prikladu a citace \cite{question-gen-connectives}, uvest priklad
 
-% ---------------------------  SECTION  ---------------------------
-\section{Semantic Approach}
-\label{sec:questions-semantically}
+  * from external templates: \textit{Ceist system} \cite{question-gen-ceist}
 
-Semanticky pristup k tvorbe otazek: \cite{questions-eval}.
-Vety jsou nejprve zparsovany a semantic role labeling, napr. kdo je agent, patient etc.
-Typy otazek popsane pomoci generickych sablon, ty popisuji vztah mezi vetou a otazkou (s vyuzitim sementickych roli a syntaktickych konstituentu, naprt. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
+\item \textbf{Semantic approach}\\
+  - od predchoziho pristupu se lisi v tom, ze transformacni pravidla pracuji se semantic role labels, napr. agent, patient etc;  cili (castecne) s vyznamem vety
 
+  - Typy otazek popsane pomoci generickych sablon, ty popisuji vztah mezi vetou a otazkou (s vyuzitim sementickych roli a syntaktickych konstituentu, naprt. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
 
-% ---------------------------  SECTION  ---------------------------
-\section{Lexico-syntactic Patterns}
-\label{sec:lexico-syntactic-patterns}
+  - Semanticky bez sablon: \cite{question-get-mannem}
+  - semanticky se salonami: \cite{questions-eval}
+\end{myItemize}
 
+TODO: tohle bylo o vetach/souvetich, ale z faktu to bude fungovat podobne, akorat je to jeste trochu vid do semanticna (tj. jeste vice program pracuje s vyznamem textu), opet nejaky priklad pravidla, jak z faktu vytvorit text, mozna inspirace v Procvicniku loni
 
-NOTE jeden z moznych pristupu, bootstraping lexikalne syntaktickych vzoru
-
-... The approach of bootstrapping lexico-syntactic patterns was used
+TODO: odstavec o tom, ze transformaci pravidla se tradicne psali rucne (at uz primo do programau, nebo pomoci externich sablon), ale v posledni dobe se ukazuje, ze je asi mozne tyto vzory naucit pomoci metod strojoveho uceni ....(system learns patterns in sentences which describe a relation between a question and an answer)  The approach of bootstrapping lexico-syntactic patterns was used
 in \textit{The Mentor} system \cite{mentor}, created by Technical University of Lisbon.
-
-There are 2 steps.
-First, the system learns patterns in sentences which describe a relation between a question and an answer.
-After this preparatory offline step, these patterns are used for question generation from texts submitted by users (which is the second step).
-
-The first step uses a few question-answer pairs as seeds.
-New sentence-question patterns are boostrapped ....
-
-TODO: popsat blize, co znamena ten bootstrapping
-
+(Boostrappping means ASI using only a few question-answer pairs as as seeds, new one are ?odvozene nebo co? [bootstrapped...]
 ... they are using \textit{QuestionBank} a corpus of 4000 parse-annotated questions \cite{question-bank}.
+(no ten QuestionBank se pouziva jen na natrenovani syntaktickeho parseru)
+[TODO: podrobneji, seed question-answr -> permutace moznosti, jak muze vypadat prislusna deklarativni veta -> jestli opravdu jo, se zjisti pomoci Googlu -> vytvoreni vzoru] [ale porad tam nechapu ten bootstrapping]
 
-TODO: svuj vlastni priklad
-
-As an example, consider sentence "Botticelli has painted the Birth of Venus".
-
-General form of pattern is: [TODO, je tam nekde odoved, nejaka pevna cast (*), ktera muze byt pouze jedna, libovolne dlouha a na zbytku jsou urcene vetne cleny (VBD, NP, ...)]
-
-Which of the [uvazovanych] patterns are correct is decided by
-Google search of phrase [ktera fraze presne?].
-
-The derived pattern is \texttt{<ANSWER> has VBD NP}.
-
-
-
-In the online step, each sentence of given text (after parsing) is matched against boostrapped patterns
-and may produce question-answer pair.
-Then some filters are applied to discard questions of poor quality. Two main filters are:
-
-\begin{enumerate}
-  \item matching question-answer category:
-    The category of the question and the category of the answer have to be same (e.g. individual or location). Example: "Who was Abraham Lincoln?" -- "16th president of the United States": both \textit{Abraham Lincoln} and \textit{president} has the semantic category \textit{individual}.
-    To find that president is individual, WordNet [citovat] is used (BFS).
-  \item Discarding Anaphoric References: e.g. "Where is there?"
-\end{enumerate}
-
-
-NOTE: asi docela uspesne, i kdyz mnoho otazek potreba rucne opravit (nepredpokladalo se online nasazeni)
 
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Generating Exercises from Knowledge Graphs}
-\label{sec:gen-exrc-from-kg}
-
-TODO: o tom, jak z grafu znalosti dostat otazky
-
-
-- generovani otazek s vyuzitim ontologii:
-\cite{question-gen-domain-ontologies} -- popisuje ruzne strategie, jak z hotoveho grafu generovat otazky (coz je v nejjednodussim pripade proste vyber jednoho faktu) a k nim distraktory (i distraktory jen na urovni celych vet, zadani bylo vzdy "Choose the correct sentence"; priklady:
-- pro RDF trojici A-B-C vytvor distraktor A-B-D, kde D je typu, ktery je podtridou typu C
-- pro RDF trojici A-B-C, pokud je C numericka hodnota, vytvor distraktory jako nasobky (a podnasobky) dane hodnoty;
-
-NOTE: jeste na tom clanku je zajimava tabulku udavajici pocet syntakticky bezchybne vygenerovanych otazek pro ruzne clanky (velky rozptyl... od 5 do 85 procent spravnych otazek ... ale je to relativne stary clanek z pocatku jejich vyzkumu, v tom nasledovnem jiz reportuji, ze 90 procent otazek bylo oznaceno jako "dobrych")
-
-\textit{OntoQue} \cite{ontoque}, a system generating questions from a domain ontology.
-Various question types: multiple choice questions, true/false, fill-in the blanks.
-True/False: chybne vety jsou ze spravne vety vytvoreny nahrazenim subjektu nebo objektu za term, ktery je semanticky blizko (je ze stejne tridy).
-
-
-TODO: popsat jak se daji vytvaret zajimavejsi otazky s vyuzitim knowledge graphs (viz Procvicnik, napr. Mohli se potkat?)
-
-
-% ---------------------------  SECTION  ---------------------------
-\section{Distractors}
+\section{Distractor selection}
 \label{sec:distractors}
 
 It is important to present a multiple-choice question with competitive \textit{distractors}.
@@ -737,11 +727,13 @@ A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov,
 NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy). Common strategies for distractor selection are:
 \begin{myItemize}
 \item \textbf{Named entities from the text}\\
-  One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, choose named entities of the same type (e.g. if the correct answer is person, choose people as distractors). This approach was used in \cite{mentor} and \cite{ontoque}. If one term can have many types, select terms which has most types common with the correct answer.
-  [Maybe TODO: jeste alternativa k typum, okrajove: pouziji se jmenne fraze z textu, ktere maji stejnou hlavu (leading noun) jako sparvna odpoved; Mitkov]
+  One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, named entities of the same type are chosen (e.g. if the correct answer is person, choose people as distractors). This approach was used in the Mentor \cite{mentor} and OntoQue \cite{ontoque}.
+If one term can have many types (which is the case in Smartoo), terms which has most types in common with the correct answer are selected.
+As an alternative to common types, common context can be used to select appropriate distractors.
+Agarwal \cite{question-gen-textbooks} uses features such as comparison of words and their POS tags before and after the correct answer and the distractor or frequency of common words in the question sentence and a sentence with the distractor.
 
 \item \textbf{Named entities from external sources}\\
-  Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in Wordnet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordnNet, the ones which occur in the text are preffered.
+  Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordNet, the ones which occur in the text are preffered.
 
 \item \textbf{Correct answer modification}\\
   If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift
@@ -752,11 +744,65 @@ NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze
 
 
 
-% ===========================  CHAPTER ===========================
-%\chapter{Exercises Grading}
-%\label{chap:exercises-grading}
 
-%NOTE: mozna neni na samostatnou kapitolu (v tom pripade spojit s predchozi, ale je to tak vice konzistentni
+% ---------------------------  SECTION  ---------------------------
+\section{Question Ranking and Filtering}
+%\label{sec:}
+
+TODO: uvod, ze mnoho otazek bude of poor queality, nebo irelevantnich, co s tim: ohodnotit a vybrat N nejlepsich, nebo filtrovat (pravidlove, machine learning-based classifikator) (filtrovani je specialni druh hodnoceni, ktere je jen binarni)
+
+Co citovat: vyber 6 nejlepsich otazek na odstavec \cite{question-gen-mannem}, filtrovani \cite{mentor}
+(a i dalsi, filtrovani se objevilo casteji)
+
+
+Maybe TODO: dokonce nejaky metody jsou vylozene zalozene na overgeneration a pak filtering (neco myslim bylo v te phd tezi, prip. v dalsich clancich od toho autora)
+
+
+\cite{mentor}: Some filters are applied to discard questions of poor quality. Two main filters are:
+\begin{enumerate}
+  \item matching question-answer category:
+    The category of the question and the category of the answer have to be same (e.g. individual or location). Example: "Who was Abraham Lincoln?" -- "16th president of the United States": both \textit{Abraham Lincoln} and \textit{president} has the semantic category \textit{individual}.
+    To find that president is individual, WordNet [citovat] is used (BFS).
+  \item Discarding Anaphoric References: e.g. "Where is there?"
+\end{enumerate}
+
+TODO: Prozkoumat clanek Question Generation via Overgenerating Transformations and Ranking, pro mozne zduvodneni komponenty ExercisesGrader, hodnoceni (pro vyber 6 nejlepsich otazek na odstavec) je take v
+\cite{question-gen-mannem}
+
+Maybe TODO: Muzu zde take rozebrat, jak jednotlive system vyhodnocovali
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Dalsi temata, todo}
+\textbf{Generovani otazek s vyuzitim ontologii}
+
+- generovani otazek s vyuzitim ontologii:
+\cite{question-gen-domain-ontologies} -- popisuje ruzne strategie, jak z hotoveho grafu generovat otazky (coz je v nejjednodussim pripade proste vyber jednoho faktu) a k nim distraktory (i distraktory jen na urovni celych vet, zadani bylo vzdy "Choose the correct sentence"; priklady:
+- pro RDF trojici A-B-C vytvor distraktor A-B-D, kde D je typu, ktery je podtridou typu C
+- pro RDF trojici A-B-C, pokud je C numericka hodnota, vytvor distraktory jako nasobky (a podnasobky) dane hodnoty;
+
+\textit{OntoQue} \cite{ontoque}, a system generating questions from a domain ontology.
+Various question types: multiple choice questions, true/false, fill-in the blanks.
+True/False: chybne vety jsou ze spravne vety vytvoreny nahrazenim subjektu nebo objektu za term, ktery je semanticky blizko (je ze stejne tridy).
+
+
+..................
+
+Maybe TODO: podivat se na "question generation workshops and the shared task (in 2010)"
+http://questiongeneration.org/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 % ===========================  CHAPTER ===========================
 \chapter{Adaptive Practice}
@@ -1236,19 +1282,26 @@ The typical sequence of client requests and server responses is shown in
 \chapter{Deployment and Evaluation}
 \label{chap:evaluation}
 
-TODO...
+TODO: podrobnosti o nasazeni (server, db, virtualni prostredi, mozna nejake sturcne shrnuti potrebnych Pythonich knihoven)
 
-performace of each component
+TODO: vyhodnoceni jednotlivych komponent, (2 KB, 6 PR, a taky celkovy prumerny vykon): pocet ok otazek, a jaka byla skutecna uspesnost, prip. zpetne vazby, pokud nejake budou.
 
 TODO: bylo by pekne, kdybych mohl ze ziskanych dat take zmerit RMSE tech 6 ruznych pracitce komponent (resp. te jejich casti, ktera modeluje studenta, tj. jak moc dobre ohdaduji, ze to uzivatel zvladne)
 
+
+% ===========================  CHAPTER ===========================
 \chapter{Conclusions and Future Plans}
 \label{chap:future}
 
 TODO: strucne shrnuti a hlavne zavery na zaklade statistik a strucne budouci plany...
 
+TODO: what to improve (... in diploma thesis)
 
-what to improve (... in diploma thesis)
+TODO: evolucni algoritmy pro hledani optimalnich parameteru (nebo i kodu!) komponent
+
+TODO: nejaka ukazka zajimavejsiho cviceni
+
+TODO: procist si sve napady z notes.txt v Procvicniku-v1
 
 
 
