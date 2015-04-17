@@ -20,6 +20,7 @@
 % math symbols and environments
 \usepackage{mathtools}
 \usepackage{amsmath}
+\usepackage{amssymb}
 % packages for complex tables
 %\usepackage{tabularx}
 %\usepackage{multirow}
@@ -105,6 +106,7 @@
 % define square symbol
 %--------------------------------------------------------------------
 \newcommand{\squarebullet}{\textcolor{black}{\raisebox{0.15em}{\rule{4pt}{4pt}}}}
+\newcommand{\emptysquarebullet}{\textcolor{black}{\raisebox{0.10em}{\tiny$\square$}}}
 
 %--------------------------------------------------------------------
 % define new itemize environment with squares and smaller spaces
@@ -112,7 +114,9 @@
 \newenvironment{myItemize}{
   \begin{itemize}[leftmargin=2em,rightmargin=1em,itemsep=\parskip ,parsep=0em,topsep=0em,partopsep=0em]
   \renewcommand{\labelitemi}{\squarebullet}
-  \renewcommand{\labelitemii}{$\diamond$}
+  %\renewcommand{\labelitemii}{$\diamond$}
+  %\renewcommand{\labelitemii}{\emptysquarebullet}
+  \renewcommand{\labelitemii}{\textbullet}
 }{
   \end{itemize}
 }
@@ -577,45 +581,81 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
 \chapter{Question Generation}
 \label{chap:exercises}
 
-TODO: Obecny uvod, o co nam ted jde
+TODO: Obecny uvod, o co nam ted jde, exercises vs. questions, priklady a ze my se budeme ted zabyvat jen question generation, protoze je to bezne.
 
 Maybe TODO: da se zminit, ze je tezke pristupy navzajem porovnat, protoze jsou hodne ruznorode v cily (uceni ciziho jazyka, uceni se lingivistiky, reading comprehension, fakta z ucenbice biologie -- asi by to chtelo ocitovat), zdrojich a tedy ve vyhodnoceni; kazdopadne existuje nekolik asi pouzitelnych systemu, vzdy jsou ale zamysleny jako "ucitel nahraje text, system vyplivne radu otazek, ucitel je profiltruje a opravi pripadne chyby a pak ty otazky pouzije" ... vyhodnoceni casto formou, 2 lide (studenti lingvistiky/biologie) o kazde otazce reknou, jestli je ok, potrebuje upravy, nebo je totalne na nic... vybiraji ruzne pocty otazek (napr. 15 procent) - to taky samozrejme vyrazne ovlivnuje vysledek (ale tak zas mohli vybrat proste tak, aby byl vhodny pomer pokryti a presnosti, vetsi problem je asi v tom, ze je proste fittovane napr. na tu ucebnici biolobie)
-Konkretne: ucebnice biologie \parencite{question-gen-textbooks}
+
+Konkretne:
+- ucebnice biologie \cite{question-gen-textbooks}
+- Mitkov, elementarni lingvistika \cite{question-gen-mitkov}
+- Wolfe... \cite{questions-wolfe}
+- Heilman, fakta obecne \cite{question-gen-heilman}
+- zamereni na spojky (tj. ze souveti) \cite{question-gen-connectives}
+- casto uceni se ciziho jazyka, to by taky chtelo nejakou citaci (i kdyz se tim nebudu zabyvat, tak aspon odkaz)
+
+
 
 Maybe TODO: snazime se tedy aspon systematizovat ruzne pristupy a identifikovat spolecne ukoly -- content selection, question formation, distractor selection, qustion grading and filtering
+
+TODO: projit text a clanky o gen. otazek a doplnit citace (a prip. podrobnosti, plus kontrola)
 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Content Selection}
 %\label{sec:}
 
-First step in exercises generation is to decide what are we going to ask about, i.e. what content (knowledge) we want to test (or practice).
-Ideally we would like to select the most important and relevant content, but it is not easy.
-Some possible approaches to the content selection are listed and described below.
+First step in question generation is to decide what we are going to ask about, i.e. what content (knowledge) we want to test (or practice).
+Ideally we would like to select the most important and relevant content, but this is not easy.
+Some common approaches to the content selection are listed and described below.
 
 \begin{myItemize}
-\item kazda veta, ze ktere lze vytvorit otazku
-  (muzou byt i souveti), (nejake pravidlo, ktere vetu transformuje na otazku + odpoved, viz nasledujici sekce)
+\item Every sentence from which the system is able to generate a question can be generated is used.
+It usually means that the system considers every sentence in the text one by one
+and tries to transform it to a question.
+The transformation process is described in \autoref{sec:question-formation}.
+For its simplicity this approach is used very often \cite{question-gen-mitkov, question-gen-connectives, questions-wolfe} [TODO: Wolfe - overit, doplnit dalsi citace].
+It can lead to questions which are not much relevant,
+but this issue can be solved by questions ranking and post-filtering (\autoref{sec:questions-ranking-filtering}).
 
-\item vyber vet podle relavance (machine learning)
-pristup by Agarwal \parencite{question-gen-textbooks}:
-1) nalezeni vet, ktere jsou dostatecne informativni a maji dostatek kontextu (features: frekvence tokenu z nadpisu, obsahuje zkratku, obsahuje superlativum, pocet slov, pocet podstatnych jmen, ...)\\
-2) vyber klice (tj. kam se da mezera) (features: pocet vyskytu slova v dokumentu, zda je obsazene v nadpisu, hloubka v syntaktckem stromu dane vety)\\
+\item Using a machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enough context in them to a question being generated from them.
+This approach was tested by Agarwal \parencite{question-gen-textbooks}.
+Some of the features used in his classifier were:
+  \begin{myItemize}
+  \item number of words in the sentence,
+  \item number of nouns,
+  \item frequency of tokens from the headline,
+  \item contains abbreviation? (binary feature),
+  \item contains superlativum? (binary feature).
+  \end{myItemize}
+Agarwal also used another classifier to select a word from the sentence which would be the correct answer of the question generated from the sentence. For this classifier he used the following three features.
+  \begin{myItemize}
+  \item number of occurences of the word in the document,
+  \item is contained in the headline? (binary feature),
+  \item depth of the word in the parse tree of the sentence.
+  \end{myItemize}
 
-\item vyber skupiny vet a z nich vytvorit otazku (aspon myslim, ze to nekde bylo.. jak bylo 6 otazek z jednoho odstavce???
+\item MaybeTDO: vyber skupiny vet a z nich vytvorit otazku (aspon myslim, ze to nekde bylo.. jak bylo 6 otazek z jednoho odstavce???
 
-\item z grafu znalosti  -- v nejjednodusim pripade 1 fakt (A -- narodil se -- 1970. Zeptame se na to, kdy se narodil A), ale lze i kombinovat (napr. mohli se potkat? vymyslet nekolik peknych prikladu)... umoznuje ptat se na otazky ktere spanuji cely text, odkaz na knowledge extraction, graf  a sparql a vzdy souvislost a ukazku - ano i ukazku dotazu!
+\item Another approach is not to select appropriate content directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (\autoref{sec:relations-extraction}).
+Sometimes a single fact can be used to generate a meaningful question,
+e.g. fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
+\textit{When was Alan Turing born?} with the correct answer \textit{1912}.
+But the great thing about knowledge graph is that we can select more facts and then ask questions which span much more than one sentence.
+[TODO: ukazka sparql dotazu (a odkaz do prislusne sekce dirve) a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, mozna i 2 priklady, napr. Mohli se potkat? - ale taky moznost to nechat az na pristi sekci, tady se chceme bavit jen o vyberu contentu, ne formulaci otazek].
+
+To ensure relevance of the questions, we can eithey employ a similar machine learning-based classifier as was described in the previous paragraph,
+or we can overgenerate questions and then rank and filter them (\autoref{sec:questions-ranking-filtering}).
+[Maybe TODO: neco citovat - mozna ty ontologie, mozna Heilman (phd)]
+[Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}]
+
 \end{myItemize}
 
-TODO: do tohoto kroku zaradit i vyber toho, na co se chceme zeptat (moznost popisovat uz v prubehu, napr. v grafu je to prirozene), jinakt to lze to delat ruzne (bude je to nektera pojmenovana entita - odkaz na named entities recognition, nebo pomoci strojoveho uceni (Argawal)
 
-
-Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}
 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Question Formation}
-%\label{sec:}
+\label{sec:question-formation}
 
 Pote, co vybereme, na co se chceme zeptat, je potreba vytvorit vhodnou otazku, nebo obecneji cviceni na procviceni dane znalosti
 
@@ -665,7 +705,7 @@ Approaches to stem generation can be divided according to how much they use the 
 
   - Typy otazek popsane pomoci generickych sablon, ty popisuji vztah mezi vetou a otazkou (s vyuzitim sementickych roli a syntaktickych konstituentu, naprt. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
 
-  - Semanticky bez sablon: \cite{question-get-mannem}
+  - Semanticky bez sablon: \cite{question-gen-mannem}
   - semanticky se salonami: \cite{questions-eval}
 \end{myItemize}
 
@@ -747,7 +787,7 @@ Agarwal \cite{question-gen-textbooks} uses features such as comparison of words 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Question Ranking and Filtering}
-%\label{sec:}
+\label{sec:questions-ranking-filtering}
 
 TODO: uvod, ze mnoho otazek bude of poor queality, nebo irelevantnich, co s tim: ohodnotit a vybrat N nejlepsich, nebo filtrovat (pravidlove, machine learning-based classifikator) (filtrovani je specialni druh hodnoceni, ktere je jen binarni)
 
