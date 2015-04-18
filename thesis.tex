@@ -577,100 +577,139 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
 %    ...
 %\end{verbatim}
 
-% ===========================  CHAPTER ===========================
+% =========================== CHAPTER ===========================
 \chapter{Question Generation}
 \label{chap:exercises}
 
-TODO: Obecny uvod, o co nam ted jde, exercises vs. questions, priklady a ze my se budeme ted zabyvat jen question generation, protoze je to bezne.
+In this chapter I describe state-of-the-art int the field of question generation .
+First question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
+and up to now (2015), several approaches to the task of question generation were proposed.
+Every system use different approach and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target group and use different evaluation metrics.
+For example some systems try to test reading comprehension [TODO: citovat],
+some focus on foreign language learning [TODO: citovat],
+some on factual texts \cite{question-gen-heilman}
+and sometimes authors choose only one specific field or topic, such as linguistic \cite{question-gen-mitkov}
+or biology \cite{question-gen-textbooks} [TODO: doplnit zamereni ostatnich clanku].
+[TODO: o snaze v poslednich letech tento problem resit - shared task....]
 
-Maybe TODO: da se zminit, ze je tezke pristupy navzajem porovnat, protoze jsou hodne ruznorode v cily (uceni ciziho jazyka, uceni se lingivistiky, reading comprehension, fakta z ucenbice biologie -- asi by to chtelo ocitovat), zdrojich a tedy ve vyhodnoceni; kazdopadne existuje nekolik asi pouzitelnych systemu, vzdy jsou ale zamysleny jako "ucitel nahraje text, system vyplivne radu otazek, ucitel je profiltruje a opravi pripadne chyby a pak ty otazky pouzije" ... vyhodnoceni casto formou, 2 lide (studenti lingvistiky/biologie) o kazde otazce reknou, jestli je ok, potrebuje upravy, nebo je totalne na nic... vybiraji ruzne pocty otazek (napr. 15 procent) - to taky samozrejme vyrazne ovlivnuje vysledek (ale tak zas mohli vybrat proste tak, aby byl vhodny pomer pokryti a presnosti, vetsi problem je asi v tom, ze je proste fittovane napr. na tu ucebnici biolobie)
+Juding by reported performances of the systems, question generation is still very difficult task in the natural language processing and there is plenty of room for improvements or even completely new ideas.
+Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system, it outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Hopefully there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually [CITOVAT ktere!!!]
 
-Konkretne:
-- ucebnice biologie \cite{question-gen-textbooks}
-- Mitkov, elementarni lingvistika \cite{question-gen-mitkov}
-- Wolfe... \cite{questions-wolfe}
-- Heilman, fakta obecne \cite{question-gen-heilman}
-- zamereni na spojky (tj. ze souveti) \cite{question-gen-connectives}
-- casto uceni se ciziho jazyka, to by taky chtelo nejakou citaci (i kdyz se tim nebudu zabyvat, tak aspon odkaz)
+Although the chapter is called \textit{question generation},
+it is possible to create more complex exercises as well [see TODO: odkazat na sekci, kde bude nejaka ukazka, asi ve future plans].
+Broader range of exercises is especially usefull if we want not only to assess one's knowledge, but rather to deep his or her remembering and understanding of the text, because for people to remember something it must  entertain them and to entertain them it must be diverse. [MaybeTODO: toto tvrzeni by se mohlo citovat, ale neni nutne].
+But all the systems I came accross generated only questions, most often multiple choice questions.
+%This is understandable as firstly it is easier to work with (multiple choice) questions only
+%and secondly it is easier for evaluation [TODO: dovysvetlit, rozepsat].
 
-
-
-Maybe TODO: snazime se tedy aspon systematizovat ruzne pristupy a identifikovat spolecne ukoly -- content selection, question formation, distractor selection, qustion grading and filtering
-
-TODO: projit text a clanky o gen. otazek a doplnit citace (a prip. podrobnosti, plus kontrola)
-
-
-% ---------------------------  SECTION  ---------------------------
-\section{Content Selection}
-%\label{sec:}
-
-First step in question generation is to decide what we are going to ask about, i.e. what content (knowledge) we want to test (or practice).
-Ideally we would like to select the most important and relevant content, but this is not easy.
-Some common approaches to the content selection are listed and described below.
-
-\begin{myItemize}
-\item Every sentence from which the system is able to generate a question can be generated is used.
-It usually means that the system considers every sentence in the text one by one
-and tries to transform it to a question.
-The transformation process is described in \autoref{sec:question-formation}.
-For its simplicity this approach is used very often \cite{question-gen-mitkov, question-gen-connectives, questions-wolfe} [TODO: Wolfe - overit, doplnit dalsi citace].
-It can lead to questions which are not much relevant,
-but this issue can be solved by questions ranking and post-filtering (\autoref{sec:questions-ranking-filtering}).
-
-\item Using a machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enough context in them to a question being generated from them.
-This approach was tested by Agarwal \parencite{question-gen-textbooks}.
-Some of the features used in his classifier were:
-  \begin{myItemize}
-  \item number of words in the sentence,
-  \item number of nouns,
-  \item frequency of tokens from the headline,
-  \item contains abbreviation? (binary feature),
-  \item contains superlativum? (binary feature).
-  \end{myItemize}
-Agarwal also used another classifier to select a word from the sentence which would be the correct answer of the question generated from the sentence. For this classifier he used the following three features.
-  \begin{myItemize}
-  \item number of occurences of the word in the document,
-  \item is contained in the headline? (binary feature),
-  \item depth of the word in the parse tree of the sentence.
-  \end{myItemize}
-
-\item MaybeTDO: vyber skupiny vet a z nich vytvorit otazku (aspon myslim, ze to nekde bylo.. jak bylo 6 otazek z jednoho odstavce???
-
-\item Another approach is not to select appropriate content directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (\autoref{sec:relations-extraction}).
-Sometimes a single fact can be used to generate a meaningful question,
-e.g. fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
-\textit{When was Alan Turing born?} with the correct answer \textit{1912}.
-But the great thing about knowledge graph is that we can select more facts and then ask questions which span much more than one sentence.
-[TODO: ukazka sparql dotazu (a odkaz do prislusne sekce dirve) a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, mozna i 2 priklady, napr. Mohli se potkat? - ale taky moznost to nechat az na pristi sekci, tady se chceme bavit jen o vyberu contentu, ne formulaci otazek].
-
-To ensure relevance of the questions, we can eithey employ a similar machine learning-based classifier as was described in the previous paragraph,
-or we can overgenerate questions and then rank and filter them (\autoref{sec:questions-ranking-filtering}).
-[Maybe TODO: neco citovat - mozna ty ontologie, mozna Heilman (phd)]
-[Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}]
-
-\end{myItemize}
-
-
-
-
-% ---------------------------  SECTION  ---------------------------
-\section{Question Formation}
-\label{sec:question-formation}
-
-Pote, co vybereme, na co se chceme zeptat, je potreba vytvorit vhodnou otazku, nebo obecneji cviceni na procviceni dane znalosti
-
-There are many types of exercises, but we restrict our attention to the multiple choice questions as these are the most popular in automatic question generator tools.
 \textit{Multiple choice questions} (MCQ) consists of a question text (called \textit{stem})
 and a few (e.g. four) \textit{choices}, from which one is the \textit{correct answer}
 and the rest are incoreect alternatives (called \textit{distractors}).
 Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question} (FMCQ),
 in which the stem is simply sentence with a blank space to which the correct answer should be put [preformulovat].
 
-Maybe TODO: MCQ -- ze jsou oblibene, maji sve vyhody a nevyhody, vyjmenovat
+%Maybe TODO: MCQ -- ze jsou oblibene, maji sve vyhody a nevyhody, vyjmenovat
+
+There are many approaches to the question generation,
+but some common tasks can be identifed throughout the systems.
+The general worklow has the following 5 steps, although some of them may be missing in some systems.
+\begin{myEnumerate}
+\item First, text of the article is pre-processed.
+Pre-processing can range from mere sentence filtering,
+to text rephrasing, and even to knowledge extraction from the text and building a knowledge graph
+(\autoref{sec:text-pre-processing}).
+
+\item The text is then scanned for the patterns which define transformations from sentences to a question-answer pair.
+  Everytime a pattern is matched, a new question and an answer is generated
+  (\autoref{sec:sentence-transformations}).
+  If a knowledge graph is used instead of text, the procedure is similar, except that now we have transformations from facts in the knowledge graph. The main advatage is that we can make use of relationships between subjects in the graph and thus create questions which span more then one sentence in the original article
+  (\autoref{sec:exercises-from-knowledge-graph}).
+
+\item In case of multiple choice questions, suitable distractors (incorrect alternatives) need to be selected
+(\autoref{sec:distractors}).
+
+\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end. Instead of filtering, we can rank the questions and use some number of questions with the highest rank
+(\autoref{sec:questions-ranking-filtering}).
+\end{myEnumerate}
+
+[TODO: projit text a clanky o gen. otazek a doplnit citace (a prip. podrobnosti, plus kontrola)]
+
+% ---------------------------  SECTION  ---------------------------
+\section{Text pre-processing}
+\label{sec:text-pre-processing}
+
+Usually, the text of the document is pre-processed in some way before it is used for question generation.
+Pre-processing can be conservative or non-conservative.
+I call pre-processing \textit{conservative}, if the output of the pre-processing is still some text,
+while the \textit{non-conservative} pre-processing leads to different (more machine readable) representation of the knowledge.
+Furthermore, we can distinguish between \textit{strongly conservative pre-processing},
+which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
+\begin{myItemize}
+  \item \textbf{Filtering}\\
+    The goal of the filtering is to discard sentences whitch are not relevant to the article or has not enough context to generate a question from them.
+
+    TODO: priklad problemu nedostatku kontextu - problem anafory (popsat o co jde, uvest priklad)
+
+  Some possible heuristics to detect which sentences are of no use \cite{questions-wolfe}:
+  \begin{itemize}
+  \item too long sentence (e.g. more than 35 words),
+  \item contains colon,
+  \item start with a verb,
+  \item TODO...
+  \end{itemize}
+
+  Instead of heuristics, we can use more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context to a question being generated from them. This approach was tested by Agarwal \parencite{question-gen-textbooks}.
+Some of the features used in his classifier were:
+  \begin{itemize}
+  \item number of words in the sentence,
+  \item number of nouns,
+  \item frequency of tokens from the headline,
+  \item contains abbreviation? (binary feature),
+  \item contains superlativum? (binary feature).
+  \end{itemize}
+
+
+  \item \textbf{Text rephrasing}\\
+    TODO: napr. anaphora resolution, par ukazek, moznost citovat ty postery z Procvicniku-v-1
+
+  \item \textbf{Building knowledge graph}\\
+    Another strategy is not to create questions directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (as described in \autoref{sec:relations-extraction}).
+[TODO: vyhody, nevyhody]
+\end{myItemize}
+
+
+TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 Wolfe, 6 taky nekde bylo) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
+
+
+
+% ---------------------------  SECTION  ---------------------------
+%\section{Question Formation}
+%\label{sec:question-formation}
+\section{Sentence transformations}
+\label{sec:sentence-transformations}
+
+Most question generation tools try to create questions directly from text without the knowledge extraction step.
+Usually the system considers every sentence in the text (without the filtered ones) one by one
+and tries to transform it to a question
+\cite{question-gen-mitkov, question-gen-connectives} [TODO: doplnit dalsi citace].
+It can lead to questions which are not much relevant,
+but this issue can be solved by questions ranking and post-filtering
+(\autoref{sec:questions-ranking-filtering}).
+
+
+............. TODO - odsud niz ...................
+
+Na co se ptame -- na libovolny pojem, pripadne lze zkouset vybrat ten nejrelvantnejsi...
+Agarwal \parencite{question-gen-textbooks} also used another classifier to select a word from the sentence which would be the correct answer of the question generated from the sentence. For this classifier he used the following three features.
+  \begin{myItemize}
+  \item number of occurences of the word in the document,
+  \item is contained in the headline? (binary feature),
+  \item depth of the word in the parse tree of the sentence.
+  \end{myItemize}
+
+Pote, co vybereme, na co se chceme zeptat, je potreba vytvorit vhodnou otazku, nebo obecneji cviceni na procviceni dane znalosti
 
 TODO: odkaz na priklad, nebo jeste lepe priklad rovnou uvest (muze to byt nejaky, na ktery se zpetne odkaze sem)
-
-- souvisi s otazkou exercise type (MCQ) a question type (FMCQ), takze tady popsat ty pojmy
 
 
 TODO: note -- zalezi, co je vystupem content selection -- veta, souveti, skupina vet, skupina faktu
@@ -678,13 +717,13 @@ TODO: note -- zalezi, co je vystupem content selection -- veta, souveti, skupina
 - gap fill is easy, ale bezne typy otazek potrebuji vetne transformce.
 - ty se daji zapsat pomoci nejakych pravidel z vet/faktu do vet - jak ziskat takova pravidla -- vetsina pristupu (citovat) rucne, nektere se snazi pouzit strojove uceni (bootstraping - the-mentor, citovat)
 
-
 [Each sentence of given text (after parsing) is matched against patterns
 and may produce question-answer pair.]
 
 Approaches to stem generation can be divided according to how much they use the meaning (semantic information) (pro transformaci z vet, ale pro fakta z knowledge graphu by ty pristupy byly podobne):
 \begin{myItemize}
 \item \textbf{Syntactic approach}\\
+  Syntactic approach only relies on Patterns
   * z vety se tvori otazka, pokud obsahuje nejaky pojem a navic ma urcitou strukturu, napr.
     $$
     S V O \text{.} \longrightarrow \text{Which } H V O \text{?}
@@ -696,6 +735,7 @@ Approaches to stem generation can be divided according to how much they use the 
     - Wolfe, 70. leta, \textit{AutoQuest} \cite{questions-wolfe};
     - Mitkov, 2006, \cite{question-gen-mitkov}:
 
+    * Muzemem mit oznacene pojmenovane entity, pak uz je to prechod k semantickemu (mitkov)
   * i souveti (spojky): delal jsem taky neco podobneho loni (napr. X because Y), ze par prikladu a citace \cite{question-gen-connectives}, uvest priklad
 
   * from external templates: \textit{Ceist system} \cite{question-gen-ceist}
@@ -719,6 +759,20 @@ in \textit{The Mentor} system \cite{mentor}, created by Technical University of 
 [TODO: podrobneji, seed question-answr -> permutace moznosti, jak muze vypadat prislusna deklarativni veta -> jestli opravdu jo, se zjisti pomoci Googlu -> vytvoreni vzoru] [ale porad tam nechapu ten bootstrapping]
 
 
+% ---------------------------  SECTION  ---------------------------
+\section{Exercises from a knowledge graph}
+\label{sec:exercises-from-knowledge-graph}
+
+Sometimes a single fact can be used to generate a meaningful question,
+e.g. fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
+\textit{When was Alan Turing born?} with the correct answer \textit{1912}.
+But the great thing about knowledge graph is that we can select more facts and then ask questions which span much more than one sentence.
+[TODO: ukazka sparql dotazu (a odkaz do prislusne sekce dirve) a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, mozna i 2 priklady, napr. Mohli se potkat? - ale taky moznost to nechat az na pristi sekci, tady se chceme bavit jen o vyberu contentu, ne formulaci otazek].
+
+To ensure relevance of the questions, we can eithey employ a similar machine learning-based classifier as was described in the previous paragraph,
+or we can overgenerate questions and then rank and filter them (\autoref{sec:questions-ranking-filtering}).
+[Maybe TODO: neco citovat - mozna ty ontologie, mozna Heilman (phd)]
+[Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}]
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -726,7 +780,7 @@ in \textit{The Mentor} system \cite{mentor}, created by Technical University of 
 \label{sec:distractors}
 
 It is important to present a multiple-choice question with competitive \textit{distractors}.
-As shown by experiments described in \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple choice question:
+As shown by experiments performed by Little and Bjork \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple choice question:
 
 \begin{exercise}
 \caption{Question with noncompetitive alternatives}%\label{table:somename}
@@ -760,7 +814,7 @@ Now take a look at the following question:
 
 This questions is much more likely to force student to retrieve knowledge about John Wilkes Booth as well as about other alternatives.
 
-\cite{optimizing-multiple-choice} also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
+Little and Bjork also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
 
 The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
 A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov, slepe-mapy}
