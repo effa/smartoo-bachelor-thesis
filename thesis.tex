@@ -594,7 +594,7 @@ In this chapter I describe state-of-the-art int the field of question generation
 First question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
 and up to now (2015), several approaches to the task of question generation were proposed.
 Every system use different approach and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target group and use different evaluation metrics.
-For example some systems try to test reading comprehension [TODO: citovat],
+For example some systems try to test reading comprehension \cite{question-overgenerating-rating},
 some focus on foreign language learning [TODO: citovat],
 some on factual texts \cite{question-gen-heilman}
 and sometimes authors choose only one specific field or topic, such as linguistic \cite{question-gen-mitkov}
@@ -679,7 +679,23 @@ Some of the features used in his classifier were:
 
 
   \item \textbf{Text rephrasing}\\
+    Ideal text for question generation would contain exactly one fact in one sentence.
+
+    The goal...
     TODO: napr. anaphora resolution, par ukazek, moznost citovat ty postery z Procvicniku-v-1
+    What might help:
+    \begin{itemize}
+    \item anaphora resolution,
+    \item compression of long sentences,
+    \item splitting of long sentences,
+    \item text summarization,
+    \item paraphrasing,
+    \item textual entailment.
+    \end{itemize}
+
+    Anaphora resolution example: TODO
+
+    TODO: \cite{question-improv-foster}
 
   \item \textbf{Knowledge extraction}\\
     Another strategy is not to create questions directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (as described in \autoref{sec:relations-extraction}).
@@ -809,26 +825,44 @@ But the great thing about knowledge graph is that we can select more facts and t
 
 To convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}. As a simple example, rule for "When was X born?" question would look like this:
 \begin{code}
-PREFIX owl: <http://dbpedia.org/ontology/>
+PREFIX ont: <http://dbpedia.org/ontology/>
 SELECT ?subject ?birthDate
 WHERE {
-  ?subject owl:birthDate ?birthDate .
+  ?subject ont:birthDate ?birthDate .
 }
 <*\arrowlinesplit*>
 Question: <*\emph{When was}*> subject <*\emph{born?}*>
 Answer: birthDate
 \end{code}
 
+
+
 \begin{code}
-PREFIX owl: <http://dbpedia.org/ontology/>
-SELECT ?subject1 ?birth1 ?death1 ?subject2 ?birth1 ?death2
+PREFIX ont: <http://dbpedia.org/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?eventName ?date
 WHERE {
-  ?subject1
-      owl:birthDate ?birth1 ;
-      owl:deathDate ?death1 .
-  ?subject2
-      owl:birthDate ?bith2 ;
-      owl:deathDate ?death2 .
+  ?event a ont:Event ;
+    rdfs:label eventName ;
+    ont:startDate ?date .
+}
+<*\arrowlinesplit*>
+Question: <*\emph{When did}*> eventName <*\emph{happen?}*>
+Answer: date
+\end{code}
+
+\begin{code}
+PREFIX ont: <http://dbpedia.org/ontology/>
+SELECT ?name1 ?birth1 ?death1 ?name2 ?birth1 ?death2
+WHERE {
+  ?person1 a ont:Person ;
+      rdfs:label name1 ;
+      ont:birthDate ?birth1 ;
+      ont:deathDate ?death1 .
+  ?subject2 a ont:Person ;
+      rdfs:label name2 ;
+      ont:birthDate ?bith2 ;
+      ont:deathDate ?death2 .
 }
 <*\arrowlinesplit*>
 Question: <*\emph{Could hypothetically}*> subject1 <*\emph{meet}*> subject2 <*\emph{?}*>
