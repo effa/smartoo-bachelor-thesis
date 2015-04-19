@@ -146,8 +146,17 @@
   basicstyle=\ttfamily,
   columns=fullflexible,
   showspaces=false,
-  showstringspaces=false
+  showstringspaces=false,
+  escapeinside={<*}{*>},
+  %morekeywords={Question,Answer}
   }}{}
+
+% define command for splitting listings into "from" and "to" part
+\newcommand{\arrowlinesplit}{%
+  \noindent\makebox[\linewidth]{\raisebox{0.15em}{\rule{0.478\textwidth}{0.5pt}}%
+  ~$\downarrow$~%
+  \noindent\raisebox{0.15em}{\rule{0.478\textwidth}{0.5pt}}}%
+}
 
 %--------------------------------------------------------------------
 % exercise environment
@@ -658,7 +667,7 @@ which does not add anything to the text, just filters some of the original sente
   \item TODO...
   \end{itemize}
 
-  Instead of heuristics, we can use more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context to a question being generated from them. This approach was tested by Agarwal \parencite{question-gen-textbooks}.
+  Instead of heuristics, we can use more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context to a question being generated from them. This approach was tested by Agarwal \cite{question-gen-textbooks}.
 Some of the features used in his classifier were:
   \begin{itemize}
   \item number of words in the sentence,
@@ -672,13 +681,13 @@ Some of the features used in his classifier were:
   \item \textbf{Text rephrasing}\\
     TODO: napr. anaphora resolution, par ukazek, moznost citovat ty postery z Procvicniku-v-1
 
-  \item \textbf{Building knowledge graph}\\
+  \item \textbf{Knowledge extraction}\\
     Another strategy is not to create questions directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (as described in \autoref{sec:relations-extraction}).
 [TODO: vyhody, nevyhody]
 \end{myItemize}
 
 
-TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 Wolfe, 6 taky nekde bylo) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
+TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 Wolfe, 6 taky nekde bylo) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal \cite{question-gen-textbooks}). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
 
 
 
@@ -688,89 +697,150 @@ TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno
 \section{Sentence transformations}
 \label{sec:sentence-transformations}
 
-Most question generation tools try to create questions directly from text without the knowledge extraction step.
-Usually the system considers every sentence in the text (without the filtered ones) one by one
-and tries to transform it to a question
-\cite{question-gen-mitkov, question-gen-connectives} [TODO: doplnit dalsi citace].
-It can lead to questions which are not much relevant,
-but this issue can be solved by questions ranking and post-filtering
+Most question generation tools try to create questions directly from the text without the knowledge extraction step.
+Usually, the system considers every sentence in the text one by one
+and tries to transform it to a question.
+%\cite{question-gen-mitkov, question-gen-connectives} [TODO: doplnit dalsi citace].
+Unless the filtering in the pre-processing step is extensive,
+considering every sentence may lead to questions which are not much relevant,
+but this issue can be solved later by questions ranking and post-filtering
 (\autoref{sec:questions-ranking-filtering}).
 
+\textit{Transformation rules} describe how to create a question-answer pair from a sentence
+which satisfies a given pattern, such as "The sentence starts with a term followed by a verb and an object."
+These transformation rules may be either hard-coded into the program (\textit{imperative rules})
+\cite{questions-wolfe, question-overgenerating-rating, question-gen-connectives}
+or stored in the external templates (\textit{declarative rules})
+\cite{question-gen-ceist, questions-eval}.
+The latter case is more difficult to implement, but it allows for simple modification of transformation rules and addition of new ones.
 
-............. TODO - odsud niz ...................
-
-Na co se ptame -- na libovolny pojem, pripadne lze zkouset vybrat ten nejrelvantnejsi...
-Agarwal \parencite{question-gen-textbooks} also used another classifier to select a word from the sentence which would be the correct answer of the question generated from the sentence. For this classifier he used the following three features.
+Patterns may be defined on syntactic or semantic level.
+Many approaches are somewhere in between these two extremes and use some basic information about the meaning of  sentences (such as which words denotes terms), but do not rely on complete semantic roles labelling. Syntactic information used in patterns include: [maybeTODO: citace]
   \begin{myItemize}
-  \item number of occurences of the word in the document,
-  \item is contained in the headline? (binary feature),
-  \item depth of the word in the parse tree of the sentence.
+    \item words in the sentence, such as "chairs", "are", "brown",
+      or their canonical forms (\textit{lemmas}), e.g. "chair", "be", "brown".
+    [TODO: ke vsem polozkam jeden konzistentni priklad, overit pomoci NLTK]
+  \item \textit{part-of-speech tags} -- lexical categories (also known as word classes) of the word, such as noun, verb, adjective or determiner,
+  \item \textit{syntax tree} of the sentence [TODO: rozvest, priklady frazi].
+  \end{myItemize}
+Semantic information which can be used to define patterns: [maybeTODO: citace]
+  \begin{myItemize}
+    \item named entities, and their types (pomoci named entity recognition -- odkaz),
+    \item semanticke vztahy mezi slovy (hypernym, coordinate etc.) -- pomoci Wordnetu (co to je a citace, jiz nekde v kapitole Knowledge),
+    \item semantic role labels (agent, patient, ...)  ... priklady z clanku... a citace.
   \end{myItemize}
 
-Pote, co vybereme, na co se chceme zeptat, je potreba vytvorit vhodnou otazku, nebo obecneji cviceni na procviceni dane znalosti
+[MaybeTODO: obrazek syntaktickeho stromu; demo shallow parsingu -- idealne srovnani techto dvou]
 
-TODO: odkaz na priklad, nebo jeste lepe priklad rovnou uvest (muze to byt nejaky, na ktery se zpetne odkaze sem)
+[MaybeTODO: citace konkretnich pripadu]
 
 
-TODO: note -- zalezi, co je vystupem content selection -- veta, souveti, skupina vet, skupina faktu
+\subsection*{Examples of transformation rules}
+TODO: projit clanky a vytahnout ukazky ruznych (syntaktickych) patternu
 
-- gap fill is easy, ale bezne typy otazek potrebuji vetne transformce.
-- ty se daji zapsat pomoci nejakych pravidel z vet/faktu do vet - jak ziskat takova pravidla -- vetsina pristupu (citovat) rucne, nektere se snazi pouzit strojove uceni (bootstraping - the-mentor, citovat)
+TODO: projit clanky a vytahnout ukazky ruznych semantickych) patternu
 
-[Each sentence of given text (after parsing) is matched against patterns
-and may produce question-answer pair.]
 
-Approaches to stem generation can be divided according to how much they use the meaning (semantic information) (pro transformaci z vet, ale pro fakta z knowledge graphu by ty pristupy byly podobne):
+\noindent ---\\
+TODO vzory z Wolfe, 70. leta, \textit{AutoQuest} \cite{questions-wolfe};
+\\---
+
+\noindent ---\\
+Priklad [TODO: usporadat a vhodne okomentovat, a taky ocitovat]:
+
+\begin{code}
+Pattern: subject verb object .
+<*\arrowlinesplit*>
+Question: <*\emph{Which}*> hypernym(subject) verb object <*\emph{?}*>
+Answer: subject
+\end{code}
+hypernym found using WordNet). (TODO: uvest priklad)
+\cite{question-gen-mitkov}
+\\---
+
+\noindent ---\\
+TODO: vzory pomoci syntaktickych stromu, z \cite{question-gen-ceist} (\textit{Ceist system})
+\\---
+
+\noindent ---\\
+TODO: vzory souveti (spojky): delal jsem taky neco podobneho loni (napr. X because Y), ze par prikladu, neco bylo ve Wolfe (autoquest), dale semanticky v \cite{question-gen-connectives}
+\\---
+
+\noindent ---\\
+TODO: semanticke: \cite{question-gen-mannem}, \cite{questions-eval}
+
+  napr. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
+\\---
+
+\subsection*{Correct answer selection}
+There might be more possible transformations from a sentence to a question-answer pair.
+In this case, only one question is usually generated.
+Another strategy is to select a word from the sentence which would be the correct answer as a first sept and then generate a question from the rest of the sentence as a second step.
+Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifier to select the most important word in the sentence. For the classification he used the following three features.
 \begin{myItemize}
-\item \textbf{Syntactic approach}\\
-  Syntactic approach only relies on Patterns
-  * z vety se tvori otazka, pokud obsahuje nejaky pojem a navic ma urcitou strukturu, napr.
-    $$
-    S V O \text{.} \longrightarrow \text{Which } H V O \text{?}
-    $$
-    where $S$, $V$, $O$ stand for \textit{subject}, \textit{verb} and \textit{object} and $H$ is the hypernym of the subject (found using WordNet). (TODO: uvest priklad)
-  * TODO: dalsi priklady (i bez Wordnetu)
-  * rozdelit a citovat pripady s harcoded rules vs. pravidla v externich sablonach
-  * hardcoded transformation rules (overit):
-    - Wolfe, 70. leta, \textit{AutoQuest} \cite{questions-wolfe};
-    - Mitkov, 2006, \cite{question-gen-mitkov}:
-
-    * Muzemem mit oznacene pojmenovane entity, pak uz je to prechod k semantickemu (mitkov)
-  * i souveti (spojky): delal jsem taky neco podobneho loni (napr. X because Y), ze par prikladu a citace \cite{question-gen-connectives}, uvest priklad
-
-  * from external templates: \textit{Ceist system} \cite{question-gen-ceist}
-
-\item \textbf{Semantic approach}\\
-  - od predchoziho pristupu se lisi v tom, ze transformacni pravidla pracuji se semantic role labels, napr. agent, patient etc;  cili (castecne) s vyznamem vety
-
-  - Typy otazek popsane pomoci generickych sablon, ty popisuji vztah mezi vetou a otazkou (s vyuzitim sementickych roli a syntaktickych konstituentu, naprt. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
-
-  - Semanticky bez sablon: \cite{question-gen-mannem}
-  - semanticky se salonami: \cite{questions-eval}
+\item number of occurences of the word in the document,
+\item is contained in the headline? (binary feature),
+\item depth of the word in the parse tree of the sentence.
 \end{myItemize}
 
-TODO: tohle bylo o vetach/souvetich, ale z faktu to bude fungovat podobne, akorat je to jeste trochu vid do semanticna (tj. jeste vice program pracuje s vyznamem textu), opet nejaky priklad pravidla, jak z faktu vytvorit text, mozna inspirace v Procvicniku loni
+\subsection*{Automatic patterns discovery}
+In most tools, transformation rules were created manually.
+However, machine learning can be put into use to discover them automatically.
+\textit{The-Mentor} system \cite{mentor}, created by Technical University of Lisbon,
+uses a machine learning technique of \textit{bootstrapping} \cite{question-answering-bootstrapping},
+together with the \textit{QuestionBank}, a corpus of 4000 parse-annotated questions \cite{question-bank},
+and the amount of the information on the Web via \textit{Google} search
+to find syntactic patterns automatically from a few question-answer seed pairs.
 
-TODO: odstavec o tom, ze transformaci pravidla se tradicne psali rucne (at uz primo do programau, nebo pomoci externich sablon), ale v posledni dobe se ukazuje, ze je asi mozne tyto vzory naucit pomoci metod strojoveho uceni ....(system learns patterns in sentences which describe a relation between a question and an answer)  The approach of bootstrapping lexico-syntactic patterns was used
-in \textit{The Mentor} system \cite{mentor}, created by Technical University of Lisbon.
-(Boostrappping means ASI using only a few question-answer pairs as as seeds, new one are ?odvozene nebo co? [bootstrapped...]
-... they are using \textit{QuestionBank} a corpus of 4000 parse-annotated questions \cite{question-bank}.
-(no ten QuestionBank se pouziva jen na natrenovani syntaktickeho parseru)
-[TODO: podrobneji, seed question-answr -> permutace moznosti, jak muze vypadat prislusna deklarativni veta -> jestli opravdu jo, se zjisti pomoci Googlu -> vytvoreni vzoru] [ale porad tam nechapu ten bootstrapping]
+
 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Exercises from a knowledge graph}
 \label{sec:exercises-from-knowledge-graph}
 
+In this section we will consider situation when we have buitl knowledge graph
+and want to create exercises from it, instead of from the original article.
 Sometimes a single fact can be used to generate a meaningful question,
 e.g. fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
 \textit{When was Alan Turing born?} with the correct answer \textit{1912}.
-But the great thing about knowledge graph is that we can select more facts and then ask questions which span much more than one sentence.
-[TODO: ukazka sparql dotazu (a odkaz do prislusne sekce dirve) a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, mozna i 2 priklady, napr. Mohli se potkat? - ale taky moznost to nechat az na pristi sekci, tady se chceme bavit jen o vyberu contentu, ne formulaci otazek].
+But the great thing about knowledge graph is that we can select more facts and then ask questions which span more than one sentence.
 
-To ensure relevance of the questions, we can eithey employ a similar machine learning-based classifier as was described in the previous paragraph,
-or we can overgenerate questions and then rank and filter them (\autoref{sec:questions-ranking-filtering}).
+
+To convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}. As a simple example, rule for "When was X born?" question would look like this:
+\begin{code}
+PREFIX owl: <http://dbpedia.org/ontology/>
+SELECT ?subject ?birthDate
+WHERE {
+  ?subject owl:birthDate ?birthDate .
+}
+<*\arrowlinesplit*>
+Question: <*\emph{When was}*> subject <*\emph{born?}*>
+Answer: birthDate
+\end{code}
+
+\begin{code}
+PREFIX owl: <http://dbpedia.org/ontology/>
+SELECT ?subject1 ?birth1 ?death1 ?subject2 ?birth1 ?death2
+WHERE {
+  ?subject1
+      owl:birthDate ?birth1 ;
+      owl:deathDate ?death1 .
+  ?subject2
+      owl:birthDate ?bith2 ;
+      owl:deathDate ?death2 .
+}
+<*\arrowlinesplit*>
+Question: <*\emph{Could hypothetically}*> subject1 <*\emph{meet}*> subject2 <*\emph{?}*>
+Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
+\end{code}
+
+%\end{code}\\
+%\noindent $\downarrow$ maps to
+%\begin{code}
+
+[TODO: ukazka sparql dotazu a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, napr. Mohli se potkat?
+
 [Maybe TODO: neco citovat - mozna ty ontologie, mozna Heilman (phd)]
 [Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}]
 
@@ -843,27 +913,41 @@ Agarwal \cite{question-gen-textbooks} uses features such as comparison of words 
 \section{Question Ranking and Filtering}
 \label{sec:questions-ranking-filtering}
 
-TODO: uvod, ze mnoho otazek bude of poor queality, nebo irelevantnich, co s tim: ohodnotit a vybrat N nejlepsich, nebo filtrovat (pravidlove, machine learning-based classifikator) (filtrovani je specialni druh hodnoceni, ktere je jen binarni)
+Common strategy in the question generation tools
+is to overgenerate questions and then filter them
+\cite{mentor, question-gen-mannem, question-overgenerating-rating}.
+The goal of the filtering is to discard questions which are:
 
-Co citovat: vyber 6 nejlepsich otazek na odstavec \cite{question-gen-mannem}, filtrovani \cite{mentor}
-(a i dalsi, filtrovani se objevilo casteji)
-
-
-Maybe TODO: dokonce nejaky metody jsou vylozene zalozene na overgeneration a pak filtering (neco myslim bylo v te phd tezi, prip. v dalsich clancich od toho autora)
-
-
-\cite{mentor}: Some filters are applied to discard questions of poor quality. Two main filters are:
-\begin{enumerate}
-  \item matching question-answer category:
+\begin{myItemize}
+  \item \textbf{invalid}\\
+    Questions which does not even make sense can be created due to anaphoric references (TODO: autoref do sekce pre-processing?) Example of an invalid question with anaphoric reference is "Where is there?"
+    (MaybeTODO: matching question-answer category (in The-Mentor system \cite{mentor}):
     The category of the question and the category of the answer have to be same (e.g. individual or location). Example: "Who was Abraham Lincoln?" -- "16th president of the United States": both \textit{Abraham Lincoln} and \textit{president} has the semantic category \textit{individual}.
     To find that president is individual, WordNet [citovat] is used (BFS).
-  \item Discarding Anaphoric References: e.g. "Where is there?"
-\end{enumerate}
 
-TODO: Prozkoumat clanek Question Generation via Overgenerating Transformations and Ranking, pro mozne zduvodneni komponenty ExercisesGrader, hodnoceni (pro vyber 6 nejlepsich otazek na odstavec) je take v
-\cite{question-gen-mannem}
+  \item \textbf{irrelevant}\\
+    Even if a question is valid, it can be totally irrelevant for the student.
+    As an example consider question TODO (for topic ...)
 
-Maybe TODO: Muzu zde take rozebrat, jak jednotlive system vyhodnocovali
+  \item \textbf{too easy}\\
+    Some multiple choice questions may be too easy due to poor distractors.
+    (Odkazat se na otazku se spatnymi distraktory uvedenou vyse.)
+
+\end{myItemize}
+
+Filtering can be implemented via heurstics decisions
+or via a machine-learning based classifier.
+As an alternative to filtering, we can rank questions first and then select $N$ best questions
+(e.g. Mannem \cite{question-gen-mannem} selects $6$ best questions per a paragraph)
+[TODO: nekde vybiralo 15 procent nejlepsich otazek]
+We can even separately rank various parameters of questions, such as probability of correctness (validity), relevance and difficulty. I have chosen this approach in Smartoo
+(\autoref{sec:smartoo-exercises-grading}), because it allows to separate the task of estimating parameters and the task of deciding which question is best for the student right now,
+i.e. it allows to use adaptive practice.
+
+
+
+TODO: Prozkoumat clanek Question Generation via Overgenerating Transformations and Ranking (phd teze), pro mozne zduvodneni komponenty ExercisesGrader, hodnoceni (pro vyber 6 nejlepsich otazek na odstavec) je take v
+\cite{question-gen-mannem} a rozhodne: \cite{question-overgenerating-rating}
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -1086,7 +1170,7 @@ Then the article is parsed into sentence trees with marked terms occurences.
 \subsection*{Shallow Parsing}
 Text is split into sentences and each sentence is tokenized (tokens are words, but also puctuation).
     Each token is assigned \textit{part-of-speech tag}.
-    Part-of-speech tag denotes lexical category (also known as word class) of the word, such as noun, verb, adjective or determiner.
+    Part-of-speech tag denotes lexical category (also known as word class) of the word, such as noun, verb, adjective or determiner. [TODO: upravit, tohle uz jsem zminit drive v chap:question-generation/sec:sentence-transformations, asi odkaz do prislusne sekce]
     For these natural language processing tasks I have used the \textit{NLTK} (Natural Language Toolkit) library \cite{nlp-python}. NLTK uses \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset}.
 
 \begin{table}[h]
