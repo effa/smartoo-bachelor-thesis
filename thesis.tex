@@ -148,6 +148,7 @@
   showspaces=false,
   showstringspaces=false,
   escapeinside={<*}{*>},
+  belowskip=0em,
   %morekeywords={Question,Answer}
   }}{}
 
@@ -528,6 +529,8 @@ TODO... nlp-knizka
 
 TODO: \parencite{triples-acquisition}
 
+TODO: clanek ontology-based-knowledge-extraction.pdf
+
 TODO: dalsi clanky
 
 TODO: + inspirace Procvicnikem-v1
@@ -780,13 +783,36 @@ TODO: vzory pomoci syntaktickych stromu, z \cite{question-gen-ceist} (\textit{Ce
 
 \noindent ---\\
 TODO: vzory souveti (spojky): delal jsem taky neco podobneho loni (napr. X because Y), ze par prikladu, neco bylo ve Wolfe (autoquest), dale semanticky v \cite{question-gen-connectives}
-\\---
+(connectives: beacuse, since, when, although, as a result, for example, for instance)
+
+\begin{code}
+Pattern: A, <*\emph{because}*> B.
+<*\arrowlinesplit*>
+Question: <*\emph{Why}*> questionForm(A) <*\emph{?}*>
+Answer: Because B.
+\end{code}
+Function \texttt{questionFom} searches for an auxiliary verb in A and if it finds one, it moves the auxiliary verb to the beginning of the sentence. If there is no auxiliary verb in the sentence, it adds appropriate auxiliary verb to the beginning of the sentence based on the tense of the main verb and the main verb is substituted for its infinitive (without to).  TODO: priklad
+
+Problem: spatne se hledaji distraktory.
+As an example, sentence "..." is tranformed into "...".
+
+
 
 \noindent ---\\
 TODO: semanticke: \cite{question-gen-mannem}, \cite{questions-eval}
 
   napr. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
 \\---
+
+Priklad patternu, ktery neni z cele vety, ale jenom z fraze \cite{mentor}:
+\begin{code}
+Pattern: [NP object] [VBN predicate] <*\emph{by}*> [Human subject]
+<*\arrowlinesplit*>
+Question: <*\emph{Who}*> pastTense(predicate) object <*\emph{?}*>
+Answer: subject
+\end{code}
+Example: from phrase "Hamlet, written by Shakespeare" will be created question "Who wrote hamlet?" with the answer "Shakespear"
+
 
 \subsection*{Correct answer selection}
 There might be more possible transformations from a sentence to a question-answer pair.
@@ -807,32 +833,63 @@ uses a machine learning technique of \textit{bootstrapping} \cite{question-answe
 together with the \textit{QuestionBank}, a corpus of 4000 parse-annotated questions \cite{question-bank},
 and the amount of the information on the Web via \textit{Google} search
 to find syntactic patterns automatically from a few question-answer seed pairs.
-
+They have discovered more then 1000 unique patterns, which is many more then tools with manually created patterns use. This allows form more specific patterns, such as the following:
+\begin{code}
+Pattern: [NP subject] [VBD aux] [VBN verb] <*\emph{in}*> [Location:Country X].
+<*\arrowlinesplit*>
+Question: <*\emph{In which country}*> aux subject verb<*\emph{?}*>
+Answer: X
+\end{code}
+Example: sentence "Pablo Picasso was born in Spain." will be transformed to the quesiton "In which country was Pablo Picasso born?
 
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Exercises from a knowledge graph}
+\section{Creating Exercises from Knowledge Graph}
 \label{sec:exercises-from-knowledge-graph}
 
-In this section we will consider situation when we have buitl knowledge graph
+In this section, we will consider situation when we have built knowledge graph
 and want to create exercises from it, instead of from the original article.
-Sometimes a single fact can be used to generate a meaningful question,
-e.g. fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
+Similarly as with the text, the question generation tool can take a fact one by one
+and transform it to the question if possible.
+For example, fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
 \textit{When was Alan Turing born?} with the correct answer \textit{1912}.
-But the great thing about knowledge graph is that we can select more facts and then ask questions which span more than one sentence.
+There are some predicates which are not suitable for creating questions from them,
+such as \texttt{rdfs:label} or \texttt{rdf:comment} and these need to be filtered.
 
+This approach of transforming a single fact at a time was used in \textit{OntoQue} \cite{ontoque}.
+OntoQue supports 3 types of exercises: multiple choice question, true/false and fill-in-the-blank.
+Fill-in-the-blanks are created simply by removing subject or object from the fact.
+Multiple-choice-questions are fill-the-blanks with 4 provided choices.
+As distractors, subjects of objects of the same class as the removed one are used.
+Finally, true statements in true/false questions are just unmodified facts from the knowledge graph,
+while false statements are created by replacing subject or object for a different one (suitable alternative is found in the same way as the distractors for mulitple choice questions).
 
-To convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}. As a simple example, rule for "When was X born?" question would look like this:
+OntoQue uses \texttt{rdf:label} property to transform facts into sentences,
+so the quality of the generated questions depends on the quality of the labels.
+Consider two situations shown in \autoref{fig:rdf-graphs-labels}.
+From the left graph, OntoQue could generate fill-in-the-blank question "Alan Turing was born in \sentenceGap .", while the right graph would be transformed into the question "Alan Turing birth date \sentenceGap ."
+Another problem would be with answer... (TODO: je moc presna)
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{images/rdf-graph-labels-comparision.pdf}
+  \caption{Labels}
+  \label{fig:rdf-graphs-labels}
+\end{figure}
+
+For this reason we might want to use more specific patterns to influence transformation from facts to sentences and simplify answers. For convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}. As a simple example, rule for "When was X born?" question would look like this:
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
-SELECT ?subject ?birthDate
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?subjectName ?birthDate
 WHERE {
-  ?subject ont:birthDate ?birthDate .
+  ?subject ont:birthDate ?birthDate ;
+      rdfs:label ?subjectName .
 }
 <*\arrowlinesplit*>
-Question: <*\emph{When was}*> subject <*\emph{born?}*>
-Answer: birthDate
+Question: <*\emph{When was}*> subjectName <*\emph{born?}*>
+Answer: parseYear(birthDate)
 \end{code}
 
 
@@ -851,6 +908,8 @@ Question: <*\emph{When did}*> eventName <*\emph{happen?}*>
 Answer: date
 \end{code}
 
+
+But the great thing about knowledge graph is that we can select more facts and then ask a question which span more than one sentence. Example:
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
 SELECT ?name1 ?birth1 ?death1 ?name2 ?birth1 ?death2
@@ -872,6 +931,8 @@ Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 %\end{code}\\
 %\noindent $\downarrow$ maps to
 %\begin{code}
+
+
 
 [TODO: ukazka sparql dotazu a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, napr. Mohli se potkat?
 
@@ -992,10 +1053,6 @@ TODO: Prozkoumat clanek Question Generation via Overgenerating Transformations a
 \cite{question-gen-domain-ontologies} -- popisuje ruzne strategie, jak z hotoveho grafu generovat otazky (coz je v nejjednodussim pripade proste vyber jednoho faktu) a k nim distraktory (i distraktory jen na urovni celych vet, zadani bylo vzdy "Choose the correct sentence"; priklady:
 - pro RDF trojici A-B-C vytvor distraktor A-B-D, kde D je typu, ktery je podtridou typu C
 - pro RDF trojici A-B-C, pokud je C numericka hodnota, vytvor distraktory jako nasobky (a podnasobky) dane hodnoty;
-
-\textit{OntoQue} \cite{ontoque}, a system generating questions from a domain ontology.
-Various question types: multiple choice questions, true/false, fill-in the blanks.
-True/False: chybne vety jsou ze spravne vety vytvoreny nahrazenim subjektu nebo objektu za term, ktery je semanticky blizko (je ze stejne tridy).
 
 
 ..................
