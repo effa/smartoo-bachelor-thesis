@@ -597,15 +597,16 @@ In this chapter I describe state-of-the-art int the field of question generation
 First question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
 and up to now (2015), several approaches to the task of question generation were proposed.
 Every system use different approach and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target group and use different evaluation metrics.
-For example some systems try to test reading comprehension \cite{question-overgenerating-rating},
-some focus on foreign language learning [TODO: citovat],
-some on factual texts \cite{question-gen-heilman}
+For example some systems try to assess vocabulary \cite{question-gen-vocabulary}
+or reading comprehension \cite{question-overgenerating-rating},
+some focus on factual texts \cite{question-gen-heilman}
 and sometimes authors choose only one specific field or topic, such as linguistic \cite{question-gen-mitkov}
 or biology \cite{question-gen-textbooks} [TODO: doplnit zamereni ostatnich clanku].
 [TODO: o snaze v poslednich letech tento problem resit - shared task....]
 
 Juding by reported performances of the systems, question generation is still very difficult task in the natural language processing and there is plenty of room for improvements or even completely new ideas.
-Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system, it outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Hopefully there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually [CITOVAT ktere!!!]
+Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system, it outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Hopefully there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually
+\cite{question-gen-mitkov}.
 
 Although the chapter is called \textit{question generation},
 it is possible to create more complex exercises as well [see TODO: odkazat na sekci, kde bude nejaka ukazka, asi ve future plans].
@@ -651,12 +652,20 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 \label{sec:text-pre-processing}
 
 Usually, the text of the document is pre-processed in some way before it is used for question generation.
-Pre-processing can be conservative or non-conservative.
-I call pre-processing \textit{conservative}, if the output of the pre-processing is still some text,
-while the \textit{non-conservative} pre-processing leads to different (more machine readable) representation of the knowledge.
-Furthermore, we can distinguish between \textit{strongly conservative pre-processing},
-which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
+Pre-processing may
+add useful information to the text (e.g. part-of-the-speech tags, semantic role labels),
+remove useless sentances, modify (rephrase) sentences or even create different (more machine readable) representation of the knowledge contained in the article, such as a knowledge graph.
+%Pre-processing can be conservative or non-conservative.
+%I call pre-processing \textit{conservative}, if the output of the pre-processing is still some text,
+%while the \textit{non-conservative} pre-processing leads to different (more machine readable) representation of the knowledge.
+%Furthermore, we can distinguish between \textit{strongly conservative pre-processing},
+%which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
 \begin{myItemize}
+  \item \textbf{Parsing}\\
+    (je otazka, jestli to nemit az v nasledujici sekci.. kde to uz je)
+  rozdeleni na vety a shallow parsing (POS tagging, lemmetization), prip. zjistovani celych syntaktickych stromu,
+  pripadne zjistovani senatic role labels
+
   \item \textbf{Filtering}\\
     The goal of the filtering is to discard sentences whitch are not relevant to the article or has not enough context to generate a question from them.
 
@@ -681,11 +690,13 @@ Some of the features used in his classifier were:
   \end{itemize}
 
 
-  \item \textbf{Text rephrasing}\\
-    Ideal text for question generation would contain exactly one fact in one sentence.
+  \item \textbf{Text trasnformations}\\
+    Ideal text for question generation would contain exactly one fact in one sentence,
+    but in reality most of the sentences are either too complex (consisting of many clauses)
+    or they are lacking important context (e.g. due to using pronouns).
+    We might want to transform (rephrase) the original text into simple factual sentences.
 
-    The goal...
-    TODO: napr. anaphora resolution, par ukazek, moznost citovat ty postery z Procvicniku-v-1
+    TODO: napr. anaphora resolution, par ukazek
     What might help:
     \begin{itemize}
     \item anaphora resolution,
@@ -697,6 +708,8 @@ Some of the features used in his classifier were:
     \end{itemize}
 
     Anaphora resolution example: TODO
+
+    Konkretne: \cite{question-gen-heilman}: rozdeleni slozene vety na jednoduche, vynechani nedulezitych extra informaci (napr. zavorky nebo non-restrictive appositives (Jeffereson, the third president of the United States, ...), pronoun resolution (difficult...), ale aspon uvest priklad
 
     TODO: \cite{question-improv-foster}
 
@@ -779,6 +792,7 @@ hypernym found using WordNet). (TODO: uvest priklad)
 
 \noindent ---\\
 TODO: vzory pomoci syntaktickych stromu, z \cite{question-gen-ceist} (\textit{Ceist system})
+ale vymyslet vlastni priklad, ten jejich neobsahuje ukazku vyuziti stromu
 \\---
 
 \noindent ---\\
@@ -802,6 +816,12 @@ As an example, sentence "..." is tranformed into "...".
 TODO: semanticke: \cite{question-gen-mannem}, \cite{questions-eval}
 
   napr. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
+%\begin{code}
+%Pattern:
+%<*\arrowlinesplit*>
+%Question:
+%Answer:
+%\end{code}
 \\---
 
 Priklad patternu, ktery neni z cele vety, ale jenom z fraze \cite{mentor}:
@@ -861,7 +881,7 @@ This approach of transforming a single fact at a time was used in \textit{OntoQu
 OntoQue supports 3 types of exercises: multiple choice question, true/false and fill-in-the-blank.
 Fill-in-the-blanks are created simply by removing subject or object from the fact.
 Multiple-choice-questions are fill-the-blanks with 4 provided choices.
-As distractors, subjects of objects of the same class as the removed one are used.
+As distractors, subjects or objects of the same type as the removed one are used.
 Finally, true statements in true/false questions are just unmodified facts from the knowledge graph,
 while false statements are created by replacing subject or object for a different one (suitable alternative is found in the same way as the distractors for mulitple choice questions).
 
@@ -928,6 +948,7 @@ Question: <*\emph{Could hypothetically}*> subject1 <*\emph{meet}*> subject2 <*\e
 Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 \end{code}
 
+
 %\end{code}\\
 %\noindent $\downarrow$ maps to
 %\begin{code}
@@ -935,9 +956,6 @@ Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 
 
 [TODO: ukazka sparql dotazu a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, napr. Mohli se potkat?
-
-[Maybe TODO: neco citovat - mozna ty ontologie, mozna Heilman (phd)]
-[Maybe TODO: pristup s mezikrokem extrakce informaci (ale asi jen trochu, prozkoumat...): Heilman \cite{question-gen-heilman}]
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -986,10 +1004,14 @@ A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov,
 NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy). Common strategies for distractor selection are:
 \begin{myItemize}
 \item \textbf{Named entities from the text}\\
-  One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, named entities of the same type are chosen (e.g. if the correct answer is person, choose people as distractors). This approach was used in the Mentor \cite{mentor} and OntoQue \cite{ontoque}.
-If one term can have many types (which is the case in Smartoo), terms which has most types in common with the correct answer are selected.
+  One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, named entities of the same type are chosen (e.g. if the correct answer is person, choose people as distractors). This approach was used for example in the Mentor \cite{mentor}.
 As an alternative to common types, common context can be used to select appropriate distractors.
 Agarwal \cite{question-gen-textbooks} uses features such as comparison of words and their POS tags before and after the correct answer and the distractor or frequency of common words in the question sentence and a sentence with the distractor.
+
+\item \textbf{Subjects in the knowledge graph}\\
+In the knowledge graph, subjects play similar role as the named entities in the text.
+The difference is that usually one subject has many types TODO-example.
+Several strategies was proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a subject of the same type as the correct answer. If there are many of them, we can prefer those which have more common types.
 
 \item \textbf{Named entities from external sources}\\
   Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordNet, the ones which occur in the text are preffered.
@@ -1030,8 +1052,6 @@ The goal of the filtering is to discard questions which are:
 
 \end{myItemize}
 
-Filtering can be implemented via heurstics decisions
-or via a machine-learning based classifier.
 As an alternative to filtering, we can rank questions first and then select $N$ best questions
 (e.g. Mannem \cite{question-gen-mannem} selects $6$ best questions per a paragraph)
 [TODO: nekde vybiralo 15 procent nejlepsich otazek]
@@ -1039,23 +1059,23 @@ We can even separately rank various parameters of questions, such as probability
 (\autoref{sec:smartoo-exercises-grading}), because it allows to separate the task of estimating parameters and the task of deciding which question is best for the student right now,
 i.e. it allows to use adaptive practice.
 
+Both filtering and ranking can be implemented either via heurstics decisions
+or via a machine-learning based classifier.
+
+Priklad heuristic ranking \cite{question-gen-mannem}: primary criterion is depth of the predicate from which is the question generated (to penalize questions form subordinate clauses) and a number of pronouns as a secondary criterion.
+
+Heuristicke je ZREJME take DynaLearn \cite{question-gen-adapt-bayes}: selects question from a list of generated question based on its type (aims at variaty of asked question types) and difficulty.
 
 
-TODO: Prozkoumat clanek Question Generation via Overgenerating Transformations and Ranking (phd teze), pro mozne zduvodneni komponenty ExercisesGrader, hodnoceni (pro vyber 6 nejlepsich otazek na odstavec) je take v
-\cite{question-gen-mannem} a rozhodne: \cite{question-overgenerating-rating}
+Priklad ranking klasifikatoru: Heilman \cite{question-gen-heilman}: statisticky model pro question ranking (vyuziti strojoveho uceni)
+features: question length, which wh-word (who, where, when, ...) was used (if any), if it includes negation (not, never, no), number of proper nouns, pronouns, adjectives etc., likelihoods of a question would appear in the text based on unigram and trigram language model and some more feautures..
+
+
+TODO: \cite{question-overgenerating-rating}
 
 
 % ---------------------------  SECTION  ---------------------------
 \section{Dalsi temata, todo}
-\textbf{Generovani otazek s vyuzitim ontologii}
-
-- generovani otazek s vyuzitim ontologii:
-\cite{question-gen-domain-ontologies} -- popisuje ruzne strategie, jak z hotoveho grafu generovat otazky (coz je v nejjednodussim pripade proste vyber jednoho faktu) a k nim distraktory (i distraktory jen na urovni celych vet, zadani bylo vzdy "Choose the correct sentence"; priklady:
-- pro RDF trojici A-B-C vytvor distraktor A-B-D, kde D je typu, ktery je podtridou typu C
-- pro RDF trojici A-B-C, pokud je C numericka hodnota, vytvor distraktory jako nasobky (a podnasobky) dane hodnoty;
-
-
-..................
 
 Maybe TODO: podivat se na "question generation workshops and the shared task (in 2010)"
 http://questiongeneration.org/
