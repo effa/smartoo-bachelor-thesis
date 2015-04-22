@@ -22,7 +22,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 % packages for complex tables
-%\usepackage{tabularx}
+\usepackage{tabularx}
 %\usepackage{multirow}
 %\usepackage{dcolumn}
 %\usepackage{array}
@@ -149,7 +149,7 @@
   showstringspaces=false,
   escapeinside={<*}{*>},
   belowskip=0em,
-  %morekeywords={Question,Answer}
+  morekeywords={Pattern,Question,Answer,Filter}
   }}{}
 
 % define command for splitting listings into "from" and "to" part
@@ -199,6 +199,21 @@
 
 % gap in the sentence (bottom line)
 \newcommand{\sentenceGap}{\rule{1.5cm}{0.4pt}~}
+
+%--------------------------------------------------------------------
+% transformation examples
+%--------------------------------------------------------------------
+\newcommand{\transformationExample}[3]{%
+\vspace{-0.4em}
+\noindent %
+\begin{tabularx}{\linewidth}{@{} l X @{}}
+Sentence: & \emph{#1}\\
+Question: & \emph{#2}\\
+Answer:   & \emph{#3}\\
+  \hline
+\end{tabularx}
+%\vspace{0.2em}
+}
 
 %--------------------------------------------------------------------
 
@@ -662,7 +677,7 @@ remove useless sentances, modify (rephrase) sentences or even create different (
 %which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
 \begin{myItemize}
   \item \textbf{Parsing}\\
-    (je otazka, jestli to nemit az v nasledujici sekci.. kde to uz je)
+    asi jen strucne + odkaz na nasledujici sekci, kde to bude rozebrano podrobneji (hodi se to tam vic)
   rozdeleni na vety a shallow parsing (POS tagging, lemmetization), prip. zjistovani celych syntaktickych stromu,
   pripadne zjistovani senatic role labels
 
@@ -711,7 +726,8 @@ Some of the features used in his classifier were:
 
     Konkretne: \cite{question-gen-heilman}: rozdeleni slozene vety na jednoduche, vynechani nedulezitych extra informaci (napr. zavorky nebo non-restrictive appositives (Jeffereson, the third president of the United States, ...), pronoun resolution (difficult...), ale aspon uvest priklad
 
-    TODO: \cite{question-improv-foster}
+    TODO: o tom jak rozdelit complex sentences na seriii simple unambiguous sentences
+    using Controlled Rhetorical Structure theory \cite{question-improv-foster}
 
   \item \textbf{Knowledge extraction}\\
     Another strategy is not to create questions directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (as described in \autoref{sec:relations-extraction}).
@@ -719,7 +735,7 @@ Some of the features used in his classifier were:
 \end{myItemize}
 
 
-TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 Wolfe, 6 taky nekde bylo) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal \cite{question-gen-textbooks}). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
+TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 \cite{questions-wolfe}, 6 \cite{question-gen-mannem}) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal \cite{question-gen-textbooks}). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
 
 
 
@@ -729,8 +745,8 @@ TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno
 \section{Sentence transformations}
 \label{sec:sentence-transformations}
 
-Most question generation tools try to create questions directly from the text without the knowledge extraction step.
-Usually, the system considers every sentence in the text one by one
+Most question generation tools create questions directly from the text without the knowledge extraction step.
+Usually, the system considers every sentence one by one
 and tries to transform it to a question.
 %\cite{question-gen-mitkov, question-gen-connectives} [TODO: doplnit dalsi citace].
 Unless the filtering in the pre-processing step is extensive,
@@ -739,100 +755,123 @@ but this issue can be solved later by questions ranking and post-filtering
 (\autoref{sec:questions-ranking-filtering}).
 
 \textit{Transformation rules} describe how to create a question-answer pair from a sentence
-which satisfies a given pattern, such as "The sentence starts with a term followed by a verb and an object."
+which satisfies a given pattern,
+such as \textit{The sentence starts with a term followed by a verb and an object}.
 These transformation rules may be either hard-coded into the program (\textit{imperative rules})
 \cite{questions-wolfe, question-overgenerating-rating, question-gen-connectives}
 or stored in the external templates (\textit{declarative rules})
 \cite{question-gen-ceist, questions-eval}.
-The latter case is more difficult to implement, but it allows for simple modification of transformation rules and addition of new ones.
+The latter case is more difficult to implement, but it allows for a simple modification of transformation rules and addition of new ones.
 
 Patterns may be defined on syntactic or semantic level.
-Many approaches are somewhere in between these two extremes and use some basic information about the meaning of  sentences (such as which words denotes terms), but do not rely on complete semantic roles labelling. Syntactic information used in patterns include: [maybeTODO: citace]
+Many approaches are somewhere in between these two extremes and use some basic information about the meaning of  sentences (such as which words denotes terms), but do not rely on complete semantic roles labelling. Syntactic information used in patterns include:
   \begin{myItemize}
     \item words in the sentence, such as "chairs", "are", "brown",
       or their canonical forms (\textit{lemmas}), e.g. "chair", "be", "brown".
     [TODO: ke vsem polozkam jeden konzistentni priklad, overit pomoci NLTK]
   \item \textit{part-of-speech tags} -- lexical categories (also known as word classes) of the word, such as noun, verb, adjective or determiner,
   \item \textit{syntax tree} of the sentence [TODO: rozvest, priklady frazi].
+        MaybeTODO: odkaz na Tregex, Tsurgeon
   \end{myItemize}
 Semantic information which can be used to define patterns: [maybeTODO: citace]
   \begin{myItemize}
     \item named entities, and their types (pomoci named entity recognition -- odkaz),
-    \item semanticke vztahy mezi slovy (hypernym, coordinate etc.) -- pomoci Wordnetu (co to je a citace, jiz nekde v kapitole Knowledge),
-    \item semantic role labels (agent, patient, ...)  ... priklady z clanku... a citace.
+    \item semanticke vztahy mezi slovy (hypernym, coordinate etc.) -- pomoci Wordnetu (co to je a citace, jiz nekde v kapitole Knowledge), prip. vztahy mezi pojmy v knowledge base such as DBpedia
+    \item semantic role labels: agent, patient, cause, purpose, manner, locative or temporal argument etc.
   \end{myItemize}
-
-[MaybeTODO: obrazek syntaktickeho stromu; demo shallow parsingu -- idealne srovnani techto dvou]
-
-[MaybeTODO: citace konkretnich pripadu]
 
 
 \subsection*{Examples of transformation rules}
-TODO: projit clanky a vytahnout ukazky ruznych (syntaktickych) patternu
 
-TODO: projit clanky a vytahnout ukazky ruznych semantickych) patternu
-
-
-\noindent ---\\
-TODO vzory z Wolfe, 70. leta, \textit{AutoQuest} \cite{questions-wolfe};
-\\---
-
-\noindent ---\\
-Priklad [TODO: usporadat a vhodne okomentovat, a taky ocitovat]:
-
+Thi simplest pattern is for the fill-in-the-blank questions
+(used for example by Agarwal and Mannem \cite{question-gen-textbooks}):
 \begin{code}
-Pattern: subject verb object .
+Pattern: beforeTerm term afterTerm.
 <*\arrowlinesplit*>
-Question: <*\emph{Which}*> hypernym(subject) verb object <*\emph{?}*>
+Question: beforeTerm <*\sentenceGap*>afterTerm
+Answer: term
+\end{code}
+\transformationExample%
+{The Southern Chinese martial art Hung Ga is based on the movements of the tiger and the crane.}%
+{The Southern Chinese martial art \sentenceGap is based on the movements of the tiger and the crane.}%
+{Hung Ga}
+
+As an typical example of a mostly syntactic approach (with a little bit help of the semantics)
+\cite{question-gen-mitkov}:
+\begin{code}
+Pattern: [NP subject] [VP verb] [NP object].
+<*\arrowlinesplit*>
+Question: <*\emph{Which}*> hypernym(subject) verb object<*\emph{?}*>
 Answer: subject
 \end{code}
-hypernym found using WordNet). (TODO: uvest priklad)
-\cite{question-gen-mitkov}
-\\---
-
-\noindent ---\\
-TODO: vzory pomoci syntaktickych stromu, z \cite{question-gen-ceist} (\textit{Ceist system})
-ale vymyslet vlastni priklad, ten jejich neobsahuje ukazku vyuziti stromu
-\\---
-
-\noindent ---\\
-TODO: vzory souveti (spojky): delal jsem taky neco podobneho loni (napr. X because Y), ze par prikladu, neco bylo ve Wolfe (autoquest), dale semanticky v \cite{question-gen-connectives}
-(connectives: beacuse, since, when, although, as a result, for example, for instance)
-
-\begin{code}
-Pattern: A, <*\emph{because}*> B.
-<*\arrowlinesplit*>
-Question: <*\emph{Why}*> questionForm(A) <*\emph{?}*>
-Answer: Because B.
-\end{code}
-Function \texttt{questionFom} searches for an auxiliary verb in A and if it finds one, it moves the auxiliary verb to the beginning of the sentence. If there is no auxiliary verb in the sentence, it adds appropriate auxiliary verb to the beginning of the sentence based on the tense of the main verb and the main verb is substituted for its infinitive (without to).  TODO: priklad
-
-Problem: spatne se hledaji distraktory.
-As an example, sentence "..." is tranformed into "...".
+\transformationExample{Logic studies reasoning.}{Which discipline studies reasoning?}{logic}
 
 
-
-\noindent ---\\
-TODO: semanticke: \cite{question-gen-mannem}, \cite{questions-eval}
-
-  napr. \texttt{What |verb| |patient| |location|?} with answer being \texttt{agent} atp., taky. specifikuji semanticou roli, kterou zastava odpoved atp.
-%\begin{code}
-%Pattern:
-%<*\arrowlinesplit*>
-%Question:
-%Answer:
-%\end{code}
-\\---
-
-Priklad patternu, ktery neni z cele vety, ale jenom z fraze \cite{mentor}:
+Priklad patternu, ktery neni z cele vety, ale jenom z fraze \cite{mentor}
+a vyuziva type of named entity
 \begin{code}
 Pattern: [NP object] [VBN predicate] <*\emph{by}*> [Human subject]
 <*\arrowlinesplit*>
-Question: <*\emph{Who}*> pastTense(predicate) object <*\emph{?}*>
+Question: <*\emph{Who}*> pastTense(predicate) object<*\emph{?}*>
 Answer: subject
 \end{code}
-Example: from phrase "Hamlet, written by Shakespeare" will be created question "Who wrote hamlet?" with the answer "Shakespear"
+\transformationExample%
+{... Hamlet, written by Shakespeare ...}%
+{Who wrote Hamlet?}%
+{Shakespeare}
 
+Patterns based on connectives (beacause, so that, since, when, for example, ...) \cite{question-gen-connectives, questions-wolfe}:
+\begin{code}
+Pattern: A, <*\emph{because}*> B.
+<*\arrowlinesplit*>
+Question: <*\emph{Why}*> questionForm(A)<*\emph{?}*>
+Answer: Because B.
+\end{code}
+\transformationExample%
+{Photosynthesis is important, because it produces oxygen.}%
+{Why is photosynthesis important?}%
+{Because it produces oxygen.}
+
+\noindent
+Function \texttt{questionForm(A)} searches for an auxiliary verb in \texttt{A} and if it finds one, it moves the auxiliary verb to the front.
+If there is no auxiliary verb in the sentence, it adds appropriate auxiliary verb to the beginning of the sentence based on the tense of the main verb and the main verb is substituted for its base form (bare infinitive).
+If the main verb \emph{to be} (as in our example), it is moved to the front without adding any auxiliary verb.
+
+
+Example of pattern using semantic role labels \cite{question-gen-mannem, questions-eval}:
+\begin{code}
+Pattern: <*\emph{By}*> manner, agent predicate patient.
+Filter: manner <*\emph{contains gerundium}*>
+<*\arrowlinesplit*>
+Question: <*\emph{How}*> questionForm(agent, predicate) patient<*\emph{?}*>
+Answer: <*\emph{by}*> manner
+\end{code}
+\transformationExample%
+{By reducing problem X to the halting problem, one can show undecibility of the problem X.}%
+{How can one show undecibility of the problem X?}%
+{by reducing problem X to the halting problem}
+
+Even more sophisticated patterns can be created using syntax trees \cite{question-gen-ceist, question-overgenerating-rating}.
+
+\subsection*{Automatic patterns discovery}
+In most tools, transformation rules were created manually.
+However, machine learning can be put into use to discover them automatically.
+\textit{The-Mentor} system \cite{mentor}
+uses a machine learning technique of \textit{bootstrapping} \cite{question-answering-bootstrapping},
+together with the \textit{QuestionBank}, a corpus of 4000 parse-annotated questions \cite{question-bank},
+and the amount of the information on the Web via \textit{Google} search
+to find syntactic patterns automatically from a few question-answer seed pairs.
+They have discovered more then 1000 unique patterns, which is many more then tools with manually created patterns use. This allows for more specific patterns, such as the following:
+\begin{code}
+Pattern: [NP subject] [VBD aux] [VBN verb] <*\emph{in}*> [Location:Country X].
+<*\arrowlinesplit*>
+Question: <*\emph{In which country}*> aux subject verb<*\emph{?}*>
+Answer: X
+\end{code}
+\transformationExample%
+{Pablo Picasso was born in Spain.}%
+{In which country was Pablo Picasso born?}%
+{Spain}
 
 \subsection*{Correct answer selection}
 There might be more possible transformations from a sentence to a question-answer pair.
@@ -844,24 +883,6 @@ Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifi
 \item is contained in the headline? (binary feature),
 \item depth of the word in the parse tree of the sentence.
 \end{myItemize}
-
-\subsection*{Automatic patterns discovery}
-In most tools, transformation rules were created manually.
-However, machine learning can be put into use to discover them automatically.
-\textit{The-Mentor} system \cite{mentor}, created by Technical University of Lisbon,
-uses a machine learning technique of \textit{bootstrapping} \cite{question-answering-bootstrapping},
-together with the \textit{QuestionBank}, a corpus of 4000 parse-annotated questions \cite{question-bank},
-and the amount of the information on the Web via \textit{Google} search
-to find syntactic patterns automatically from a few question-answer seed pairs.
-They have discovered more then 1000 unique patterns, which is many more then tools with manually created patterns use. This allows form more specific patterns, such as the following:
-\begin{code}
-Pattern: [NP subject] [VBD aux] [VBN verb] <*\emph{in}*> [Location:Country X].
-<*\arrowlinesplit*>
-Question: <*\emph{In which country}*> aux subject verb<*\emph{?}*>
-Answer: X
-\end{code}
-Example: sentence "Pablo Picasso was born in Spain." will be transformed to the quesiton "In which country was Pablo Picasso born?
-
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -1023,6 +1044,7 @@ Several strategies was proposed to select the most competitive distractors in th
 \end{myItemize}
 
 
+MaybeTODO: spatne se hledaji distraktory pro clauses (napr. pri why - because questions)
 
 
 
@@ -1032,7 +1054,7 @@ Several strategies was proposed to select the most competitive distractors in th
 
 Common strategy in the question generation tools
 is to overgenerate questions and then filter them
-\cite{mentor, question-gen-mannem, question-overgenerating-rating}.
+\cite{mentor, question-gen-mannem, question-overgenerating-rating, questions-wolfe}.
 The goal of the filtering is to discard questions which are:
 
 \begin{myItemize}
@@ -1061,6 +1083,9 @@ i.e. it allows to use adaptive practice.
 
 Both filtering and ranking can be implemented either via heurstics decisions
 or via a machine-learning based classifier.
+
+Priklad heuristickeho filtru \cite{questions-wolfe}:
+vyrad question-answer pair, pokud plati alespon 1 z nasledujicich: "otazka nebo odpoved ma vice nez 17 slov, otazka obsahuje slovo "and", prvni slovo odpovedi je relative pronoun or subordiante conjunction", otazka obsahuje carku", etc.
 
 Priklad heuristic ranking \cite{question-gen-mannem}: primary criterion is depth of the predicate from which is the question generated (to penalize questions form subordinate clauses) and a number of pronouns as a secondary criterion.
 
