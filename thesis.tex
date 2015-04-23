@@ -53,6 +53,9 @@
 	%block=ragged, 			% format bibliography into blocks, ragged on right
 ]{biblatex}
 \addbibresource{thesis.bib}
+% break long urls
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
 
 % setting custom colors for links
 \usepackage{xcolor}
@@ -289,7 +292,7 @@ multiple choice questions
 
 TODO: intro, goal of the thesis (dodelat podle oficialniho zadani / abstraktu)
 
-Mere repeated reading of the text which one is traying to learn is unefficient method of learning, while answering to related questions leads to [better long-term knowledge / dlouhodobemu zapamatovani] \parencite{edu-improve}.
+Mere repeated reading of the text which one is traying to learn is unefficient method of learning, while answering to related questions leads to [better long-term knowledge / dlouhodobemu zapamatovani] \parencite{edu-improve} taky mozna citovat \cite{adaptive-practice}
 
 TODO: 2 ruzne cile: procvicovani (uceni) tematu vs. testovani; i pri procvicovani tematu muzu chtit i to testovani (abych vedel, jak na tom jsem) (budu se venovat obema (?) a v implementovanem systemu to bude nekde na pomezi)
 
@@ -1111,7 +1114,10 @@ Heilman \cite{question-gen-heilman} trained a machine learning-based classifier 
 
 TODO popis stavu: mame vygenerovane otazky (prip. i s ohodnocenim?), ted je chceme studentovi predkladat, v nasem settings: obvykle mame spousty otazek (destiky nebo stovky) ale predlozit jich ma cenu je nekolik (napr. 10 nebo 20, prip. dalsi na zadost uzivatele) ... je tedy dulezite umet vybrat ty nejvice pro studenta relevantni otazky a zaroven vyvazovat prumernou uspesnost (pokud by uzivatel nevedel nikdy spravnou odpoved, tak by ho to deprimovalo)
 
+proc adaptive practice: flow \cite{flow}, the sweet spot of learning", (not too easy, not too hard), balance between boredom (apathy) and frustration \cite{adaptive-practice}
+
 TODO: trochu jine podminky jsou, pokud jsou otazky (nebo aspon fakta) vytvoreny predem (napr. slepe mapy), ale i tam nas samozrejme zajima adaptabilni procvicovani a mnohe z nasledujiciho se vztahuje k obema pripadum
+... kdyz mam dopredu otazky/fakta, muzu se podrobneji zamerit na odhad obtiznosti faktu/otazek a ne prubeznem vylepsovani jeho znalosti (spaced reptition) danym studentem. My jsme v odlisne situaci, vygenerovali jsme NOVE otazky, nic o nich nevime, o studentovi nejspis taky nic nevime: co muzeme delat: snazit se odhadnout global skill studenta co nejpresneji behem co nejmene otazek a davat mu pak takove, na ktere bude mit idealni pravdedpodbnost spravne odpovedi, tj. aby ho to udrzelo ve flow
 
 TODO o co jde: poskytovani tech otazek, ktere jsou pro uzivatele co nejuzitecnejsi ... tj. zamereni na to, co student jeste moc dobre neumi, ale na druhou stranu vyvazovat uspesnost (pokud by uzivatel nevedel na zadnou otazku spravnou odpoved, tak by ho to deprimovalo.
 
@@ -1196,7 +1202,7 @@ Kriteria, ktera jsou dulezita pro vyber vhodne otazky:
 
 \begin{myItemize}
   \item relevance -- obecne relevance pro studenta, v nasem kontextu hlavne relevance k danemu tematu, v jinem to muze znamenat vice aktualni relevanci - co zrovna ted potrebuje student procvicit nejvice (least known concept -- napr. \cite{question-gen-adapt-bayes} ... neni potreba uplne resit pokud cekam, ze tam bude uzivatel dost dlouho a casem se dostnane ke vsemu)
-  \item difficulty -- pro testovani je nejvhodnejsi, pokud je pravdepodobnost spravne odpovedi 50 procent (takova otazka pak poskytuje nejvice informaci o studentovych znalostech), ale pro procvicovani je je 50 procent uz dost malo a pusobi spise deprimacne, takze je dobre mirit vyse (napr. ve slepych mapach je 75 procent, zase by se hodil nejaky odkaz), rozhodne ne zas moc lehke, je to potreba vybalancovat (flow).
+  \item difficulty -- pro testovani je nejvhodnejsi, pokud je pravdepodobnost spravne odpovedi 50 procent (takova otazka pak poskytuje nejvice informaci o studentovych znalostech), ale pro procvicovani je je 50 procent uz dost malo a pusobi spise deprimacne, takze je dobre mirit vyse (napr. ve slepych mapach je 75 procent \cite{slepe-mapy-motivation}), rozhodne ne zas moc lehke, je to potreba vybalancovat (flow).
   \item variability -- to muze v ruznych kontextech znamenat ruzne veci, napr. stridat typy otazek, nebo neptat se na jeden pojem 2 krat za sebou (i kdyz jinou otazkou)
 \end{myItemize}
 
@@ -1526,8 +1532,12 @@ are given by the behavior parameters.
 Target difficulty is not exactly $(1 - \tau)$ as it is adjusted according to
 so far success of the user -- if the correct ratio of the user is higher than the target success,
 the target difficulty is set higher than $(1 - \tau)$ and vice versa.
-(TODO: odkaz na experimenty na slepych mapach, kde se tohle ukazalo jako uzitecne)
+(experimenty na slepych mapach ukazali statistickou vyznamnost vylepseni pri zaplem dynamic adjustment of target succes \cite{slepe-mapy-motivation})
 (TODO: konkretni vzorec podle zdrojaku)
+
+NOTE: global target success je stejne jako ve slepych mapach \cite{slepe-mapy-motivation}
+NOTE: funkce, podle ktere obtiznost upravuji (graf) \cite{slepe-mapy-motivation}
+... "dynamic adjustment", stejne jako ja pouzivaji ve slepych mapach "student’s recent performance (as a measure of recent performance we use the success rate on the last ten questions)."
 
   \item Repetitiveness penalization is based on the cosine similarity between the scored exercise and the exercises already used in the current session
 (see \autoref{sec:smartoo-exercises-grading} for the explanation and formula of the cosine similarity).
