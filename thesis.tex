@@ -624,17 +624,15 @@ Some systems proved to be usable in the offline mode, in which a teacher submits
 \cite{question-gen-mitkov}.
 
 Although the chapter is called \textit{question generation},
-it is possible to create more complex exercises as well [see TODO: odkazat na sekci, kde bude nejaka ukazka, asi ve future plans].
-Broader range of exercises is especially usefull if we want not only to assess one's knowledge, but rather to deep his or her remembering and understanding of the text, because for people to remember something it must  entertain them and to entertain them it must be diverse. [MaybeTODO: toto tvrzeni by se mohlo citovat, ale neni nutne].
-But all the systems I came accross generated only questions, most often multiple choice questions.
-%This is understandable as firstly it is easier to work with (multiple choice) questions only
-%and secondly it is easier for evaluation [TODO: dovysvetlit, rozepsat].
-
+it is possible to create more complex exercises as well.
+Broader range of exercises is especially usefull if we want not only to assess one's knowledge, but rather to deep his or her remembering and understanding of the text,
+because for people to remember something it must  entertain them and to entertain them it must be diverse.
+However, all the systems I came accross generated only questions, most often multiple choice questions.
 \textit{Multiple choice questions} consists of a question text (called \textit{stem})
 and a few (e.g. four) \textit{choices}, from which one is the \textit{correct answer}
 and the rest are incorect alternatives (called \textit{distractors}).
 Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question},
-in which the stem is a sentence with a blank space which should be filled by the correct answer.
+in which the stem is a sentence with a blank space which should be filled with the correct answer.
 
 Although the approaches to the question generation are diverse,
 some common tasks can be identifed throughout the systems.
@@ -659,7 +657,7 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 \end{myEnumerate}
 
 % ---------------------------  SECTION  ---------------------------
-\section{Text pre-processing}
+\section{Text Pre-processing}
 \label{sec:text-pre-processing}
 
 Usually, the text of the document is pre-processed in some way before it is used for question generation.
@@ -672,22 +670,24 @@ remove useless sentances, modify (rephrase) sentences or even create different (
 %Furthermore, we can distinguish between \textit{strongly conservative pre-processing},
 %which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
 \begin{myItemize}
-  \item \textbf{Parsing}\\
-    asi jen strucne + odkaz na nasledujici sekci, kde to bude rozebrano podrobneji (hodi se to tam vic)
-  rozdeleni na vety a shallow parsing (POS tagging, lemmetization), prip. zjistovani celych syntaktickych stromu,
-  pripadne zjistovani senatic role labels
+  \item \textbf{Parsing and labelling}\\
+    The text is split into sentences and each sentence is tokenized (\emph{tokens} are words and puctuation).
+    Afterwards, each sentence might be \emph{parsed} (its syntax tree is built) or at least \textit{shallowed parsed} (each token is assigned a part-of-the-speech tag),
+    named entities recognition might be performed or even semantic role labelling
+    (see \autoref{sec:sentence-transformations} for deatils).
 
   \item \textbf{Filtering}\\
-    The goal of the filtering is to discard sentences whitch are not relevant to the article or has not enough context to generate a question from them.
+    The goal of the filtering is to discard sentences which are not relevant to the article or has not enough context to generate a question from them.
+    Typical example of sentence without sufficent context are \emph{anaphoric references},
+    i.e. referring back to something mentioned earlier in the text.
+    For example, in the sentence \emph{He was the 16th President of the United States.},
+    the word \emph{he} refers to \emph{Abraham Lincoln}.
 
-    TODO: priklad problemu nedostatku kontextu - problem anafory (popsat o co jde, uvest priklad)
-
-  Some possible heuristics to detect which sentences are of no use \cite{questions-wolfe}:
+  Some possible heuristics to detect which sentences cannot be used to generate good questions \cite{questions-wolfe}:
   \begin{itemize}
-  \item too long sentence (e.g. more than 35 words),
-  \item contains colon,
-  \item start with a verb,
-  \item TODO...
+  \item sentence is too long(e.g. more than 35 words),
+  \item contains demonstrative word (such as \emph{this} and \emph{that}),
+  \item starts with a verb.
   \end{itemize}
 
   Instead of heuristics, we can use more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context to a question being generated from them. This approach was tested by Agarwal \cite{question-gen-textbooks}.
@@ -700,45 +700,32 @@ Some of the features used in his classifier were:
   \item contains superlativum? (binary feature).
   \end{itemize}
 
+%TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 \cite{questions-wolfe}, 6 \cite{question-gen-mannem}) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal \cite{question-gen-textbooks}). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
 
-  \item \textbf{Text trasnformations}\\
+  \item \textbf{Text rephrasing}\\
     Ideal text for question generation would contain exactly one fact in one sentence,
     but in reality most of the sentences are either too complex (consisting of many clauses)
-    or they are lacking important context (e.g. due to using pronouns).
-    We might want to transform (rephrase) the original text into simple factual sentences.
+    or they lack important context (e.g. due to using pronouns).
+    We might want to transform (rephrase) the original text into simple factual sentences
+    \cite{question-gen-heilman,question-improv-foster},
+    for example split complex sentences into simple ones,
+    remove unimportant information (such as content of brackets)
+    and resolve anaphoras.
 
-    TODO: napr. anaphora resolution, par ukazek
-    What might help:
-    \begin{itemize}
-    \item anaphora resolution,
-    \item compression of long sentences,
-    \item splitting of long sentences,
-    \item text summarization,
-    \item paraphrasing,
-    \item textual entailment.
-    \end{itemize}
+    %Konkretne: \cite{question-gen-heilman}: rozdeleni slozene vety na jednoduche, vynechani nedulezitych extra informaci (napr. zavorky nebo non-restrictive appositives (Jeffereson, the third president of the United States, ...), pronoun resolution (difficult...), ale aspon uvest priklad
 
-    Anaphora resolution example: TODO
-
-    Konkretne: \cite{question-gen-heilman}: rozdeleni slozene vety na jednoduche, vynechani nedulezitych extra informaci (napr. zavorky nebo non-restrictive appositives (Jeffereson, the third president of the United States, ...), pronoun resolution (difficult...), ale aspon uvest priklad
-
-    TODO: o tom jak rozdelit complex sentences na seriii simple unambiguous sentences
-    using Controlled Rhetorical Structure theory \cite{question-improv-foster}
+    %TODO: o tom jak rozdelit complex sentences na seriii simple unambiguous sentences
+    %using Controlled Rhetorical Structure theory \cite{question-improv-foster}
 
   \item \textbf{Knowledge extraction}\\
     Another strategy is not to create questions directly from the text, but rather from a knowledge graph built from the article by the process of knowledge extraction (as described in \autoref{sec:relations-extraction}).
-[TODO: vyhody, nevyhody]
 \end{myItemize}
-
-
-TODO: poznamka o \textit{content selection}, ze to nemusi byt vzdy skoro vsechno, ale treba jen 1 nebo 6 otazek na odstavec (1 \cite{questions-wolfe}, 6 \cite{question-gen-mannem}) nebo muzeme rovnou hledat pomoci klasifikatoru pouze nejrelevatnejsi vety (Agarwal \cite{question-gen-textbooks}). Ale vetsinovy pristup je otazky nadgenerovat a filterovat pozdeji.
-
 
 
 % ---------------------------  SECTION  ---------------------------
 %\section{Question Formation}
 %\label{sec:question-formation}
-\section{Sentence transformations}
+\section{Sentence Transformations}
 \label{sec:sentence-transformations}
 
 Most question generation tools create questions directly from the text without the knowledge extraction step.
@@ -1002,7 +989,7 @@ Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Distractor selection}
+\section{Distractor Selection}
 \label{sec:distractors}
 
 It is important to present a multiple-choice question with competitive \textit{distractors}.
@@ -1262,7 +1249,7 @@ Time ordering of the signals and processes is showed in \autoref{fig:client-serv
 \end{figure}
 
 % ---------------------------  SECTION  ---------------------------
-\section{Behaviors selection}
+\section{Behaviors Selection}
 \label{sec:smartoo-behaviors-selection}
 
 Each session has assigned a \textit{performance} which is computed as a weighted sum of the user final rating and the number of exercises marked as invalid or irrelevant. [Maybe TODO: presny vzorec]
@@ -1305,9 +1292,8 @@ Some text preprocessing is performed, e.g. sections without useful content, such
 Then the article is parsed into sentence trees with marked terms occurences.
 
 \subsection*{Shallow Parsing}
-Text is split into sentences and each sentence is tokenized (tokens are words, but also puctuation).
-    Each token is assigned \textit{part-of-speech tag}.
-    Part-of-speech tag denotes lexical category (also known as word class) of the word, such as noun, verb, adjective or determiner. [TODO: upravit, tohle uz jsem zminit drive v chap:question-generation/sec:sentence-transformations, asi odkaz do prislusne sekce]
+Text is split into sentences, each sentence is tokenized
+and each token is assigned part-of-speech tag (\autoref{sec:sentence-transformations}).
     For these natural language processing tasks I have used the \textit{NLTK} (Natural Language Toolkit) library \cite{nlp-python}. NLTK uses \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset}.
 
 \begin{table}[h]
