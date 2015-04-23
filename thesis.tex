@@ -148,7 +148,7 @@
   showspaces=false,
   showstringspaces=false,
   escapeinside={<*}{*>},
-  belowskip=0em,
+  belowskip=0.2em,
   morekeywords={Pattern,Question,Answer,Filter}
   }}{}
 
@@ -188,12 +188,14 @@
 \newenvironment{question}
 {
   \begin{center}
+  \vspace{-0.5em}
   \begin{tabular}{p{0.9\textwidth}}
-  \vskip 0.05em
+  %\vskip 0.05em
 }
 {
   \\
   \end{tabular}
+  \vspace{-1em}
   \end{center}
 }
 
@@ -204,7 +206,7 @@
 % transformation examples
 %--------------------------------------------------------------------
 \newcommand{\transformationExample}[3]{%
-\vspace{-0.4em}
+\vspace{-0.5em}
 \noindent %
 \begin{tabularx}{\linewidth}{@{} l X @{}}
 Sentence: & \emph{#1}\\
@@ -294,7 +296,7 @@ TODO: 2 ruzne cile: procvicovani (uceni) tematu vs. testovani; i pri procvicovan
 TODO: neco o tom, ze vytvaret testy manualne je time-consuming, takze by bylo fajn to autmatizovat
 
 In spite of active and [dlouhodoby nebo tak neco] research of question generation
-(e.g. \parencite{questions-wolfe, questions-eval}) [mozna pridat dalsi, pripadne rozepsat - priklad early research a recent research],
+(started already in 1970s \parencite{questions-wolfe} and [hodne pozornosti po roce 2000, jako ilustraci 2009 Qustion Generation Shared Task \cite{shared-task2009}).
 there is still no publicly available web application to solve this task.
 And I am sure that such application would be really useful. Typical example is to make self-studying more efficient by answering a few generated questions after reading an article to verify and consolidate the new knowledge.
 [overit aktualnost a jasne urcit moment o kterem mluvim (neexistuje tady a ted)]
@@ -608,19 +610,17 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
 \chapter{Question Generation}
 \label{chap:exercises}
 
-In this chapter I describe state-of-the-art int the field of question generation .
+In this chapter I describe the state-of-the-art in the field of question generation.
 First question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
 and up to now (2015), several approaches to the task of question generation were proposed.
-Every system use different approach and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target group and use different evaluation metrics.
+Every system use different methods and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target groups and use different evaluation metrics.
 For example some systems try to assess vocabulary \cite{question-gen-vocabulary}
 or reading comprehension \cite{question-overgenerating-rating},
 some focus on factual texts \cite{question-gen-heilman}
-and sometimes authors choose only one specific field or topic, such as linguistic \cite{question-gen-mitkov}
-or biology \cite{question-gen-textbooks} [TODO: doplnit zamereni ostatnich clanku].
-[TODO: o snaze v poslednich letech tento problem resit - shared task....]
+and sometimes authors use for evalution only a single textbook or a topic, such as linguistic \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
 
-Juding by reported performances of the systems, question generation is still very difficult task in the natural language processing and there is plenty of room for improvements or even completely new ideas.
-Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system, it outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Hopefully there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually
+Juding by reported performances of the systems, question generation is still open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
+Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system, it outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Ideally, there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually
 \cite{question-gen-mitkov}.
 
 Although the chapter is called \textit{question generation},
@@ -630,16 +630,14 @@ But all the systems I came accross generated only questions, most often multiple
 %This is understandable as firstly it is easier to work with (multiple choice) questions only
 %and secondly it is easier for evaluation [TODO: dovysvetlit, rozepsat].
 
-\textit{Multiple choice questions} (MCQ) consists of a question text (called \textit{stem})
+\textit{Multiple choice questions} consists of a question text (called \textit{stem})
 and a few (e.g. four) \textit{choices}, from which one is the \textit{correct answer}
-and the rest are incoreect alternatives (called \textit{distractors}).
-Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question} (FMCQ),
-in which the stem is simply sentence with a blank space to which the correct answer should be put [preformulovat].
+and the rest are incorect alternatives (called \textit{distractors}).
+Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question},
+in which the stem is a sentence with a blank space which should be filled by the correct answer.
 
-%Maybe TODO: MCQ -- ze jsou oblibene, maji sve vyhody a nevyhody, vyjmenovat
-
-There are many approaches to the question generation,
-but some common tasks can be identifed throughout the systems.
+Although the approaches to the question generation are diverse,
+some common tasks can be identifed throughout the systems.
 The general worklow has the following 5 steps, although some of them may be missing in some systems.
 \begin{myEnumerate}
 \item First, text of the article is pre-processed.
@@ -656,11 +654,9 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 \item In case of multiple choice questions, suitable distractors (incorrect alternatives) need to be selected
 (\autoref{sec:distractors}).
 
-\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end. Instead of filtering, we can rank the questions and use some number of questions with the highest rank
-(\autoref{sec:questions-ranking-filtering}).
+\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end. Instead of direct filtering, we can rank the questions and either select some number of questions with the highest rank
+  (\autoref{sec:questions-ranking-filtering}) or employ adaptive practice (\autoref{chap:practice}).
 \end{myEnumerate}
-
-[TODO: projit text a clanky o gen. otazek a doplnit citace (a prip. podrobnosti, plus kontrola)]
 
 % ---------------------------  SECTION  ---------------------------
 \section{Text pre-processing}
@@ -754,6 +750,16 @@ considering every sentence may lead to questions which are not much relevant,
 but this issue can be solved later by questions ranking and post-filtering
 (\autoref{sec:questions-ranking-filtering}).
 
+There might be more possible transformations from a sentence to a question-answer pair.
+Instead of generating all possible questions from the sentence (or picking one of them by random),
+we might select a word from the sentence which would be the correct answer as a first step and then generate a question from the rest of the sentence as a second step.
+Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifier to select the most important word in the sentence. For the classification he used the following three features.
+\begin{myItemize}
+\item number of occurences of the word in the document,
+\item is contained in the headline? (binary feature),
+\item depth of the word in the parse tree of the sentence.
+\end{myItemize}
+
 \textit{Transformation rules} describe how to create a question-answer pair from a sentence
 which satisfies a given pattern,
 such as \textit{The sentence starts with a term followed by a verb and an object}.
@@ -764,27 +770,52 @@ or stored in the external templates (\textit{declarative rules})
 The latter case is more difficult to implement, but it allows for a simple modification of transformation rules and addition of new ones.
 
 Patterns may be defined on syntactic or semantic level.
-Many approaches are somewhere in between these two extremes and use some basic information about the meaning of  sentences (such as which words denotes terms), but do not rely on complete semantic roles labelling. Syntactic information used in patterns include:
-  \begin{myItemize}
-    \item words in the sentence, such as "chairs", "are", "brown",
-      or their canonical forms (\textit{lemmas}), e.g. "chair", "be", "brown".
-    [TODO: ke vsem polozkam jeden konzistentni priklad, overit pomoci NLTK]
-  \item \textit{part-of-speech tags} -- lexical categories (also known as word classes) of the word, such as noun, verb, adjective or determiner,
-  \item \textit{syntax tree} of the sentence [TODO: rozvest, priklady frazi].
-        MaybeTODO: odkaz na Tregex, Tsurgeon
-  \end{myItemize}
-Semantic information which can be used to define patterns: [maybeTODO: citace]
-  \begin{myItemize}
-    \item named entities, and their types (pomoci named entity recognition -- odkaz),
-    \item semanticke vztahy mezi slovy (hypernym, coordinate etc.) -- pomoci Wordnetu (co to je a citace, jiz nekde v kapitole Knowledge), prip. vztahy mezi pojmy v knowledge base such as DBpedia
-    \item semantic role labels: agent, patient, cause, purpose, manner, locative or temporal argument etc.
-  \end{myItemize}
+Many approaches are somewhere in between these two extremes and use syntactic and a little bit of semantic information (such as which words denotes terms), but do not rely on complete semantic roles labelling. Syntactic information used in patterns include:
+\begin{myItemize}
+  \item Words in the sentence, such as \emph{Pablo}, \emph{Picasso}, \emph{was}, \emph{born}, \emph{in}, \emph{Spain}
+    or their canonical forms (\textit{lemmas}) -- \emph{Pablo}, \emph{Picasso}, \emph{be}, \emph{bear}, \emph{in}, \emph{Spain}.
+
+  \item \textit{Part-of-speech (POS) tags} -- lexical categories (also known as word classes) such as noun, verb, adjective or determiner.
+    Using \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset},
+    the sentence \emph{Pablo Picasso was born in Spain.} would be POS-tagged as follows.
+\begin{code}
+[NNP Pablo]  [NNP Picasso] [VBD was] [VBN born] [IN in] [NNP Spain]
+\end{code}
+    where NNP stands for proper noun, VBD for past tense verb, VBN for past participle verb and IN for preposition.
+
+  \item \textit{Syntax tree} (also called \emph{parse tree}) -- tree representation of the deep stracture of a sentence.
+    On the \autoref{fig:parse-tree}, syntax tree for the sentence from previous paragraph is shown.
+    Besides POS-tags, the tree contains tags for sentence (S), noun phrase (NP), verb phrase (VP) and prepositional phrase (PP).
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.62\textwidth]{images/parse-tree.pdf}
+    \caption{Syntax tree}
+    \label{fig:parse-tree}
+  \end{figure}
+\end{myItemize}
+
+\noindent
+Semantic information which can be used to define patterns are:
+\begin{myItemize}
+\item Named entities and their types, discovered by named entity recognition described in \autoref{sec:terms-extraction}. Example for the same sentence as in the paragraph above:
+\begin{code}
+[Person| Pablo Picasso] was born in [Location| Spain]
+\end{code}
+
+\item \emph{Semantic role labels} which mark predicate of the sentence and its arguments -- agent (subject), patient (object), cause, purpose, manner, location, time etc.
+Semantic roles can be identified using statisctical classifier \cite{semantic-role-labelling}.
+\begin{code}
+[agent| Pablo Picasso] [predicate| was born] [location| in Spain]
+\end{code}
+
+\item Semantic relations between words, such as \emph{hypernymy}, i.e. being a super-class (e.g. \emph{animal} as a hypernym for \emph{dog}). These relations between words can be found in \emph{WordNet} \cite{wordnet}.
+\end{myItemize}
 
 
 \subsection*{Examples of transformation rules}
 
 Thi simplest pattern is for the fill-in-the-blank questions
-(used for example by Agarwal and Mannem \cite{question-gen-textbooks}):
+(used for example by Agarwal and Mannem \cite{question-gen-textbooks}).
 \begin{code}
 Pattern: beforeTerm term afterTerm.
 <*\arrowlinesplit*>
@@ -796,7 +827,9 @@ Answer: term
 {The Southern Chinese martial art \sentenceGap is based on the movements of the tiger and the crane.}%
 {Hung Ga}
 
-As an typical example of a mostly syntactic approach (with a little bit help of the semantics)
+\noindent
+Typical example of a mostly syntactic approach,
+with a little bit help of the semantics (using WordNet) to create the final question
 \cite{question-gen-mitkov}:
 \begin{code}
 Pattern: [NP subject] [VP verb] [NP object].
@@ -806,9 +839,8 @@ Answer: subject
 \end{code}
 \transformationExample{Logic studies reasoning.}{Which discipline studies reasoning?}{logic}
 
-
-Priklad patternu, ktery neni z cele vety, ale jenom z fraze \cite{mentor}
-a vyuziva type of named entity
+\noindent
+The following example shows that sometimes, questions might be generated just from a phrase, instead of the full sentence and it also makes use of named entities \cite{mentor}.
 \begin{code}
 Pattern: [NP object] [VBN predicate] <*\emph{by}*> [Human subject]
 <*\arrowlinesplit*>
@@ -820,7 +852,9 @@ Answer: subject
 {Who wrote Hamlet?}%
 {Shakespeare}
 
-Patterns based on connectives (beacause, so that, since, when, for example, ...) \cite{question-gen-connectives, questions-wolfe}:
+\noindent
+Some connectives (beacause, so that, since, when, for example, ...) can be used to generate questions
+\cite{question-gen-connectives, questions-wolfe}.
 \begin{code}
 Pattern: A, <*\emph{because}*> B.
 <*\arrowlinesplit*>
@@ -837,8 +871,8 @@ Function \texttt{questionForm(A)} searches for an auxiliary verb in \texttt{A} a
 If there is no auxiliary verb in the sentence, it adds appropriate auxiliary verb to the beginning of the sentence based on the tense of the main verb and the main verb is substituted for its base form (bare infinitive).
 If the main verb \emph{to be} (as in our example), it is moved to the front without adding any auxiliary verb.
 
-
-Example of pattern using semantic role labels \cite{question-gen-mannem, questions-eval}:
+\noindent
+As mentioned above, semantic role labels might be used to describe patterns \cite{question-gen-mannem, questions-eval}.
 \begin{code}
 Pattern: <*\emph{By}*> manner, agent predicate patient.
 Filter: manner <*\emph{contains gerundium}*>
@@ -851,9 +885,10 @@ Answer: <*\emph{by}*> manner
 {How can one show undecibility of the problem X?}%
 {by reducing problem X to the halting problem}
 
+\noindent
 Even more sophisticated patterns can be created using syntax trees \cite{question-gen-ceist, question-overgenerating-rating}.
 
-\subsection*{Automatic patterns discovery}
+%\subsection*{Automatic patterns discovery}
 In most tools, transformation rules were created manually.
 However, machine learning can be put into use to discover them automatically.
 \textit{The-Mentor} system \cite{mentor}
@@ -863,7 +898,7 @@ and the amount of the information on the Web via \textit{Google} search
 to find syntactic patterns automatically from a few question-answer seed pairs.
 They have discovered more then 1000 unique patterns, which is many more then tools with manually created patterns use. This allows for more specific patterns, such as the following:
 \begin{code}
-Pattern: [NP subject] [VBD aux] [VBN verb] <*\emph{in}*> [Location:Country X].
+Pattern: [NP subject] [VBD aux] [VBN verb] <*\emph{in}*> [Location:Country| X].
 <*\arrowlinesplit*>
 Question: <*\emph{In which country}*> aux subject verb<*\emph{?}*>
 Answer: X
@@ -873,29 +908,18 @@ Answer: X
 {In which country was Pablo Picasso born?}%
 {Spain}
 
-\subsection*{Correct answer selection}
-There might be more possible transformations from a sentence to a question-answer pair.
-In this case, only one question is usually generated.
-Another strategy is to select a word from the sentence which would be the correct answer as a first sept and then generate a question from the rest of the sentence as a second step.
-Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifier to select the most important word in the sentence. For the classification he used the following three features.
-\begin{myItemize}
-\item number of occurences of the word in the document,
-\item is contained in the headline? (binary feature),
-\item depth of the word in the parse tree of the sentence.
-\end{myItemize}
-
 
 % ---------------------------  SECTION  ---------------------------
 \section{Creating Exercises from Knowledge Graph}
 \label{sec:exercises-from-knowledge-graph}
 
-In this section, we will consider situation when we have built knowledge graph
-and want to create exercises from it, instead of from the original article.
+In this section, we will consider the situation when we have built knowledge graph
+and want to create exercises from it, instead of from the original text.
 Similarly as with the text, the question generation tool can take a fact one by one
 and transform it to the question if possible.
 For example, fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
 \textit{When was Alan Turing born?} with the correct answer \textit{1912}.
-There are some predicates which are not suitable for creating questions from them,
+However, there are some predicates which are not suitable for creating questions from them,
 such as \texttt{rdfs:label} or \texttt{rdf:comment} and these need to be filtered.
 
 This approach of transforming a single fact at a time was used in \textit{OntoQue} \cite{ontoque}.
@@ -909,8 +933,12 @@ while false statements are created by replacing subject or object for a differen
 OntoQue uses \texttt{rdf:label} property to transform facts into sentences,
 so the quality of the generated questions depends on the quality of the labels.
 Consider two situations shown in \autoref{fig:rdf-graphs-labels}.
-From the left graph, OntoQue could generate fill-in-the-blank question "Alan Turing was born in \sentenceGap .", while the right graph would be transformed into the question "Alan Turing birth date \sentenceGap ."
-Another problem would be with answer... (TODO: je moc presna)
+From the left graph, OntoQue could generate fill-in-the-blank question
+\emph{Alan Turing was born in \sentenceGap},
+while the right graph would be transformed into the question
+\emph{Alan Turing birth date \sentenceGap}
+Another possible problem could be with the answer, sometimes it needs to be modified
+(in our example \emph{1912-06-23} could be simplified to \emph{1912}).
 
 \begin{figure}[h]
   \centering
@@ -919,7 +947,8 @@ Another problem would be with answer... (TODO: je moc presna)
   \label{fig:rdf-graphs-labels}
 \end{figure}
 
-For this reason we might want to use more specific patterns to influence transformation from facts to sentences and simplify answers. For convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}. As a simple example, rule for "When was X born?" question would look like this:
+For this reason we might want to use more specific patterns to influence transformation from facts to sentences and simplify answers. For convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}.
+As a simple example, rule for \emph{When was X born?} question would look like this:
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -933,8 +962,8 @@ Question: <*\emph{When was}*> subjectName <*\emph{born?}*>
 Answer: parseYear(birthDate)
 \end{code}
 
-
-
+\noindent
+The following transformation would generate questions about start dates of all events in the knowledge graph.
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -949,8 +978,10 @@ Question: <*\emph{When did}*> eventName <*\emph{happen?}*>
 Answer: date
 \end{code}
 
-
-But the great thing about knowledge graph is that we can select more facts and then ask a question which span more than one sentence. Example:
+\noindent
+But the great thing about the knowledge graph is that we can select more facts and then ask a question which span more than one sentence, such as
+\textit{Could hypothetically Leonhard Euler meet Carl Friedrich Gauss?}
+This transformation is described in the following example.
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
 SELECT ?name1 ?birth1 ?death1 ?name2 ?birth1 ?death2
@@ -968,15 +999,6 @@ WHERE {
 Question: <*\emph{Could hypothetically}*> subject1 <*\emph{meet}*> subject2 <*\emph{?}*>
 Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 \end{code}
-
-
-%\end{code}\\
-%\noindent $\downarrow$ maps to
-%\begin{code}
-
-
-
-[TODO: ukazka sparql dotazu a nejakeho strukturovaneho vystupu (vcetne toho, na co chceme zeptat (spravna odpoved) z Procvicniku-v1, napr. Mohli se potkat?
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -1017,12 +1039,12 @@ Now take a look at the following question:
 \end{exercise}
 
 This questions is much more likely to force student to retrieve knowledge about John Wilkes Booth as well as about other alternatives.
-
 Little and Bjork also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
 
-The consequences are clear -- when creating a multiple-choice question, we should try to find plausible alternatives which are as competitive as possible.
-A tak se skutecne deje v ruznych aktualnich systemech \cite{question-gen-mitkov, slepe-mapy}
-NOTE: u systemu, kde je omezena fixni sada faktu k nauceni (slepe mapy), tak lze brat jako distraktory polozky, ktere se nejvice pletou (citovat slepe mapy). Common strategies for distractor selection are:
+The consequences are clear -- when creating a multiple-choice question, we should try to find distractors which are as competitive as possible,
+which is what most of the current question generation tools do
+\cite{question-gen-mitkov, question-gen-textbooks, mentor}.
+Common strategies for distractor selection are:
 \begin{myItemize}
 \item \textbf{Named entities from the text}\\
   One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, named entities of the same type are chosen (e.g. if the correct answer is person, choose people as distractors). This approach was used for example in the Mentor \cite{mentor}.
@@ -1038,14 +1060,17 @@ Several strategies was proposed to select the most competitive distractors in th
   Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordNet, the ones which occur in the text are preffered.
 
 \item \textbf{Correct answer modification}\\
-  If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift
+  If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift or (sub)multiplication
 \cite{question-gen-domain-ontologies}.
-[TODO: priklad s letopoctem]
+For instance, if the correct answer is $1616$ the distractors generated by multiplying the corrent answer by $0.92$, $0.95$ and $1.04$ would be $1487$, $1535$ and $1680$.
 \end{myItemize}
 
-
-MaybeTODO: spatne se hledaji distraktory pro clauses (napr. pri why - because questions)
-
+\noindent
+All these strategies work only if the correct answer is a named entity or a single word.
+If the correct answer is a full clause
+(e.g. \emph{Why is photosynthesis important? / Because it produces oxygen.}),
+generating meaningfull and competitive distractors is much harder.
+Simple (but not very good) way to find at least some distractors would be to use the correct answers of the generated questions of the same question type.
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -1058,64 +1083,39 @@ is to overgenerate questions and then filter them
 The goal of the filtering is to discard questions which are:
 
 \begin{myItemize}
-  \item \textbf{invalid}\\
-    Questions which does not even make sense can be created due to anaphoric references (TODO: autoref do sekce pre-processing?) Example of an invalid question with anaphoric reference is "Where is there?"
-    (MaybeTODO: matching question-answer category (in The-Mentor system \cite{mentor}):
-    The category of the question and the category of the answer have to be same (e.g. individual or location). Example: "Who was Abraham Lincoln?" -- "16th president of the United States": both \textit{Abraham Lincoln} and \textit{president} has the semantic category \textit{individual}.
-    To find that president is individual, WordNet [citovat] is used (BFS).
-
-  \item \textbf{irrelevant}\\
-    Even if a question is valid, it can be totally irrelevant for the student.
-    As an example consider question TODO (for topic ...)
-
-  \item \textbf{too easy}\\
-    Some multiple choice questions may be too easy due to poor distractors.
-    (Odkazat se na otazku se spatnymi distraktory uvedenou vyse.)
-
+  \item invalid (e.g. because they contain anaphoric references, such as \emph{Where is there?}),
+  \item irrelevant to the topic,
+  \item too easy (e.g. because of noncompetitive distractors).
 \end{myItemize}
 
-As an alternative to filtering, we can rank questions first and then select $N$ best questions
-(e.g. Mannem \cite{question-gen-mannem} selects $6$ best questions per a paragraph)
-[TODO: nekde vybiralo 15 procent nejlepsich otazek]
-We can even separately rank various parameters of questions, such as probability of correctness (validity), relevance and difficulty. I have chosen this approach in Smartoo
-(\autoref{sec:smartoo-exercises-grading}), because it allows to separate the task of estimating parameters and the task of deciding which question is best for the student right now,
-i.e. it allows to use adaptive practice.
+As an alternative to direct filtering,
+we can rank questions first and then select $N$ best questions
+(e.g. Mannem \cite{question-gen-mannem} selects $6$ best questions per a paragraph).
+Ranking allows to separate the task of estimating parameters and the task of deciding which question is the best for the student right now, i.e. it allows for adaptive practice.
+We can even separately rank various parameters of questions, such as probability of correctness (validity), relevance and difficulty.
 
 Both filtering and ranking can be implemented either via heurstics decisions
 or via a machine-learning based classifier.
+Some possible heuristic criteria to discard generated questions are \cite{questions-wolfe}:
+\begin{myItemize}
+\item Question or answer is too long.
+\item Question contains word \emph{and}, colon or quotes.
+\item The first word in the answer is a relative pronoun.
+\end{myItemize}
 
-Priklad heuristickeho filtru \cite{questions-wolfe}:
-vyrad question-answer pair, pokud plati alespon 1 z nasledujicich: "otazka nebo odpoved ma vice nez 17 slov, otazka obsahuje slovo "and", prvni slovo odpovedi je relative pronoun or subordiante conjunction", otazka obsahuje carku", etc.
+Mannem \cite{question-gen-mannem} uses heuristic ranking,
+with depth of the predicate from which is the question generated as a primary criterion
+(to penalize questions form subordinate clauses)
+and the number of pronouns as a secondary criterion (to penalize possible anaphoric references).
 
-Priklad heuristic ranking \cite{question-gen-mannem}: primary criterion is depth of the predicate from which is the question generated (to penalize questions form subordinate clauses) and a number of pronouns as a secondary criterion.
-
-Heuristicke je ZREJME take DynaLearn \cite{question-gen-adapt-bayes}: selects question from a list of generated question based on its type (aims at variaty of asked question types) and difficulty.
-
-
-Priklad ranking klasifikatoru: Heilman \cite{question-gen-heilman}: statisticky model pro question ranking (vyuziti strojoveho uceni)
-features: question length, which wh-word (who, where, when, ...) was used (if any), if it includes negation (not, never, no), number of proper nouns, pronouns, adjectives etc., likelihoods of a question would appear in the text based on unigram and trigram language model and some more feautures..
-
-
-TODO: \cite{question-overgenerating-rating}
-
-
-% ---------------------------  SECTION  ---------------------------
-\section{Dalsi temata, todo}
-
-Maybe TODO: podivat se na "question generation workshops and the shared task (in 2010)"
-http://questiongeneration.org/
-
-
-
-
-
-
-
-
-
-
-
-
+Heilman \cite{question-gen-heilman} trained a machine learning-based classifier for question ranking using features such as:
+\begin{myItemize}
+\item question length,
+\item which wh-word (who, where, when, ...) was used (if any),
+\item includes negation (no, not, never)? (binary feature),
+\item number of proper noun, pronons, adjectives etc.,
+\item likelihoods of a question would appear in a text according to an unigram and a trigram language models.
+\end{myItemize}
 
 
 % ===========================  CHAPTER ===========================
@@ -1216,7 +1216,8 @@ Kriteria, ktera jsou dulezita pro vyber vhodne otazky:
 Casty pristup je takovyto: tato (pripadne i nejaka dalsi) kriteria se pak mohou podili nejakou vahou na skore otazky, vybrana je pak otazka s nejvyssim skore (napr. slepe mapy -- citovat)
 
 Dalsi takovy system je
-\cite{question-gen-adapt-bayes}, vyuziva BKT pro modelovani studentovych znalosti a obtiznosti konceptu,  domenove nezavisle, vyber tematu otazky: least known concept, vyber konkretni otazky: bere se v uvahu primerena obtiznost a pestrost typu otazek.
+DynaLearn \cite{question-gen-adapt-bayes}, vyuziva BKT pro modelovani studentovych znalosti a obtiznosti konceptu,  domenove nezavisle, vyber tematu otazky: least known concept, vyber konkretni otazky: bere se v uvahu primerena obtiznost a pestrost typu otazek....
+selects question from a list of generated question based on its type (aims at variaty of asked question types) and difficulty.
 
 
 
