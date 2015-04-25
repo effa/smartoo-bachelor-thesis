@@ -245,6 +245,9 @@ Answer:   & \emph{#3}\\
 %  bla
 %\end{myItemize}
 
+% == quotation marks
+%``the sweet sport of learning''
+
 
 % ===== BEGIN DOCUMENT =====
 \begin{document}
@@ -1107,60 +1110,93 @@ Heilman \cite{question-gen-heilman} trained a machine learning-based classifier 
 \item likelihoods of a question would appear in a text according to an unigram and a trigram language models.
 \end{myItemize}
 
+TODO (important): ze muzeme rankovat ruzne atributy (napr. korektnost, relevanci, zabavnost a obtiznost), ale ze je to tezke (a nevim, jestli to vubec nekdo delal).
+
 
 % ===========================  CHAPTER ===========================
 \chapter{Adaptive Practice}
 \label{chap:practice}
 
-TODO popis stavu: mame vygenerovane otazky (prip. i s ohodnocenim?), ted je chceme studentovi predkladat, v nasem settings: obvykle mame spousty otazek (destiky nebo stovky) ale predlozit jich ma cenu je nekolik (napr. 10 nebo 20, prip. dalsi na zadost uzivatele) ... je tedy dulezite umet vybrat ty nejvice pro studenta relevantni otazky a zaroven vyvazovat prumernou uspesnost (pokud by uzivatel nevedel nikdy spravnou odpoved, tak by ho to deprimovalo)
+TODO (cela kapitola): doplnit relevantni citace (a poznamky), obrazky a grafy, dale promyslet (a otestovat na simulovanych datech) vyuziti modelu ve Smartoo (napr. PFA)
 
-proc adaptive practice: flow \cite{flow}, the sweet spot of learning", (not too easy, not too hard), balance between boredom (apathy) and frustration \cite{adaptive-practice}
+The goal of \emph{computerized adaptive practice} [cite:treba adaptive-practice-irt-math]
+is to make the practice as efficient as possible.
+This is related to, but different from the \emph{computerized adaptive testing} [citovat]
+which aims at precise and reliable measuring of student's knowledge (or skill).
+There are many systems providing practice customized to the learner,
+these systems are called \emph{intelligent tutoring systems} (cite:tutoring-systems-behavior).
+Some of them focus on the procedural knowledge (such as solving math problems) [citace,konkretni systemy, napr. Math Garden a clanek o souvisejim vyzkumu adaptive-practice-irt-math],
+other on adaptive practice of facts \cite{slepe-mapy}.
 
-TODO: trochu jine podminky jsou, pokud jsou otazky (nebo aspon fakta) vytvoreny predem (napr. slepe mapy), ale i tam nas samozrejme zajima adaptabilni procvicovani a mnohe z nasledujiciho se vztahuje k obema pripadum
-... kdyz mam dopredu otazky/fakta, muzu se podrobneji zamerit na odhad obtiznosti faktu/otazek a ne prubeznem vylepsovani jeho znalosti (spaced reptition) danym studentem. My jsme v odlisne situaci, vygenerovali jsme NOVE otazky, nic o nich nevime, o studentovi nejspis taky nic nevime: co muzeme delat: snazit se odhadnout global skill studenta co nejpresneji behem co nejmene otazek a davat mu pak takove, na ktere bude mit idealni pravdedpodbnost spravne odpovedi, tj. aby ho to udrzelo ve flow
+For practice to be efficient, it is important to balance difficulty of the task with respect to the learner.
+If the practice is too easy, the learner doesn't learn anything new and quickly becomes bored.
+On the other hand, if it is too difficult, the learner becomes anxious and frustrated.
+Hence, the key of efficient adaptive practice is to find the optimal difficulty.
+Thomas Butt talks about ``the sweet spot of learning'' \cite{adaptive-practice}.
+Generally, the ideal state of absolute immersion, focus and enjoyement is called \emph{flow} \cite{flow}.
+Alhough the ideal success rate may vary for different people,
+it is for simplicity usually treated as a constant;
+e.g. some systems target at 75 \% \cite{slepe-mapy,adaptive-practice-irt-math}.
 
-TODO o co jde: poskytovani tech otazek, ktere jsou pro uzivatele co nejuzitecnejsi ... tj. zamereni na to, co student jeste moc dobre neumi, ale na druhou stranu vyvazovat uspesnost (pokud by uzivatel nevedel na zadnou otazku spravnou odpoved, tak by ho to deprimovalo.
+MaybeTODO: flow diagram (svuj, ale citace na myslenku)
 
-(TODO: mozne rozdeleni na 3 casti: odhad prior knowledge (nejspis na urovni jednoho faktu), odhad aktualni znalosti (ma smysl pri opakovanych otazkach na 1 fakt, napr. slepe mapy, ale nikoliv Smartoo), selection of a suitable question (podle odhadu znalosti a historie odpovedi).)
+Intelligent tutoring systems use attempts (answers) of learners to estimate both skill (knowledge) of each learner and the difficulty of all facts (or tasks).
+As most people use these tutors repeatedly and not only once, the process of learning can be also captured
+and the systems may even have special estimate parameter for each learner-fact pair \cite{slepe-mapy}.
 
+Our situation is, however, different, as there is no limited set of facts.
+In each practice session, tens (or even hundreds) of new questions are generated
+and we don't know much neither about the questions, nor about the learner's knowledge of the topic.
+As there is usually so many generated questions, we can't ask learner all of them,
+but carefully select just a few questions, which are the most relevant to the learner and are not too easy or too difficult.
+The generated questions are (usually) brand-new, so we necessarily need to rank them for relevance and difficulty estimation (and possibly other attributes as well) as described in \autoref{sec:questions-ranking-filtering},
+otherwise there is no way to distinguish between generated questions.
 
-Takze napred projdu nekolik nejznamejsich zpusobu modelovani skillu studenta a obtiznosti faktu (IRT/Rash, PFA, ELO, PFAE, BKT), pak se zamerim na samotny vyber otazky.
+Having the limitations in mind, we can now formulate the goal of the adaptive practice in the settings of the automatically generated questions.
+The system shall ask questions, which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequatly difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
 
+In \autoref{sec:knowledge-estimation}, I describe several common models of a student used to estimate one's knowledge, then I briefly mention dynamic adjustment of target difficulty (\autoref{sec:target-difficulty}),
+and finally I discuss the selection of best question \autoref{sec:question-selection}.
 
 % ---------------------------  SECTION  ---------------------------
-\section{Item Response Theory}
-\label{sec:irt}
+%\section{Student Modeling}
+%\label{sec:student-model}
+% NOTE: kdyby toho bylo hodne, je to mozne rozdeleit do 2 kapitol (Student Modeling a Knowledge Estiamtion)
+
+% ---------------------------  SECTION  ---------------------------
+\section{Knowledge Estimation}
+\label{sec:knowledge-estimation}
+
+TODO: vsude doplnit citace (inspirace treba v clanku o Slepych mapach, nebo zdroje ALG)
+
+obecne o tom, co to je \textit{student model}, rika pravdepodobnost, ze student odpovi spravne na nejakou otazku
+... taky o tom, ze se zamerime hlavne na odhad prior knowledge (protoze uceni nas nezajima)
 
 
-TODO...
-
-NOTE: Mozna zvlast sekce o IRT a Rash Modelu?
-
-Napr. Rash Model, coz je logisticky model, predpoklad konstantni znalosti studenta (neuvazuje uceni). Pro multiple choice questions with $n$ options (tj. pravdepodobnost nahodneho uhadnuti je $\frac{1}{n}$), znalost studenta daneho faktu dana parametrem $s$ a obtiznost tematu dana parametrem $d$, vypada odhad spravne odpovedi nasledovne:
-
-$$
-P(correct \mid k, d) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(s - d)}}
-$$
-
+\begin{myItemize}
+\item \textbf{Logistic model}\\
+  One parameter logistic model, also called Rash model; neuvazuje uceni
+  znalost studenta daneho faktu dana parametrem $k$ a obtiznost otazky dana parametrem $d$, vypada odhad spravne odpovedi nasledovne:
+\begin{equation}\label{eq:logistic}
+P(k, d) = \frac{1}{1 + e^{-(k - d)}}
+\end{equation}
+Vlastnosti:, ze je to vzdy mezi 0 a 1
+In case of multiple choice questions with $n$ options (tj. pravdepodobnost nahodneho uhadnuti je $\frac{1}{n}$):
+\begin{equation}\label{eq:logistic-mcq}
+P(k, d) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(s - d)}}
+\end{equation}
 (Mozne TODO: graf)
-
 TODO: uceni parametru: joint maximum likelihood estimation (odkaz), offline, potreba dost dat a je to pomale a obzvlaste nevhodne pro online aplikace, kde je idealni kontinualni update
 
-
-% ---------------------------  SECTION  ---------------------------
-\section{Performance Factor Analysis}
-\label{sec:pfa}
-
-NOTE: Performance Factor Analysis = rozsireni Rash modelu, aby uvazoval meninic se znalost skillu; pravdepodbnost odpovedi je stale dana logaritmickou funkci, ale neni zavisla na konstantnim rozdilu znalosti studenta a obtiznosti faktu, ale na linearni kombinaci obtiznosti a poctu studentovych spravnych a poctu chybnych odpovedi na prislusnou otazku ($m = d + \alpha \cdot correctCount + \beta \cdot incorrectCount$).
+\item \textbf{Performance factor analysis}\\
+rozsireni logistickeho modelu, aby uvazoval menici se odhad skillu,
+pravdepodobnost spravne odpovedi je stale dana logaritmickou funkci, ale neni zavisla na konstantnim rozdilu znalosti studenta a obtiznosti faktu, ale na linearni kombinaci obtiznosti a poctu studentovych spravnych a poctu chybnych odpovedi na prislusnou otazku ($m = d + \alpha \cdot correctCount + \beta \cdot incorrectCount$).
 Vsimneme si, ze v uvahu nebere poradi spravnych a spatnych odpovedi, pouze jejich obsolutni pocet (tj. neumi rozlisit mezi tim, ze jsem 10 krat odpovedel spatne a pak 10 krat dobre a mezi tim, ze odpovidam jednou dobre a jednou spatne.)
 
 Dalsi problem je, ze nebere v uvahu moznost tipovani (coz je potreba u multiple choice otazek).
 
-% ---------------------------  SECTION  ---------------------------
-\section{Elo System}
-\label{sec:elo}
 
-
+\item \textbf{Elo model}\\
 TODO: inspirovane hodnocenim sachovych hracu \cite{elo-rating}, mozna i napred trochu popsat, jak to funguje tam a pak teprve ta analogie na nasi situaci
 
 Je to dalsi zpusob, jak rozsirit Rash model o uceni, odhad spravne odpovedi zustava stejny logisticky model (odkaz na ten vzorecek). Skill se updatuje po "zapasu" mezi studentem a otazkou (faktem) nasledovne,
@@ -1174,13 +1210,10 @@ NOTE: Lze pouzit (a ve Slepych mapach \cite{slepe-mapy} se pouziva) i pro odhad 
 Pak je ale problem with constant K: kdyz je moc mala, tak je uceni pomale, kdyz je velke, tak nestabilni, je tedy vhodne (a pouziva se v Slepe mapy -- viz \cite{slepe-mapy}, mozna odkaz spis primo na system) pouzit misto konstanty
 uncertainty function, e.g. $K = \frac{a}{1 + bn}$, kde $n$ je kolik otazek uz uzivatel zodpovedel (nebo obracene, kolik otazek na dane misto jiz bylo zodpovezeno) a $a$ a $b$ jsou fixne zvolene parametry.
 
-Moznost zkombinovat PFA a Elo (viz \cite{slepe-mapy}, nazyvaji to PFAE, kde E muze znamenat bude Elo nebo Extended), porad stejna logisticka funkce, nyni vzhledem k $K_{sf}$, coz je odhad, ze student $s$ zna fakt $f$. Tato promenna (odhad) se updatuje po kazde otazce studenta $s$ na otazku na fakt $f$ podle vzorce pro Elo (odkaz), akort misto jedne konstanty $K$ se pouzivaji 2 ruzne pri spravne vs. spatne odpovedi.
+NOTE: Moznost zkombinovat PFA a Elo (viz \cite{slepe-mapy}, nazyvaji to PFAE, kde E muze znamenat bude Elo nebo Extended), porad stejna logisticka funkce, nyni vzhledem k $K_{sf}$, coz je odhad, ze student $s$ zna fakt $f$. Tato promenna (odhad) se updatuje po kazde otazce studenta $s$ na otazku na fakt $f$ podle vzorce pro Elo (odkaz), akort misto jedne konstanty $K$ se pouzivaji 2 ruzne pri spravne vs. spatne odpovedi.
 
 
-% ---------------------------  SECTION  ---------------------------
-\section{Bayesian Knowledge Tracing}
-\label{sec:bayesian-network}
-
+\item \textbf{Bayesian knowledge tracing}\\
 TODO: Baysovska sit (HMM) k popisu konceptu (skill) a jejich nauceni (2 stavy: known (learned) and unknown (unlearned)), 4 parametry modelu: pravdepodobnost, ze je koncept known hned od zacatku, pravdepodobnost nauceni v 1 kroku, pravdepodobnost spravne odpovedi, kdyz koncept neumim (guess) a pravdepodobnost spatne odpovedi, kdyz koncept umim (slip).
 Update skillu po odpovedi na otazku: s pouzitim Bayesova pravidla.
 Odhad parametru: napr. pomoci Expectation Maximization na existujicich datech.
@@ -1188,9 +1221,13 @@ Odhad parametru: napr. pomoci Expectation Maximization na existujicich datech.
 Predpoklad je diskretni prechod z neumim do umim (coz je obvykle dost zjednodusujici, zapamatovani deklarativnich faktu je postupne).
 
 Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (trochu rozebrany nize).
+\end{myItemize}
 
-TODO: Dalsi clanky viz odkazy v clanku slepe-mapy.
 
+
+% ---------------------------  SECTION  ---------------------------
+\section{Dynamic Target Difficulty Adjustment}
+\label{sec:target-difficulty}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Question Selection}
@@ -1613,6 +1650,9 @@ TODO: evolucni algoritmy pro hledani optimalnich parameteru (nebo i kodu!) kompo
 TODO: nejaka ukazka zajimavejsiho cviceni
 
 TODO: procist si sve napady z notes.txt v Procvicniku-v1
+
+Plany/vylepseni:
+- misto fixnich 10 otazek by to melo detekovat, ze to neumim a poslat me znova precist clanek, resp. rict, ze uz to umim
 
 
 
