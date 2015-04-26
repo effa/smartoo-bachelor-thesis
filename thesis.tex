@@ -1125,19 +1125,17 @@ On the other hand, if it is too difficult, the learner becomes anxious and frust
 Hence, the key of efficient adaptive practice is to find the optimal difficulty --
 Thomas Butt talks about ``the sweet spot of learning'' \cite{adaptive-practice}.
 Generally, the ideal state of absolute immersion, focus and enjoyement is called \emph{flow} \cite{flow}.
-Although the ideal success rate may vary for different people,
-it is for simplicity usually treated as a constant;
-e.g. some systems target at 75 \% \cite{slepe-mapy,adaptive-practice-irt-math}.
-
 
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}[xscale=5, yscale=5]
-  \draw [gray, fill=gray] (0,0) -- (0.1,0) -- (1,0.8) -- (0.8,1) -- (0,0.1) -- (0,0);
-  \draw [thick, <->] (0,1) node [left] {$challenge$} -- (0,0) -- (1,0) node [below right] {$skill$};
+  \begin{tikzpicture}[font=\sffamily,xscale=5, yscale=5]
   \large
+  %\draw [lightgray, fill=gray] (0,0) -- (0.1,0) -- (1,0.8) -- (0.8,1) -- (0,0.1) -- (0,0);
+  \draw (0.1,0) -- (1,0.8);
+  \draw (0,0.1) -- (0.8,1);
+  \draw [thick, <->] (0,1) node [left] {$challenge$} -- (0,0) -- (1,0) node [below right] {$skill$};
   \node at (0.27,0.82) {frustration};
-  \node at (0.7,0.7) {\textbf{flow}};
+  \node at (0.6,0.6) {flow};
   \node at (0.7,0.2) {boredom};
   \end{tikzpicture}
   \caption{Relationship between challenge and skill \cite{flow}.}
@@ -1175,7 +1173,7 @@ It usually includes information about which skills have been mastered by the stu
 but other information may be also useful, e.g. enjoyment and motivation of the student \cite{learner-skill-models-review}.
 
 In the settings of facts practicing, student model is used to estimate the probability that given student knows a given fact \cite{slepe-mapy}.
-(MaybeTODO: o tom, ze se zamerime hlavne na odhad prior knowledge (protoze uceni nas nezajima))
+(MaybeTODO: o tom, ze se zamerime hlavne na odhad prior knowledge (vs. current knowledge) (protoze uceni nas nezajima))
 (MaybeTODO: predpoklad homogenity faktu i uzivatelu)
 The most common student models for knowledge estimation are described in the following paragraphs.
 \begin{myItemize}
@@ -1193,9 +1191,8 @@ The most common student models for knowledge estimation are described in the fol
 \begin{equation}\label{eq:logistic-mcq}
 P(k, d, n) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(k - d)}}
 \end{equation}
-TODO: graf, mozna oba\\
-TODO: parameters estimation\\
-MaybeTODO: neuvazuje uceni, existuji rozsireni, viz dale
+TODO: parameters estimation, asi joint maximum likelihood estimation, napr: R. De Ayala. The theory and practice of item response theory. The Guilford Press, 2008.\\
+MaybeTODO: ze neuvazuje uceni
 
 \begin{figure}[h]
   \centering
@@ -1209,7 +1206,7 @@ MaybeTODO: neuvazuje uceni, existuji rozsireni, viz dale
   \draw [thin, dashed] (0,1) -- (1,1) -- (1, 0);
   \draw [thin, dashed] (-0.57,2) -- (-2,2);
   \draw [thick] (1,0.1) -- (1,-0.1) node [below] {$d$};
-  \draw plot (\x, {2 / (1 + exp(1 - \x))});
+  \draw [very thick] plot (\x, {2 / (1 + exp(1 - \x))});
   \end{tikzpicture}
   \begin{tikzpicture}[domain=-2:4, smooth, samples=20, scale=1]
   \draw [thick, ->] (-2,0) -- (4,0) node [below right] {$k$};
@@ -1222,7 +1219,7 @@ MaybeTODO: neuvazuje uceni, existuji rozsireni, viz dale
   \draw [thin, dashed] (-0.57,2) -- (-2,2);
   \draw [thin, dashed] (0,0.5) -- (4,0.5);
   \draw [thick] (1,0.1) -- (1,-0.1) node [below] {$d$};
-  \draw plot (\x, {0.5 + 1.5 / (1 + exp(1 - \x))});
+  \draw [very thick] plot (\x, {0.5 + 1.5 / (1 + exp(1 - \x))});
   \end{tikzpicture}
   \caption{Logistic model without guessing (left) and with guessing (right)}
   \label{fig:logistic-function}
@@ -1234,47 +1231,41 @@ MaybeTODO: neuvazuje uceni, existuji rozsireni, viz dale
   The model is inspired by the rating of chess players \cite{elo-rating} and interprets each attempt of a student to answer an question as a ``match'' between the student and the question.
   According to the result $R$ of the match (1 for correct and 0 for incorrect answer)
   and the expected result $P(k, d)$
-  (computed by the one-parameter logistic function \ref{eq:logistic}, or \ref{eq:logistic-mcq})
-  the knowledge $k$ and diffiulcty $d$ are updated as follows:
+  (computed by the logistic function \ref{eq:logistic}, or \ref{eq:logistic-mcq} for multiple choice questions)
+  the knowledge $k$ and difficulty $d$ are updated as follows:
   \begin{equation}\label{eq:elo}
   \begin{array}{l}
-      k \gets k + K \cdot (R - P(k, d))\\
-      d \gets d - K \cdot (R - P(k, d))
+      k \gets k + K (R - P(k, d))\\
+      d \gets d - K (R - P(k, d))
   \end{array}
-\end{equation}
-The difference $(R - P(k, d))$ express how much the result was unexpected (or ``surprise'').
+  \end{equation}
+The difference $(R - P(k, d))$ expresses how much the result was unexpected.
 The $K$ parameter influences the weight of the last match to the current estimate.
-(a ze to muze byt fce)
-
-
-
-
-
-O prior knowledge estimation:
-If $K$ is too large, estimation is unstable; if it's too small, estimation is belated.
-For this reason, it is of
-
-
-
-
-podobne logistickemu modelu, ale nabize 2 mozne vyuziti: bud modelovani uceni nebo jako online metoda odhadu global prior knowledge \cite{slepe-mapy}
-
-NOTE: Lze pouzit (a ve Slepych mapach \cite{slepe-mapy} se pouziva) i pro odhad prior knowledge (a global difficulty faktu)
-(Oproti Rash modelu asi nema v tomto ohledu tak dobrou semantiku (viz clanek slepe-mapy), ale zato se lepe pocita, vhodny pro online system; navic experimenty ukazuji, ze se to chova podobne (odkaz opet v clanku ve slepe-mapy).
-Pak je ale problem with constant K: kdyz je moc mala, tak je uceni pomale, kdyz je velke, tak nestabilni, je tedy vhodne (a pouziva se v Slepe mapy -- viz \cite{slepe-mapy}, mozna odkaz spis primo na system) pouzit misto konstanty
-uncertainty function, e.g. $K = \frac{a}{1 + bn}$, kde $n$ je kolik otazek uz uzivatel zodpovedel (nebo obracene, kolik otazek na dane misto jiz bylo zodpovezeno) a $a$ a $b$ jsou fixne zvolene parametry.
+% NOTE: lze podotknout, ze misto konstanty K se casto pouziva funkce (uncertainty function), mozna citace na Glicko
+Although the primary use of Elo model was to describe the process of learning,
+it can be also used for the gradual improvements of estimates for prior knowledge of students and difficulty of facts \cite{slepe-mapy}.
+The possible problem is hidden in constant $K$ -- if it's too large, estimation is unstable; if it's too small, estimation converges too slowly.
+For this reason, instead of some consant, an attenuation function
+\[
+  K(m) = \frac{a}{1 + bm}
+\]
+($m$ is the order of the match, $a$ and $b$ are fixed parameters) can be used.
+The main advantage of using the Elo model to estimate the prior knowledge and difficulties in compasion with the joint maximum likelihoood estimation technique (odkaz vyse) is its simplicity and intrinsic online nature.
+Experiments suggest that it leads to similar results as the joint maximum likelikhood estimation \cite{slepe-mapy-time-elo}.
 
 \item \textbf{Performance factors analysis}\\
   Performance factors analysis \cite{performance-factors-analysis} is similar to the logistic model presented above, but enables to capture learning.
-
-  extends the logistic model to capture ch
-rozsireni logistickeho modelu, aby uvazoval menici se odhad skillu,
-pravdepodobnost spravne odpovedi je stale dana logaritmickou funkci, ale neni zavisla na konstantnim rozdilu znalosti studenta a obtiznosti faktu, ale na linearni kombinaci obtiznosti a poctu studentovych spravnych a poctu chybnych odpovedi na prislusnou otazku ($m = d + \alpha \cdot correctCount + \beta \cdot incorrectCount$).
-Vsimneme si, ze v uvahu nebere poradi spravnych a spatnych odpovedi, pouze jejich obsolutni pocet (tj. neumi rozlisit mezi tim, ze jsem 10 krat odpovedel spatne a pak 10 krat dobre a mezi tim, ze odpovidam jednou dobre a jednou spatne.)
-
-NOTE: Moznost zkombinovat PFA a Elo (viz \cite{slepe-mapy}, nazyvaji to PFAE, kde E muze znamenat bude Elo nebo Extended), porad stejna logisticka funkce, nyni vzhledem k $K_{sf}$, coz je odhad, ze student $s$ zna fakt $f$. Tato promenna (odhad) se updatuje po kazde otazce studenta $s$ na otazku na fakt $f$ podle vzorce pro Elo (odkaz), akort misto jedne konstanty $K$ se pouzivaji 2 ruzne pri spravne vs. spatne odpovedi.
-
-
+  According to this model, the probability that a student answers correctly to a question
+  depends on the difficulty $d$ of the question and number of correct ($a$) and incorrect ($b$) answers of the student to this question in the past. The exact formula is:
+  \begin{equation}\label{eq:pfa}
+  \begin{array}{c}
+  P(a, b, d) = \frac{1}{1 + e^{-k}}\\
+  \text{where } k = \alpha \cdot a + \beta \cdot b - d
+  \end{array}
+  \end{equation}
+  The main drawback of this model is that it ignores the order of answers,
+  so answering firstly 10 times incorrecly and then 10 time incorrecly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
+  To take the order of answers into the account, performance factors analysis can be combined with the Elo model \cite{slepe-mapy} -- after each answer, estimate of knowledge parameter $k$ is updated according to the rule \ref{eq:elo}.
 
 
 \item \textbf{Bayesian knowledge tracing}\\
@@ -1282,7 +1273,7 @@ TODO: Baysovska sit (HMM) k popisu konceptu (skill) a jejich nauceni (2 stavy: k
 Update skillu po odpovedi na otazku: s pouzitim Bayesova pravidla.
 Odhad parametru: napr. pomoci Expectation Maximization na existujicich datech.
 
-Predpoklad je diskretni prechod z neumim do umim (coz je obvykle dost zjednodusujici, zapamatovani deklarativnich faktu je postupne).
+Predpoklad je diskretni prechod z neumim do umim (coz je obvykle dost zjednodusujici, zapamatovani deklarativnich faktu je postupne), ale pouziva se u proceduralni znalosti
 
 Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (trochu rozebrany nize).
 \end{myItemize}
@@ -1290,8 +1281,24 @@ Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (t
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Dynamic Target Difficulty Adjustment}
+\section{Target Difficulty Adjustment}
 \label{sec:target-difficulty}
+
+As we mentioned in the introduction to this chapter,
+the key to the efficient practice is to provide the student with adequatly difficult questions.
+Although the ideal success rate may vary for different people (and even for person in different conditions)
+for simplicity it is usually treated as a constant and set e.g. on 75 \% \cite{slepe-mapy, adaptive-practice-irt-math}.
+
+Experiments performed in the online adaptive system for learning geography facts suggest that the optimal success rate may be 65--70 \% \cite{slepe-mapy-motivation}.
+This result was obtained by self-reports of students (after some number of answered questions, students were asked if the practice is ``too easy'', ``appropriate'', or ``too difficult'');
+each student was assigned to one of 10 groups with different target probability of correct answer (from 50 to 95 \%).
+
+It was also noticed that the actual success rate is usually higher than the target probability of correct answer.
+To approach the desired target succes rate more closely, an algorithm was proposed for dynamic adjustment of target difficulty \cite{slepe-mapy-motivation}.
+It is based on the idea of \textit{proportional controller}.
+If the actual success rate is lower than the target probability of correct answer, the target probability is increased (proportionaly to the ``error'').
+If the actual success rate is higher, the target probability is proportionally decreased.
+The exact adjustment function is shown in \autoref{fig:adjusted-target-probability}.
 
 \begin{figure}[h]
   \centering
@@ -1299,7 +1306,7 @@ Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (t
     \draw [thick] (0,1) -- (0,0) -- (1,0);
     \draw (0,1) node [align=center, above] {$adjusted~target$\\$probability$};
     \draw (1,0) node [right] {$success~rate$};
-    \draw [thick] (1,0) -- (0.75,0.75) -- (0,1);
+    \draw [very thick] (1,0) -- (0.75,0.75) -- (0,1);
     \draw [thick] (-0.03,1) node [left] {$1$} -- (0.03,1);
     \draw [thick] (-0.03,0.75) node [align=right,left] {target\\probability} -- (0.03,0.75);
     \draw [thick] (1,-0.03) node [below] {$1$} -- (1,0.03);
@@ -1309,6 +1316,9 @@ Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (t
   \caption{Function describing adjustment of target probability}
   \label{fig:adjusted-target-probability}
 \end{figure}
+
+This dynamic adjustment of target probability proved to be useful -- it increased by 5~\% the set of people who reported that the difficulty is ``appropriate'' \cite{slepe-mapy-motivation}.
+
 
 % ---------------------------  SECTION  ---------------------------
 \section{Question Selection}
