@@ -1165,8 +1165,6 @@ and finally I discuss the selection of best question (\autoref{sec:question-sele
 \section{Knowledge Estimation}
 \label{sec:knowledge-estimation}
 
-TODO: vsude doplnit citace (inspirace treba v clanku o Slepych mapach, nebo zdroje ALG)
-
 The collection of persistent information about the student which is used to decide which skill to practice next is called the \textit{student model} \cite{tutoring-systems-behavior}.
 It usually includes information about which skills have been mastered by the student
 (and to which extent),
@@ -1324,21 +1322,32 @@ This dynamic adjustment of target probability proved to be useful -- it increase
 \section{Question Selection}
 \label{sec:question-selection}
 
-NOTE: predchozi sekce (mozna to mely byt jen podsekce, ale to je jedno) se zabyvaji, tim, jak modelovat znalost studenta a obtiznost konceptu/faktu. To je jedna z komponent, kterou pro vyber vhodne otazky potrebujeme.
-
-Kriteria, ktera jsou dulezita pro vyber vhodne otazky:
-
+In the previous sections, we discussed how to estimate students' knowledge and how to dynamically adjust target difficulty of questions.
+Using these two components, we can find the question with the optimal difficulty.
+However, several criteria should be considered to select the question which is the most useful for the student and difficulty is just one of them.
 \begin{myItemize}
-  \item relevance -- obecne relevance pro studenta, v nasem kontextu hlavne relevance k danemu tematu, v jinem to muze znamenat vice aktualni relevanci - co zrovna ted potrebuje student procvicit nejvice (least known concept -- napr. \cite{question-gen-adapt-bayes} ... neni potreba uplne resit pokud cekam, ze tam bude uzivatel dost dlouho a casem se dostnane ke vsemu)
-  \item difficulty -- pro testovani je nejvhodnejsi, pokud je pravdepodobnost spravne odpovedi 50 procent (takova otazka pak poskytuje nejvice informaci o studentovych znalostech), ale pro procvicovani je je 50 procent uz dost malo a pusobi spise deprimacne, takze je dobre mirit vyse (napr. ve slepych mapach je 75 procent \cite{slepe-mapy-motivation}), rozhodne ne zas moc lehke, je to potreba vybalancovat (flow).
-  \item variability -- to muze v ruznych kontextech znamenat ruzne veci, napr. stridat typy otazek, nebo neptat se na jeden pojem 2 krat za sebou (i kdyz jinou otazkou)
+  \item \textbf{Relevance}\\
+    The question should be relevant to the practiced topic.
+    A possible approach to ranking the relevance of questions was described in \autoref{sec:questions-ranking-filtering}.
+    Besides this \emph{objective relevance} which is independent of the student and the practice session,
+    there is also what we could call \emph{subjective relevance}, i.e. what concept is the most relevant to the student right now.
+    The subjective relevance changes during the practice, as some parts of the article are already practiced and some are not.
+    Generally, the most relevant for the student is what he needs to pratice most, i.e.
+    \emph{the least known concept} \cite{question-gen-adapt-bayes}.
+
+  \item \textbf{Difficulty}\\
+    We already discussed that the optimal probability of correct answer is about 70 \% and we also mentioned a method for dynamic adjustment of this target probability (\autoref{sec:target-difficulty}).
+    Using a student model (\autoref{sec:knowledge-estimation}) we can estimate the probability that a student would answer given question correctly.
+    The more closer is the estimated probability to the target probability, the more is this question preferred.
+
+  \item \textbf{Variability}\\
+    Especially important is the variability in the practiced concepts.
+    If one concept is practiced in several questions in a row, it gets quickly boring, and it negatively influences both the relevance (as the student would like to practice other concepts from the article as well) and the difficulty (since it is easier to answer questions about the same concept which was already practiced).
+    Besides this crucial variabilty of concepts,
+    variability of question types may also help (diversity increases enjoyment) \cite{question-gen-adapt-bayes}.
 \end{myItemize}
-
-Casty pristup je takovyto: tato (pripadne i nejaka dalsi) kriteria se pak mohou podili nejakou vahou na skore otazky, vybrana je pak otazka s nejvyssim skore (napr. slepe mapy -- citovat)
-
-Dalsi takovy system je
-DynaLearn \cite{question-gen-adapt-bayes}, vyuziva BKT pro modelovani studentovych znalosti a obtiznosti konceptu,  domenove nezavisle, vyber tematu otazky: least known concept, vyber konkretni otazky: bere se v uvahu primerena obtiznost a pestrost typu otazek....
-selects question from a list of generated question based on its type (aims at variaty of asked question types) and difficulty.
+Common approach is to use an appropriate scoring function for each of the considered criteria, and then obtain the total score as a linear combination of individual scores \cite{slepe-mapy}.
+The question with the highest total score is selected and presented to the student.
 
 
 
