@@ -261,18 +261,7 @@ Answer:   & \emph{#3}\\
 \end{ThesisDeclaration}
 
 \begin{ThesisThanks}
-
-  TODO (Sir, NLP a ALG)
-%I'd like to thank Petr for his guidance, enthusiasm and inspiring discussions.
-%I also owe much to my mom and brother for their continuous support. Thank you.
-
-%\noindent
-%Further thanks goes to all my friends who had to put up with my enthusiasm
-%and numerous research details they may have never asked for $\ddot\smile$.
-
-%\noindent
-%Last but not least, I'd like to acknowledge the Laboratory of Security and Applied Cryptography and
-%the National Grid Infrastructure MetaCentrum for providing access to their computing and storage facilities.
+  TODO (Sir, NLP, ALG, a dalsim lidem, kteri to pomohli otestovat a meli dobre pripominky)
 \end{ThesisThanks}
 
 \begin{ThesisAbstract}
@@ -281,7 +270,9 @@ When studying, it is more efficient not just to read about the topic, but also t
 
 \begin{ThesisKeyWords}
 % TODO: profiltrovat na ty opravdu relevantni
-knowledge representation, question generation, adaptive practice, learning,
+question generation, adaptive practice,
+knowledge representation, knowledge extraction,
+learning,
 multiple choice questions
 %artificial intelligence, natural language processing,
 \end{ThesisKeyWords}
@@ -1138,7 +1129,20 @@ Although the ideal success rate may vary for different people,
 it is for simplicity usually treated as a constant;
 e.g. some systems target at 75 \% \cite{slepe-mapy,adaptive-practice-irt-math}.
 
-MaybeTODO: flow diagram (svuj, ale citace na myslenku)
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[xscale=5, yscale=5]
+  \draw [gray, fill=gray] (0,0) -- (0.1,0) -- (1,0.8) -- (0.8,1) -- (0,0.1) -- (0,0);
+  \draw [thick, <->] (0,1) node [left] {$challenge$} -- (0,0) -- (1,0) node [below right] {$skill$};
+  \large
+  \node at (0.27,0.82) {frustration};
+  \node at (0.7,0.7) {\textbf{flow}};
+  \node at (0.7,0.2) {boredom};
+  \end{tikzpicture}
+  \caption{Relationship between challenge and skill \cite{flow}.}
+  \label{fig:flow}
+\end{figure}
 
 Intelligent tutoring systems use answers (attempts) of learners to estimate both knowledge (skill) of each learner and the difficulty of all facts (tasks).
 As most people use these tutors repeatedly and not only once, the process of learning can be also captured
@@ -1158,10 +1162,6 @@ The system shall ask questions, which are relevant to the topic, ideally coverin
 In \autoref{sec:knowledge-estimation}, I describe several common models of a student used to estimate one's knowledge, then I briefly mention dynamic adjustment of target difficulty (\autoref{sec:target-difficulty}),
 and finally I discuss the selection of best question (\autoref{sec:question-selection}).
 
-% ---------------------------  SECTION  ---------------------------
-%\section{Student Modeling}
-%\label{sec:student-model}
-% NOTE: kdyby toho bylo hodne, je to mozne rozdeleit do 2 kapitol (Student Modeling a Knowledge Estiamtion)
 
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Estimation}
@@ -1174,47 +1174,107 @@ It usually includes information about which skills have been mastered by the stu
 (and to which extent),
 but other information may be also useful, e.g. enjoyment and motivation of the student \cite{learner-skill-models-review}.
 
-In the settings of facts practicing, student model is used to estimate the probability that the given student knows a given fact \cite{slepe-mapy}.
-(MaybeTODO: o tom, ze se zamerime hlavne na odhad prior knowledge (protoze uceni nas nezajima)
+In the settings of facts practicing, student model is used to estimate the probability that given student knows a given fact \cite{slepe-mapy}.
+(MaybeTODO: o tom, ze se zamerime hlavne na odhad prior knowledge (protoze uceni nas nezajima))
+(MaybeTODO: predpoklad homogenity faktu i uzivatelu)
 The most common student models for knowledge estimation are described in the following paragraphs.
 \begin{myItemize}
 \item \textbf{Logistic model}\\
-  One parameter logistic model, also called Rash model; neuvazuje uceni
-  znalost studenta daneho faktu dana parametrem $k$ a obtiznost otazky dana parametrem $d$, vypada odhad spravne odpovedi nasledovne:
-\begin{equation}\label{eq:logistic}
-P(k, d) = \frac{1}{1 + e^{-(k - d)}}
-\end{equation}
-Vlastnosti:, ze je to vzdy mezi 0 a 1
-In case of multiple choice questions with $n$ options (tj. pravdepodobnost nahodneho uhadnuti je $\frac{1}{n}$):
+  One-parameter logistic model is the basic model of student in the
+  \emph{item response theory} \cite{visual-irt}.
+  This model uses logistic function with a single paremeter $d$, which denotes the difficulty of the fact.
+  The probabily, that the student with knowledge $k$ knows a fact with difficulty $d$ is given by the formula:
+  \begin{equation}\label{eq:logistic}
+  P(k, d) = \frac{1}{1 + e^{-(k - d)}}
+  \end{equation}
+  The logistic funcion is suitable for probability modeling, because it ranges from $0$ to $1$ for any possible input.
+  In case of multiple choice questions, we need to adjust the formula a little bit to account for the possiblity of guessing.
+  With $n$ options, the probability of correct guess is $\frac{1}{n}$.
 \begin{equation}\label{eq:logistic-mcq}
-P(k, d) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(s - d)}}
+P(k, d, n) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(k - d)}}
 \end{equation}
-(Mozne TODO: graf)
-TODO: uceni parametru: joint maximum likelihood estimation (odkaz), offline, potreba dost dat a je to pomale a obzvlaste nevhodne pro online aplikace, kde je idealni kontinualni update
+TODO: graf, mozna oba\\
+TODO: parameters estimation\\
+MaybeTODO: neuvazuje uceni, existuji rozsireni, viz dale
 
-\item \textbf{Performance factor analysis}\\
-rozsireni logistickeho modelu, aby uvazoval menici se odhad skillu,
-pravdepodobnost spravne odpovedi je stale dana logaritmickou funkci, ale neni zavisla na konstantnim rozdilu znalosti studenta a obtiznosti faktu, ale na linearni kombinaci obtiznosti a poctu studentovych spravnych a poctu chybnych odpovedi na prislusnou otazku ($m = d + \alpha \cdot correctCount + \beta \cdot incorrectCount$).
-Vsimneme si, ze v uvahu nebere poradi spravnych a spatnych odpovedi, pouze jejich obsolutni pocet (tj. neumi rozlisit mezi tim, ze jsem 10 krat odpovedel spatne a pak 10 krat dobre a mezi tim, ze odpovidam jednou dobre a jednou spatne.)
+\begin{figure}[h]
+  \centering
 
-Dalsi problem je, ze nebere v uvahu moznost tipovani (coz je potreba u multiple choice otazek).
+  \begin{tikzpicture}[domain=-2:4, smooth, samples=20, scale=1]
+  \draw [thick, ->] (-2,0) -- (4,0) node [below right] {$k$};
+  \draw [thick, ->] (0,0) -- (0,2.5) node [left] {$P(k,d)$};
+  \draw [thick] (-0.1,1) node [left] {$0.5$} -- (0.1,1);
+  \draw [thick] (-0.1,2) node [left] {$1$} -- (0.1,2);
+  \draw [thin, dashed] (0,2) -- (4,2);
+  \draw [thin, dashed] (0,1) -- (1,1) -- (1, 0);
+  \draw [thin, dashed] (-0.57,2) -- (-2,2);
+  \draw [thick] (1,0.1) -- (1,-0.1) node [below] {$d$};
+  \draw plot (\x, {2 / (1 + exp(1 - \x))});
+  \end{tikzpicture}
+  \begin{tikzpicture}[domain=-2:4, smooth, samples=20, scale=1]
+  \draw [thick, ->] (-2,0) -- (4,0) node [below right] {$k$};
+  \draw [thick, ->] (0,0) -- (0,2.5) node [left] {$P(k,d,n)$};
+  \draw [thick] (-0.1,2) node [left] {$1$} -- (0.1,2);
+  \draw [thick] (-0.1,0.5) node [left] {$\frac{1}{n}$} -- (0.1,0.5);
+  \draw [thin, dashed] (0,2) -- (4,2);
+  \draw [thin, dashed] (0,1.25) -- (1,1.25) -- (1, 0);
+  \draw [thin, dashed] (-0.57,0.5) -- (-2,0.5);
+  \draw [thin, dashed] (-0.57,2) -- (-2,2);
+  \draw [thin, dashed] (0,0.5) -- (4,0.5);
+  \draw [thick] (1,0.1) -- (1,-0.1) node [below] {$d$};
+  \draw plot (\x, {0.5 + 1.5 / (1 + exp(1 - \x))});
+  \end{tikzpicture}
+  \caption{Logistic model without guessing (left) and with guessing (right)}
+  \label{fig:logistic-function}
+\end{figure}
 
 
 \item \textbf{Elo model}\\
-TODO: inspirovane hodnocenim sachovych hracu \cite{elo-rating}, mozna i napred trochu popsat, jak to funguje tam a pak teprve ta analogie na nasi situaci
+  Elo model extends the logistic model to capture changing knowledge.
+  The model is inspired by the rating of chess players \cite{elo-rating} and interprets each attempt of a student to answer an question as a ``match'' between the student and the question.
+  According to the result $R$ of the match (1 for correct and 0 for incorrect answer)
+  and the expected result $P(k, d)$
+  (computed by the one-parameter logistic function \ref{eq:logistic}, or \ref{eq:logistic-mcq})
+  the knowledge $k$ and diffiulcty $d$ are updated as follows:
+  \begin{equation}\label{eq:elo}
+  \begin{array}{l}
+      k \gets k + K \cdot (R - P(k, d))\\
+      d \gets d - K \cdot (R - P(k, d))
+  \end{array}
+\end{equation}
+The difference $(R - P(k, d))$ express how much the result was unexpected (or ``surprise'').
+The $K$ parameter influences the weight of the last match to the current estimate.
+(a ze to muze byt fce)
 
-Je to dalsi zpusob, jak rozsirit Rash model o uceni, odhad spravne odpovedi zustava stejny logisticky model (odkaz na ten vzorecek). Skill se updatuje po "zapasu" mezi studentem a otazkou (faktem) nasledovne,
-kde $s$ je skill studenta, $R$ je result (1 if the answer was correct, 0 if incorrect).
-$$
-s \gets s + K \cdot (R - P(R = 1))
-$$
+
+
+
+
+O prior knowledge estimation:
+If $K$ is too large, estimation is unstable; if it's too small, estimation is belated.
+For this reason, it is of
+
+
+
+
+podobne logistickemu modelu, ale nabize 2 mozne vyuziti: bud modelovani uceni nebo jako online metoda odhadu global prior knowledge \cite{slepe-mapy}
 
 NOTE: Lze pouzit (a ve Slepych mapach \cite{slepe-mapy} se pouziva) i pro odhad prior knowledge (a global difficulty faktu)
 (Oproti Rash modelu asi nema v tomto ohledu tak dobrou semantiku (viz clanek slepe-mapy), ale zato se lepe pocita, vhodny pro online system; navic experimenty ukazuji, ze se to chova podobne (odkaz opet v clanku ve slepe-mapy).
 Pak je ale problem with constant K: kdyz je moc mala, tak je uceni pomale, kdyz je velke, tak nestabilni, je tedy vhodne (a pouziva se v Slepe mapy -- viz \cite{slepe-mapy}, mozna odkaz spis primo na system) pouzit misto konstanty
 uncertainty function, e.g. $K = \frac{a}{1 + bn}$, kde $n$ je kolik otazek uz uzivatel zodpovedel (nebo obracene, kolik otazek na dane misto jiz bylo zodpovezeno) a $a$ a $b$ jsou fixne zvolene parametry.
 
+\item \textbf{Performance factors analysis}\\
+  Performance factors analysis \cite{performance-factors-analysis} is similar to the logistic model presented above, but enables to capture learning.
+
+  extends the logistic model to capture ch
+rozsireni logistickeho modelu, aby uvazoval menici se odhad skillu,
+pravdepodobnost spravne odpovedi je stale dana logaritmickou funkci, ale neni zavisla na konstantnim rozdilu znalosti studenta a obtiznosti faktu, ale na linearni kombinaci obtiznosti a poctu studentovych spravnych a poctu chybnych odpovedi na prislusnou otazku ($m = d + \alpha \cdot correctCount + \beta \cdot incorrectCount$).
+Vsimneme si, ze v uvahu nebere poradi spravnych a spatnych odpovedi, pouze jejich obsolutni pocet (tj. neumi rozlisit mezi tim, ze jsem 10 krat odpovedel spatne a pak 10 krat dobre a mezi tim, ze odpovidam jednou dobre a jednou spatne.)
+
 NOTE: Moznost zkombinovat PFA a Elo (viz \cite{slepe-mapy}, nazyvaji to PFAE, kde E muze znamenat bude Elo nebo Extended), porad stejna logisticka funkce, nyni vzhledem k $K_{sf}$, coz je odhad, ze student $s$ zna fakt $f$. Tato promenna (odhad) se updatuje po kazde otazce studenta $s$ na otazku na fakt $f$ podle vzorce pro Elo (odkaz), akort misto jedne konstanty $K$ se pouzivaji 2 ruzne pri spravne vs. spatne odpovedi.
+
+
 
 
 \item \textbf{Bayesian knowledge tracing}\\
@@ -1232,6 +1292,23 @@ Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (t
 % ---------------------------  SECTION  ---------------------------
 \section{Dynamic Target Difficulty Adjustment}
 \label{sec:target-difficulty}
+
+\begin{figure}[h]
+  \centering
+    \begin{tikzpicture}[scale=5]
+    \draw [thick] (0,1) -- (0,0) -- (1,0);
+    \draw (0,1) node [align=center, above] {$adjusted~target$\\$probability$};
+    \draw (1,0) node [right] {$success~rate$};
+    \draw [thick] (1,0) -- (0.75,0.75) -- (0,1);
+    \draw [thick] (-0.03,1) node [left] {$1$} -- (0.03,1);
+    \draw [thick] (-0.03,0.75) node [align=right,left] {target\\probability} -- (0.03,0.75);
+    \draw [thick] (1,-0.03) node [below] {$1$} -- (1,0.03);
+    \draw [thick] (0.75,-0.03) node [align=center,below] {target\\probability} -- (0.75,0.03);
+    \draw [thin, dashed] (0,0.75) -- (0.75,0.75) -- (0.75,0);
+    \end{tikzpicture}
+  \caption{Function describing adjustment of target probability}
+  \label{fig:adjusted-target-probability}
+\end{figure}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Question Selection}
