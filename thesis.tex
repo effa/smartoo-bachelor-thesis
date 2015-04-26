@@ -1119,30 +1119,30 @@ TODO (important): ze muzeme rankovat ruzne atributy (napr. korektnost, relevanci
 
 TODO (cela kapitola): doplnit relevantni citace (a poznamky), obrazky a grafy, dale promyslet (a otestovat na simulovanych datech) vyuziti modelu ve Smartoo (napr. PFA)
 
-The goal of \emph{computerized adaptive practice} [cite:treba adaptive-practice-irt-math]
+The goal of \emph{computerized adaptive practice} \cite{adaptive-practice-irt-math}
 is to make the practice as efficient as possible.
-This is related to, but different from the \emph{computerized adaptive testing} [citovat]
+This is related to, but different from the \emph{computerized adaptive testing} \cite{computerized-adaptive-testing},
 which aims at precise and reliable measuring of student's knowledge (or skill).
 There are many systems providing practice customized to the learner,
-these systems are called \emph{intelligent tutoring systems} (cite:tutoring-systems-behavior).
-Some of them focus on the procedural knowledge (such as solving math problems) [citace,konkretni systemy, napr. Math Garden a clanek o souvisejim vyzkumu adaptive-practice-irt-math],
+these systems are called \emph{intelligent tutoring systems} \cite{tutoring-systems-behavior}.
+Some of them focus on the procedural knowledge (such as solving math problems) \cite{adaptive-practice-irt-math},
 other on adaptive practice of facts \cite{slepe-mapy}.
 
 For practice to be efficient, it is important to balance difficulty of the task with respect to the learner.
 If the practice is too easy, the learner doesn't learn anything new and quickly becomes bored.
 On the other hand, if it is too difficult, the learner becomes anxious and frustrated.
-Hence, the key of efficient adaptive practice is to find the optimal difficulty.
+Hence, the key of efficient adaptive practice is to find the optimal difficulty --
 Thomas Butt talks about ``the sweet spot of learning'' \cite{adaptive-practice}.
 Generally, the ideal state of absolute immersion, focus and enjoyement is called \emph{flow} \cite{flow}.
-Alhough the ideal success rate may vary for different people,
+Although the ideal success rate may vary for different people,
 it is for simplicity usually treated as a constant;
 e.g. some systems target at 75 \% \cite{slepe-mapy,adaptive-practice-irt-math}.
 
 MaybeTODO: flow diagram (svuj, ale citace na myslenku)
 
-Intelligent tutoring systems use attempts (answers) of learners to estimate both skill (knowledge) of each learner and the difficulty of all facts (or tasks).
+Intelligent tutoring systems use answers (attempts) of learners to estimate both knowledge (skill) of each learner and the difficulty of all facts (tasks).
 As most people use these tutors repeatedly and not only once, the process of learning can be also captured
-and the systems may even have special estimate parameter for each learner-fact pair \cite{slepe-mapy}.
+and the systems may have special estimate parameter for each learner-fact pair \cite{slepe-mapy}.
 
 Our situation is, however, different, as there is no limited set of facts.
 In each practice session, tens (or even hundreds) of new questions are generated
@@ -1156,7 +1156,7 @@ Having the limitations in mind, we can now formulate the goal of the adaptive pr
 The system shall ask questions, which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequatly difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
 
 In \autoref{sec:knowledge-estimation}, I describe several common models of a student used to estimate one's knowledge, then I briefly mention dynamic adjustment of target difficulty (\autoref{sec:target-difficulty}),
-and finally I discuss the selection of best question \autoref{sec:question-selection}.
+and finally I discuss the selection of best question (\autoref{sec:question-selection}).
 
 % ---------------------------  SECTION  ---------------------------
 %\section{Student Modeling}
@@ -1169,10 +1169,14 @@ and finally I discuss the selection of best question \autoref{sec:question-selec
 
 TODO: vsude doplnit citace (inspirace treba v clanku o Slepych mapach, nebo zdroje ALG)
 
-obecne o tom, co to je \textit{student model}, rika pravdepodobnost, ze student odpovi spravne na nejakou otazku
-... taky o tom, ze se zamerime hlavne na odhad prior knowledge (protoze uceni nas nezajima)
+The collection of persistent information about the student which is used to decide which skill to practice next is called the \textit{student model} \cite{tutoring-systems-behavior}.
+It usually includes information about which skills have been mastered by the student
+(and to which extent),
+but other information may be also useful, e.g. enjoyment and motivation of the student \cite{learner-skill-models-review}.
 
-
+In the settings of facts practicing, student model is used to estimate the probability that the given student knows a given fact \cite{slepe-mapy}.
+(MaybeTODO: o tom, ze se zamerime hlavne na odhad prior knowledge (protoze uceni nas nezajima)
+The most common student models for knowledge estimation are described in the following paragraphs.
 \begin{myItemize}
 \item \textbf{Logistic model}\\
   One parameter logistic model, also called Rash model; neuvazuje uceni
