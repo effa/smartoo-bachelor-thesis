@@ -1108,8 +1108,6 @@ TODO (important): ze muzeme rankovat ruzne atributy (napr. korektnost, relevanci
 \chapter{Adaptive Practice}
 \label{chap:practice}
 
-TODO (cela kapitola): doplnit relevantni citace (a poznamky), obrazky a grafy, dale promyslet (a otestovat na simulovanych datech) vyuziti modelu ve Smartoo (napr. PFA)
-
 The goal of \emph{computerized adaptive practice} \cite{adaptive-practice-irt-math}
 is to make the practice as efficient as possible.
 This is related to, but different from the \emph{computerized adaptive testing} \cite{computerized-adaptive-testing},
@@ -1178,7 +1176,7 @@ The most common student models for knowledge estimation are described in the fol
 \item \textbf{Logistic model}\\
   One-parameter logistic model is the basic model of student in the
   \emph{item response theory} \cite{visual-irt}.
-  This model uses logistic function with a single paremeter $d$, which denotes the difficulty of the fact.
+  This model uses logistic function with a paremeter $d$, which denotes the difficulty of the fact.
   The probabily, that the student with knowledge $k$ knows a fact with difficulty $d$ is given by the formula:
   \begin{equation}\label{eq:logistic}
   P(k, d) = \frac{1}{1 + e^{-(k - d)}}
@@ -1189,8 +1187,10 @@ The most common student models for knowledge estimation are described in the fol
 \begin{equation}\label{eq:logistic-mcq}
 P(k, d, n) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(k - d)}}
 \end{equation}
-TODO: parameters estimation, asi joint maximum likelihood estimation, napr: R. De Ayala. The theory and practice of item response theory. The Guilford Press, 2008.\\
-MaybeTODO: ze neuvazuje uceni
+MaybeTODO: ze neuvazuje uceni, pro nas ok
+TODO: parameters estimation, obvykle joint maximum likelihood estimation, napr: R. De Ayala. The theory and practice of item response theory. The Guilford Press, 2008,
+ale nase situace je jina: mamem odhady obtiznosti otazek a vzhledem k temto odhadum chceme nafitovat odhad znalosti k.
+
 
 \begin{figure}[h]
   \centering
@@ -1242,13 +1242,13 @@ The $K$ parameter influences the weight of the last match to the current estimat
 % NOTE: lze podotknout, ze misto konstanty K se casto pouziva funkce (uncertainty function), mozna citace na Glicko
 Although the primary use of Elo model was to describe the process of learning,
 it can be also used for the gradual improvements of estimates for prior knowledge of students and difficulty of facts \cite{slepe-mapy}.
-The possible problem is hidden in constant $K$ -- if it's too large, estimation is unstable; if it's too small, estimation converges too slowly.
+However, the constat $K$ is problematic -- if it's too large, estimation is unstable; if it's too small, estimation converges too slowly.
 For this reason, instead of some consant, an attenuation function
-\[
+\begin{equation}\label{eq:attenuation}
   K(m) = \frac{a}{1 + bm}
-\]
+\end{equation}
 ($m$ is the order of the match, $a$ and $b$ are fixed parameters) can be used.
-The main advantage of using the Elo model to estimate the prior knowledge and difficulties in compasion with the joint maximum likelihoood estimation technique (odkaz vyse) is its simplicity and intrinsic online nature.
+The main advantage of using the Elo model to estimate the prior knowledge and difficulties in comparision with the joint maximum likelihoood estimation technique (odkaz vyse) is its simplicity and intrinsic online nature.
 Experiments suggest that it leads to similar results as the joint maximum likelikhood estimation \cite{slepe-mapy-time-elo}.
 
 \item \textbf{Performance factors analysis}\\
@@ -1256,10 +1256,8 @@ Experiments suggest that it leads to similar results as the joint maximum likeli
   According to this model, the probability that a student answers correctly to a question
   depends on the difficulty $d$ of the question and number of correct ($a$) and incorrect ($b$) answers of the student to this question in the past. The exact formula is:
   \begin{equation}\label{eq:pfa}
-  \begin{array}{c}
-  P(a, b, d) = \frac{1}{1 + e^{-k}}\\
-  \text{where } k = \alpha \cdot a + \beta \cdot b - d
-  \end{array}
+  P(a, b, d) = \frac{1}{1 + e^{-k}}
+  \text{~~where~~} k = \alpha \cdot a + \beta \cdot b - d
   \end{equation}
   The main drawback of this model is that it ignores the order of answers,
   so answering firstly 10 times incorrecly and then 10 time incorrecly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
@@ -1686,6 +1684,58 @@ $$
 An exercise with the highest score is chosen.
 
 TODO: priklad 1 session, otazek a odpovidani na, aby bylo videt prizpusobovani -- takze mozna jen pomoci nejakeho grafu s vyznacenymi dobrymi a spatnymi odpovedmi a aktualni target difficulty.
+
+\begin{figure}[h]
+  \centering
+
+  \begin{tikzpicture}[xscale=1,yscale=2]
+  \draw [thick, ->] (0,0) -- (9,0) node [below right] {$questions$};
+  \draw [thick, ->] (0,-0.15) -- (0,1.5) node [align=right, left] {$knowledge$\\$estimate$};
+  %\draw [thick] (-0.1,1) node [left] {$0.5$} -- (0.1,1);
+  %\draw [thick] (-0.1,2) node [left] {$1$} -- (0.1,2);
+  \draw [thin, dashed] (0,1.2) -- (9.2,1.2) node [right] {$true~knowledge$};
+  \draw [very thick] (0,0)
+    -- (1,0.29)
+    -- (2,-0.05)
+    -- (3,0.35)
+    -- (4,0.76)
+    -- (5,1.25)
+    -- (6,1.31)
+    -- (7,1.29)
+    -- (8,0.94)
+    -- (4(9,1.19);
+  \end{tikzpicture}
+  \caption{Convergency of knowledge estimate}
+  \label{fig:logistic-function}
+\end{figure}
+
+TODO: tikz - popisky os
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| c | c | c | c | c | c | c |}
+  \hline
+  & knowledge est. &  target & difficulty & probability est. & true probability & answer\\
+  \hline \hline
+  $1$ & $+0.000$ & $0.65$ & $-0.2$ & $0.662$ & $0.852$ &  correct   \\ \hline
+  $2$ & $+0.290$ & $0.52$ & $+0.8$ & $0.531$ & $0.699$ &  incorrect \\ \hline
+  $3$ & $-0.050$ & $0.69$ & $-0.4$ & $0.690$ & $0.874$ &  correct   \\ \hline
+  $4$ & $+0.346$ & $0.63$ & $+0.4$ & $0.615$ & $0.767$ &  correct   \\ \hline
+  $5$ & $+0.760$ & $0.50$ & $+1.4$ & $0.509$ & $0.588$ &  correct   \\ \hline
+  $6$ & $+1.250$ & $0.41$ & $+1.8$ & $0.524$ & $0.516$ &  correct   \\ \hline
+  $7$ & $+1.305$ & $0.34$ & $+1.8$ & $0.534$ & $0.516$ &  incorrect \\ \hline
+  $8$ & $+1.294$ & $0.54$ & $+1.8$ & $0.532$ & $0.516$ &  incorrect \\ \hline
+  $9$ & $+0.941$ & $0.66$ & $+0.8$ & $0.651$ & $0.699$ &  correct   \\ \hline
+ $10$ & $+1.191$ & $0.62$ & $+1.2$ & $0.623$ & $0.625$ &  incorrect \\ \hline
+\end{tabular}
+\end{center}
+\caption{Adaptive practice for a student with knowledge 1.2}
+\end{table}
+
+
+Zminit uzitecnost dynamickeho prizpusobovani obtiznosti, zejm. pro studenty, kteri toho vi hodne / malo.
+
+
 
 
 % ---------------------------  SECTION  ---------------------------
