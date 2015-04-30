@@ -607,25 +607,26 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
 \chapter{Question Generation}
 \label{chap:exercises}
 
-In this chapter I describe the state-of-the-art in the field of question generation.
-First question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
+The first question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
 and up to now (2015), several approaches to the task of question generation were proposed.
-Every system use different methods and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target groups and use different evaluation metrics.
+Every system uses different methods and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target groups and use different evaluation metrics.
 For example some systems try to assess vocabulary \cite{question-gen-vocabulary}
 or reading comprehension \cite{question-overgenerating-rating},
 some focus on factual texts \cite{question-gen-heilman}
-and sometimes authors use for evalution only a single textbook or a topic, such as linguistic \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
+and sometimes authors use for evalution only a single textbook or a topic, such as linguistics \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
 
-Juding by reported performances of the systems, question generation is still open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
-Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system, it outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Ideally, there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually
+Based on reported performances of the systems, it can be concluded that question generation is still open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
+Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system,
+the system outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Ideally, there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually
 \cite{question-gen-mitkov}.
 
 Although the chapter is called \textit{question generation},
 it is possible to create more complex exercises as well.
-Broader range of exercises is especially usefull if we want not only to assess one's knowledge, but rather to deep his or her remembering and understanding of the text,
-because for people to remember something it must  entertain them and to entertain them it must be diverse.
-However, all the systems I came accross generated only questions, most often multiple choice questions.
-\textit{Multiple choice questions} consists of a question text (called \textit{stem})
+Broader range of exercises is especially useful if we want not only to assess one's knowledge, but rather to deepen his or her remembering and understanding of the text.
+Generally, people are more likely to remember things that entertain them.
+However, complex exercises are more difficult to implement and evaluate,
+so usually only questions are generated, most often multiple choice questions.
+\textit{Multiple choice questions} consist of a question text (called \textit{stem})
 and a few (e.g. four) \textit{choices}, from which one is the \textit{correct answer}
 and the rest are incorect alternatives (called \textit{distractors}).
 Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question},
@@ -633,31 +634,34 @@ in which the stem is a sentence with a blank space which should be filled with t
 
 Although the approaches to the question generation are diverse,
 some common tasks can be identifed throughout the systems.
-The general worklow has the following 5 steps, although some of them may be missing in some systems.
+The general worklow has the following 5 steps, although some of them may be missing in some systems:
 \begin{myEnumerate}
 \item First, text of the article is pre-processed.
 Pre-processing can range from mere sentence filtering,
 to text rephrasing, and even to knowledge extraction from the text and building a knowledge graph
 (\autoref{sec:text-pre-processing}).
 
-\item The text is then scanned for the patterns which define transformations from sentences to a question-answer pair.
-  Everytime a pattern is matched, a new question and an answer is generated
+\item The text is then scanned for the patterns which define transformations from sentences to a question-answer pairs.
+  Everytime a pattern is matched, a new question and the corresponding answer is generated
   (\autoref{sec:sentence-transformations}).
   If a knowledge graph is used instead of text, the procedure is similar, except that now we have transformations from facts in the knowledge graph. The main advatage is that we can make use of relationships between subjects in the graph and thus create questions which span more then one sentence in the original article
   (\autoref{sec:exercises-from-knowledge-graph}).
 
-\item In case of multiple choice questions, suitable distractors (incorrect alternatives) need to be selected
+\item In case of multiple choice questions, suitable distractors (incorrect alternatives) are selected
 (\autoref{sec:distractors}).
 
-\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end. Instead of direct filtering, we can rank the questions and either select some number of questions with the highest rank
+\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end. Instead of direct filtering, we can rank the questions and either select some predefined number of questions with the highest rank
   (\autoref{sec:questions-ranking-filtering}) or employ adaptive practice (\autoref{chap:practice}).
+In adaptive practice, decisions about which question is next presented to the student
+are not made in advance, but during the practice itself,
+based on already answered questions and success of the student.
 \end{myEnumerate}
 
 % ---------------------------  SECTION  ---------------------------
 \section{Text Pre-processing}
 \label{sec:text-pre-processing}
 
-Usually, the text of the document is pre-processed in some way before it is used for question generation.
+Usually, the text of the document is pre-processed before it is used for question generation.
 Pre-processing may
 add useful information to the text (e.g. part-of-the-speech tags, semantic role labels),
 remove useless sentances, modify (rephrase) sentences or even create different (more machine readable) representation of the knowledge contained in the article, such as a knowledge graph.
@@ -1136,7 +1140,7 @@ Generally, the ideal state of absolute immersion, focus and enjoyement is called
   \node at (0.6,0.6) {flow};
   \node at (0.7,0.2) {boredom};
   \end{tikzpicture}
-  \caption{Relationship between challenge and skill \cite{flow}.}
+  \caption{Relationship between challenge and skill.}
   \label{fig:flow}
 \end{figure}
 
@@ -1148,8 +1152,8 @@ Our situation is, however, different, as there is no limited set of facts.
 In each practice session, tens (or even hundreds) of new questions are generated
 and we don't know much neither about the questions, nor about the learner's knowledge of the topic.
 As there is usually so many generated questions, we can't ask learner all of them,
-but carefully select just a few questions, which are the most relevant to the learner and are not too easy or too difficult.
-The generated questions are (usually) brand-new, so we necessarily need to rank them for relevance and difficulty estimation (and possibly other attributes as well) as described in \autoref{sec:questions-ranking-filtering},
+but carefully select just a few questions, which are the most relevant to the learner and are not too easy nor too difficult.
+The generated questions are brand-new, so we necessarily need to rank them for relevance and difficulty estimation (and possibly other attributes as well) as described in \autoref{sec:questions-ranking-filtering},
 otherwise there is no way to distinguish between generated questions.
 
 Having the limitations in mind, we can now formulate the goal of the adaptive practice in the settings of the automatically generated questions.
@@ -1164,14 +1168,13 @@ and finally I discuss the selection of best question (\autoref{sec:question-sele
 \label{sec:knowledge-estimation}
 
 The collection of persistent information about the student which is used to decide which skill to practice next is called the \textit{student model} \cite{tutoring-systems-behavior}.
-It usually includes information about which skills have been mastered by the student
+It may include information about which skills have been mastered by the student
 (and to which extent),
-but other information may be also useful, e.g. enjoyment and motivation of the student \cite{learner-skill-models-review}.
+or even enjoyment and motivation of the student \cite{learner-skill-models-review}.
 
 In the settings of facts practicing, student model is used to estimate the probability that given student knows a given fact \cite{slepe-mapy}.
-(MaybeTODO: o tom, ze se zamerime hlavne na odhad prior knowledge (vs. current knowledge) (protoze uceni nas nezajima))
-(MaybeTODO: predpoklad homogenity faktu i uzivatelu)
-The most common student models for knowledge estimation are described in the following paragraphs.
+The most common student models for factual knowledge are described
+in the following paragraphs.
 \begin{myItemize}
 \item \textbf{Logistic model}\\
   One-parameter logistic model is the basic model of student in the
@@ -1187,10 +1190,14 @@ The most common student models for knowledge estimation are described in the fol
 \begin{equation}\label{eq:logistic-mcq}
 P(k, d, n) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(k - d)}}
 \end{equation}
-MaybeTODO: ze neuvazuje uceni, pro nas ok
-TODO: parameters estimation, obvykle joint maximum likelihood estimation, napr: R. De Ayala. The theory and practice of item response theory. The Guilford Press, 2008,
-ale nase situace je jina: mamem odhady obtiznosti otazek a vzhledem k temto odhadum chceme nafitovat odhad znalosti k.
-
+Given enough data, model parameters can be estimated using
+one of \emph{maximum likelihood estimation} algorithm \cite{irt-theory-and-practice}.
+However, since we use generated questions, we do not have any data about students' answers to them.
+That is why we need to have some heuristic estimates of difficulty (\autoref{sec:questions-ranking-filtering}).
+Student knowledge is then estimated using questions he or she already answered and their difficulties,
+according to \emph{maximum likelihood principle}, i.e. the knowledge level is selected which maximizes the likelihood of the student history.
+Although this cannot be solved analytically, fast numeric methods can be used,
+e.g. \emph{Newton-Raphson method} \cite{irt-ability-estimation}.
 
 \begin{figure}[h]
   \centering
@@ -1243,16 +1250,17 @@ The $K$ parameter influences the weight of the last match to the current estimat
 Although the primary use of Elo model was to describe the process of learning,
 it can be also used for the gradual improvements of estimates for prior knowledge of students and difficulty of facts \cite{slepe-mapy}.
 However, the constat $K$ is problematic -- if it's too large, estimation is unstable; if it's too small, estimation converges too slowly.
-For this reason, instead of some consant, an attenuation function
+For this reason, instead of a consant, an attenuation function
 \begin{equation}\label{eq:attenuation}
   K(m) = \frac{a}{1 + bm}
 \end{equation}
 ($m$ is the order of the match, $a$ and $b$ are fixed parameters) can be used.
-The main advantage of using the Elo model to estimate the prior knowledge and difficulties in comparision with the joint maximum likelihoood estimation technique (odkaz vyse) is its simplicity and intrinsic online nature.
-Experiments suggest that it leads to similar results as the joint maximum likelikhood estimation \cite{slepe-mapy-time-elo}.
+The main advantage of using the Elo model to estimate the prior knowledge and difficulties in comparision with the maximum likelihoood estimation algorithms is its simplicity and intrinsic online nature.
+Experiments suggest that it leads to similar results as the maximum likelikhood estimation \cite{slepe-mapy-time-elo}.
 
 \item \textbf{Performance factors analysis}\\
-  Performance factors analysis \cite{performance-factors-analysis} is similar to the logistic model presented above, but enables to capture learning.
+  Performance factors analysis \cite{performance-factors-analysis} is also similar to the logistic model
+  and enables to capture learning.
   According to this model, the probability that a student answers correctly to a question
   depends on the difficulty $d$ of the question and number of correct ($a$) and incorrect ($b$) answers of the student to this question in the past. The exact formula is:
   \begin{equation}\label{eq:pfa}
@@ -1261,17 +1269,7 @@ Experiments suggest that it leads to similar results as the joint maximum likeli
   \end{equation}
   The main drawback of this model is that it ignores the order of answers,
   so answering firstly 10 times incorrecly and then 10 time incorrecly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
-  To take the order of answers into the account, performance factors analysis can be combined with the Elo model \cite{slepe-mapy} -- after each answer, estimate of knowledge parameter $k$ is updated according to the rule \ref{eq:elo}.
-
-
-\item \textbf{Bayesian knowledge tracing}\\
-TODO: Baysovska sit (HMM) k popisu konceptu (skill) a jejich nauceni (2 stavy: known (learned) and unknown (unlearned)), 4 parametry modelu: pravdepodobnost, ze je koncept known hned od zacatku, pravdepodobnost nauceni v 1 kroku, pravdepodobnost spravne odpovedi, kdyz koncept neumim (guess) a pravdepodobnost spatne odpovedi, kdyz koncept umim (slip).
-Update skillu po odpovedi na otazku: s pouzitim Bayesova pravidla.
-Odhad parametru: napr. pomoci Expectation Maximization na existujicich datech.
-
-Predpoklad je diskretni prechod z neumim do umim (coz je obvykle dost zjednodusujici, zapamatovani deklarativnich faktu je postupne), ale pouziva se u proceduralni znalosti
-
-Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (trochu rozebrany nize).
+  To take the order of answers into account, performance factors analysis can be combined with the Elo model \cite{slepe-mapy} -- after each answer, estimate of knowledge parameter $k$ is updated according to the rule \ref{eq:elo}.
 \end{myItemize}
 
 
@@ -1282,7 +1280,7 @@ Priklad systemu pro uceni, ktery vyuziva BKT: \cite{question-gen-adapt-bayes} (t
 
 As we mentioned in the introduction to this chapter,
 the key to the efficient practice is to provide the student with adequatly difficult questions.
-Although the ideal success rate may vary for different people (and even for person in different conditions)
+Although the ideal success rate may vary for different people (and even for one person in different conditions),
 for simplicity it is usually treated as a constant and set e.g. on 75 \% \cite{slepe-mapy, adaptive-practice-irt-math}.
 
 Experiments performed in the online adaptive system for learning geography facts suggest that the optimal success rate may be 65--70 \% \cite{slepe-mapy-motivation}.
@@ -1322,7 +1320,7 @@ This dynamic adjustment of target probability proved to be useful -- it increase
 
 In the previous sections, we discussed how to estimate students' knowledge and how to dynamically adjust target difficulty of questions.
 Using these two components, we can find the question with the optimal difficulty.
-However, several criteria should be considered to select the question which is the most useful for the student and difficulty is just one of them.
+However, several criteria should be considered to select the question which is the most useful for the student and difficulty is just one of them. Let us review the most imporatn criteria.
 \begin{myItemize}
   \item \textbf{Relevance}\\
     The question should be relevant to the practiced topic.
@@ -1330,8 +1328,9 @@ However, several criteria should be considered to select the question which is t
     Besides this \emph{objective relevance} which is independent of the student and the practice session,
     there is also what we could call \emph{subjective relevance}, i.e. what concept is the most relevant to the student right now.
     The subjective relevance changes during the practice, as some parts of the article are already practiced and some are not.
-    Generally, the most relevant for the student is what he needs to pratice most, i.e.
-    \emph{the least known concept} \cite{question-gen-adapt-bayes}.
+    Generally, the most subjectively relevant for the student is
+    \emph{the least known concept} \cite{question-gen-adapt-bayes}
+    (provided it is also objectively relevant to the topic).
 
   \item \textbf{Difficulty}\\
     We already discussed that the optimal probability of correct answer is about 70 \% and we also mentioned a method for dynamic adjustment of this target probability (\autoref{sec:target-difficulty}).
@@ -1342,7 +1341,8 @@ However, several criteria should be considered to select the question which is t
     Especially important is the variability in the practiced concepts.
     If one concept is practiced in several questions in a row, it gets quickly boring, and it negatively influences both the relevance (as the student would like to practice other concepts from the article as well) and the difficulty (since it is easier to answer questions about the same concept which was already practiced).
     Besides this crucial variabilty of concepts,
-    variability of question types may also help (diversity increases enjoyment) \cite{question-gen-adapt-bayes}.
+    variability of question types may also help, because diversity increases enjoyment.
+    %\cite{question-gen-adapt-bayes}.
 \end{myItemize}
 Common approach is to use an appropriate scoring function for each of the considered criteria, and then obtain the total score as a linear combination of individual scores \cite{slepe-mapy}.
 The question with the highest total score is selected and presented to the student.
