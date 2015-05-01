@@ -59,6 +59,7 @@
 
 % setting custom colors for links
 \usepackage{xcolor}
+\definecolor{theme-red}{rgb}{0.62,0.01,0.05}
 \definecolor{dark-red}{rgb}{0.6,0.15,0.15}
 \definecolor{dark-green}{rgb}{0.15,0.4,0.15}
 \definecolor{medium-blue}{rgb}{0,0,0.5}
@@ -70,9 +71,12 @@
             unicode,	 	    % allow unicode characters in links
             colorlinks=true, 	    % use colored links instead of boxed (pc version)
             %hidelinks, 		    % hide links (print version)
-            linkcolor={dark-red},
-            citecolor={dark-green},
-            urlcolor={medium-blue}
+            %linkcolor={dark-red},
+            %citecolor={dark-green},
+            %urlcolor={medium-blue}
+            linkcolor={theme-red},
+            citecolor={theme-red},
+            urlcolor={theme-red}
 			]{hyperref}
 
 % ===== FI THESIS SETTINGS =====
@@ -152,7 +156,7 @@
   showstringspaces=false,
   escapeinside={<*}{*>},
   belowskip=0.2em,
-  morekeywords={Pattern,Question,Answer,Filter}
+  morekeywords={Pattern,Question,Answer,Filter,Relation}
   }}{}
 
 % define command for splitting listings into "from" and "to" part
@@ -353,11 +357,12 @@ i.e. convert the text into the structured data.
 This process is called \textit{information extraction} \cite[][262]{nlp-python}.
 Information extraction has several subtasks, the two most relevant for us are:
 \begin{myItemize}
-  \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{"Abraham Lincoln"}) and numeric expressions from the text,
-\item \textit{relation recognition} -- extraction of relations between the entities.
+  \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{Abraham Lincoln}) and numeric expressions (e.g. \emph{12 February 1809}) from the text,
+  \item \textit{relation extraction} -- extraction of relations between the discovered named entities,
+    for example \texttt{birhDate(Abraham Lincoln, 12 February 1809)}.
 \end{myItemize}
 
-One way to create exercises is to first perform the relation extraction and then create the exercises from built structured knowledge representation. Another approach is to generate exercises from text with discovered named entities. We will take closer look at both these approaches in \autoref{chap:exercises}.
+One way to create exercises is to first perform the relation extraction and then create the exercises from built structured knowledge representation. Another approach is to generate exercises from text with discovered named entities. We will take a closer look at both these approaches in \autoref{chap:exercises}.
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -460,7 +465,7 @@ rsrc:Alan_Turing
   dbprop:nationality "British"@en .
 \end{code}
 
-RDF graphs are great for representation of simple facts, but it is useful to know about its limitaions. RDF graphs is designed to capture \textit{procedural knowledge}, such as mathematical problem solving,
+RDF graphs are great for representation of simple facts, but it is useful to know about its limitaions. RDF graphs are not designed to capture \textit{procedural knowledge}, such as mathematical problem solving,
 [Maybe TODO: takze nemuzeme pak testovat higher order thinking skills... citace k tomu higher order thinking skills, napr. Bloom's taxonomy]
 
 
@@ -471,13 +476,13 @@ RDF graphs are great for representation of simple facts, but it is useful to kno
 \textit{SPARQL}%
 \footnote{The name of this query language is a recursive acronym of \textit{SPARQL Protocol and RDF Query Language}.}
 is a query language for convenient querying of RDF graphs. \parencite[][84]{semantic-web}.
-The most common is the \textit{SELECT query} which resembles SQL SELECT query and has these main parts:
+The most common is the \textit{select query} which resembles SQL select query and has these main parts:
 \begin{myItemize}
-  \item \textbf{PREFIX} -- definition of prefixes and assosiated shortcuts,
-  \item \textbf{FROM} -- dataset (RDF graph) on which to run the query,
-  \item \textbf{SELECT} -- which information to return,
-  \item \textbf{WHERE} -- condition on returned data,
-  \item \textbf{ORDER BY} -- ordering of results.
+  \item \textbf{prefix} -- definition of prefixes and assosiated shortcuts,
+  \item \textbf{from} -- dataset (RDF graph) on which to run the query,
+  \item \textbf{select} -- which information to return,
+  \item \textbf{where} -- condition on returned data,
+  \item \textbf{order by} -- ordering of results.
 \end{myItemize}
 As an example, take a look at the following SPARQL query, which would return the birthdate and birthplace of Alan Turing:
 \begin{code}
@@ -486,9 +491,13 @@ PREFIX owl: <http://dbpedia.org/ontology/>
 SELECT ?date ?place
 WHERE {
   rsrc:Alan_Turing owl:birthDate ?date ;
-                   owl:birthPlace ?place .
+                     owl:birthPlace ?place .
 }
 \end{code}
+
+MaybeTODO: podrobnosti o SPARQL / komplouikovanejsi priklad.
+More examples of SPARQL queries can be found in the section about creating exercises from knowledge graph
+(\autoref{sec:exercises-from-knowledge-graph}).
 
 %% ---------------------------  SECTION  ---------------------------
 %\section{Ontology}
@@ -507,47 +516,103 @@ WHERE {
 \textit{Named entities}
 are "information units like names, including person, organization and location names, and numeric expressions including time, date, money and percent expressions" \autocite{named-entity-recognition}.
 Sometimes I will specifically refer to \textit{terms}, which are named entities other than numeric expressions.
-Es an example, \textit{"Abraham Lincoln"} is a term, while \textit{"21 March 2015"} is a numeric expression
+Es an example, \textit{Abraham Lincoln} is a term, while \textit{21 March 2015} is a numeric expression
 (and both are named entities).
 The aim of the \textit{named entity recognion} is to discover all named entities in a text and and label them with their types. Common types of named entites are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
 \begin{myItemize}
 \item \textbf{Regular expressions}\\
   Regular expressions are especially good for numeric expressions as they typical follow reasonably simple rules.
-  [Maybe TODO: nejake konkretni ukazky zjednodusenych regexu]
+  As an example, consider the following regular expression (in Python dialect%
+  \footnote{\url{https://docs.python.org/2/library/re.html}})
+  to capture dates such as \emph{21 March 2015}:
+\begin{code}
+(?P<date>
+    # day (one or two digits followed by a space)
+    \d{1,2} \s
+    # month (followed by a space)
+    (?: January | February | March | April | May | June | July |
+         August | September | October | November | December) \s
+    # year (four digits)
+    \d{4}
+)
+\end{code}
+MaybeTODO: pridat optional th (21th March 2015)
+
+
 \item \textbf{List of terms}\\
   A simple way to find if some word or phrase is a named entity is to try to look it up in a list of named entities. There are for example publicly available \textit{gazetteers} -- lists of well-known geographical locations. However, this method is quite limited as it is impossible to have complete lists of all named entities.
 (In particular there is infinitely many numeric expressions.)
-Another problem is ambiguity of words, e.g. \textit{"Reading"} is a town in the United Kingdom, but not in the sentence \textit{"Reading is important for everyone's personal development."}
-  [TODO: podobne lze pouzit i bazi znalosti ... a mozna Wordnet?]
+Another problem is ambiguity of words, e.g. \textit{Reading} is a town in the United Kingdom, but not in the sentence \textit{Reading is important for everyone's personal development.}
   There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
-\item \textbf{Frequency counting}\\
-  After identifying nouns and noun phrases in the text, we count their frequencies and these which exceed some given threshold are considered as terms.
-  This method is used for example in \cite{question-gen-mitkov}. It works reasonable well for terms recognition, but it can't discover numeric expressions.
-This method can label as terms also common names which are frequently used.
-A solution to this problem is to apply \textit{tf-idf weighting} which normalizes term frequency in the document by its frequency in all documents (or in common texts) \cite[][118]{information-retrieval}.
-[Maybe TODO: citovat, kde se na NE recognition pouziva TF-IDF nebo neco podobneho]
-\item \textbf{Machine learning}\\
-  The most difficult, but also the most powerful method is to train a machine learning recognizer.
-  [TODO: podrobneji, napr. \cite[][283]{nlp-python}, \autocite{named-entity-recognition}]
-\end{myItemize}
-Often, several of these approaches are combined (e.g. in \textit{The Mentor} they use regular experssions, gazetteers and a machine learning recognizer \cite{mentor}).
 
-TODO: clanek "A survey of named entity recognition and classification" \autocite{named-entity-recognition}
+\item \textbf{Frequency counting}\\
+  After identifying nouns and noun phrases in the text, their frequencies are counted and these which exceed some given threshold are considered as terms.
+  This method is used for example in \cite{question-gen-mitkov}. It works reasonable well for terms recognition, but it can't discover numeric expressions.
+This method can unfortunatelly also label as terms common names which are frequently used.
+A solution to this problem is to apply \textit{tf-idf weighting} which normalizes term frequency in the document by its frequency in all documents (or in common texts) \cite[][118]{information-retrieval}.
+
+\item \textbf{Machine learning}\\
+  The most difficult, but also the most powerful method is to use a machine learning-based classifier.
+  Traditionally, supervised learning dominated in this field,
+  but as it requires a lot of annotated sentences,
+  novel approaches using semi-supervised or even unsupervised learing are developed
+  \cite{named-entity-recognition}.
+  Semi-supervised learning is often based on the method of \emph{bootstrapping} -- a few named entities of each type are given to the system, the system finds them in a large unannotated corpus a uses their context to find other similar named entities, and the whole process is repeated many times with increasing number of discovered named entities and contexts.
+\end{myItemize}
+Often, several of these approaches are combined, e.g. \textit{The Mentor} (question generation tool) uses regular experssions, gazetteers and a machine learning recognizer \cite{mentor}).
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Relations Extraction}
+\section{Relation Extraction}
 \label{sec:relations-extraction}
 
-TODO... nlp-knizka
+obecne:
+- hledame trojice (NE, relace, NE) -- viz RDF graph (subjekt a objekt jsou NE, predikat je relace
+- uvest konkretni priklad trojice (napr. neco s Lincolnem)
+- casto napred named entity recognition
 
-TODO: \parencite{triples-acquisition}
+review: \cite{rel-extract-review}
 
-TODO: clanek ontology-based-knowledge-extraction.pdf
+nlp-knizka \cite{nlp-python}:
+- pomoci regexu: hledame sekvenci NE, nejaka slova oznacujici pozadovanou relaci NE,
+priklad: ORG ... in ... LOC (vzory mohou obsahovat i POS-tagy, lemmata)
+- vzory jsou zadany rucne, nebo muzeme zkusit se je naucit pomoci strojoveho uceni from a training corpus.
 
-TODO: dalsi clanky
+Priklad vzoru pro ...
 
-TODO: + inspirace Procvicnikem-v1
+\begin{myItemize}
+  \item \emph{Abraham Lincol was born in 1809.}
+  \item \emph{Abraham Lincol was born on 12 February, 1809.}
+  \item \emph{Abraham Lincol was born in Hodgenville, Kentucky, on 12 February, 1809.}
+\end{myItemize}
+\begin{code}
+Pattern: PERSON was born .*? (in | on) DATE
+<*\arrowlinesplit*>
+Relation: (PERSON, birthDate, DATE)
+\end{code}
+(Note: *? je lazy quantifier/operator... aby to bylo opravdu 1. datum ve vete (dulezite))
+
+Takze moznosti (itemize)
+- rucne psane vzory (regexy viz knizka): uvest priklad
+- odvozeni vzoru pomoci strojoveho uceni
+
+
+\parencite{triples-acquisition}
+- pristup z knizky vyzaduje zadat relace, takze je to domain-dependent,
+tento clanek se snazi o domain-independent relation extraction
+subject-verb-object triples
+concpet-verb-concept
+- musi resit problem nedostatku kontextu ve vetach,
+treba pronouns resolution, allocating missing subject or object or fragments (protoze pracuji s pozanmkami)
+- priklad extrakce: (S (NP subtree = subject) (VP subtree - v nem se hleda nejzanorenejsi sloveso (verb), object se hleda v PP, NP a ADJP potomcich VP\_subtree (v NP a PP se vybere prvni podstatne jmeno or compound noun, v ADJP prvni pridavne jmeno.
+
+Artequakt -- clanek ontology-based-knowledge-extraction.pdf: ?
+
+pouziti strojoveho uceni (konkretne SVM) \cite{rel-extract-kernel}
+
+Procvicnik-v1:
+- date-event: pre-date date post-date => date = pre-date + post-date
+- uplne analogicky pro person-event, place-cokoliv
 
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Bases}
@@ -559,8 +624,9 @@ Examples of popular knowledge bases are
 \textit{DBpedia}\footnote{\url{http://dbpedia.org/}}
 and \textit{Freebase}.\footnote{\url{https://www.freebase.com/}}
 Knowledge bases are used for many task in natural lanuage processing,
-such as named entity recognition [TODO: coz by se melo rozebirat v predhozi kapitole ?!],
-desambiguation,
+such as
+%named entity recognition
+named entity desambiguation \cite{dbpedia-spotlight},
 semantic search [Maybe TODO: co to znamena, citovat Google]
 and question answering -- several knowledge bases (including DBpedia) were used in \emph{DeepQA project} to create \emph{IBM Watson} computer, which won the \emph{Jeopardy!} quiz game against two human champions in 2011 \cite{watson}. And we can make use of information in these knowledge bases to create better exercises as well. [TODO: upravit posledni vetu, zpresnit, kdy a k cemu budeme bazi znalosti vyuzivat]
 
@@ -1337,7 +1403,7 @@ However, several criteria should be considered to select the question which is t
 \begin{myItemize}
   \item \textbf{Relevance}\\
     The question should be relevant to the practiced topic.
-    A possible approach to ranking the relevance of questions was described in \autoref{sec:questions-ranking-filtering}.
+    %A possible approach to ranking the relevance of questions was described in \autoref{sec:questions-ranking-filtering}.
     Besides this \emph{objective relevance} which is independent of the student and the practice session,
     there is also what we could call \emph{subjective relevance}, i.e. what concept is the most relevant to the student right now.
     The subjective relevance changes during the practice, as some parts of the article are already practiced and some are not.
