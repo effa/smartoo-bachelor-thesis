@@ -642,7 +642,7 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 (\autoref{sec:text-pre-processing}).
 
 \item The text is then scanned for the patterns which define transformations from sentences to a question-answer pairs.
-  Everytime a pattern is matched, a new question and the corresponding answer is generated
+  Everytime a pattern is matched, a new question and the corresponding answer are generated
   (\autoref{sec:sentence-transformations}).
   If a knowledge graph is used instead of text, the procedure is similar, except that now we have transformations from facts in the knowledge graph. The main advatage is that we can make use of relationships between subjects in the graph and thus create questions which span more then one sentence in the original article
   (\autoref{sec:exercises-from-knowledge-graph}).
@@ -650,11 +650,14 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 \item In case of multiple choice questions, suitable distractors (incorrect alternatives) are selected
 (\autoref{sec:distractors}).
 
-\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end. Instead of direct filtering, we can rank the questions and either select some predefined number of questions with the highest rank
-  (\autoref{sec:questions-ranking-filtering}) or employ adaptive practice (\autoref{chap:practice}).
+\item In the previous steps, questions are usually overgenerated, so it is important to filter them at the end
+  (\autoref{sec:questions-ranking-filtering}).
+  Instead of direct filtering, we can rank the questions and either select some predefined number of questions with the highest rank
+  or employ adaptive practice.
 In adaptive practice, decisions about which question is next presented to the student
 are not made in advance, but during the practice itself,
 based on already answered questions and success of the student.
+(Adaptive practice is discussed in detail in chapter \autoref{chap:practice}.)
 \end{myEnumerate}
 
 % ---------------------------  SECTION  ---------------------------
@@ -664,7 +667,8 @@ based on already answered questions and success of the student.
 Usually, the text of the document is pre-processed before it is used for question generation.
 Pre-processing may
 add useful information to the text (e.g. part-of-the-speech tags, semantic role labels),
-remove useless sentances, modify (rephrase) sentences or even create different (more machine readable) representation of the knowledge contained in the article, such as a knowledge graph.
+remove useless sentences (e.g. sentences without information about the topic),
+modify (rephrase) sentences or even create different (more machine readable) representation of the knowledge contained in the article, such as a knowledge graph.
 %Pre-processing can be conservative or non-conservative.
 %I call pre-processing \textit{conservative}, if the output of the pre-processing is still some text,
 %while the \textit{non-conservative} pre-processing leads to different (more machine readable) representation of the knowledge.
@@ -673,30 +677,30 @@ remove useless sentances, modify (rephrase) sentences or even create different (
 \begin{myItemize}
   \item \textbf{Parsing and labelling}\\
     The text is split into sentences and each sentence is tokenized (\emph{tokens} are words and puctuation).
-    Afterwards, each sentence might be \emph{parsed} (its syntax tree is built) or at least \textit{shallowed parsed} (each token is assigned a part-of-the-speech tag),
-    named entities recognition might be performed or even semantic role labelling
+    Afterwards, each sentence might be \emph{syntactically parsed} (its syntax tree is built)
+    or at least \textit{shallow-parsed} (each token is assigned a part-of-the-speech tag).
+    Named entities recognition or even semantic role labelling might be performed
     (see \autoref{sec:sentence-transformations} for deatils).
 
   \item \textbf{Filtering}\\
     The goal of the filtering is to discard sentences which are not relevant to the article or has not enough context to generate a question from them.
-    Typical example of sentence without sufficent context are \emph{anaphoric references},
+    Typical example of a sentence without sufficent context are \emph{anaphoric references},
     i.e. referring back to something mentioned earlier in the text.
     For example, in the sentence \emph{He was the 16th President of the United States.},
     the word \emph{he} refers to \emph{Abraham Lincoln}.
-
-  Some possible heuristics to detect which sentences cannot be used to generate good questions \cite{questions-wolfe}:
+  Some possible heuristics to detect which sentences cannot be used to generate good questions \cite{questions-wolfe} are:
   \begin{itemize}
-  \item sentence is too long(e.g. more than 35 words),
+  \item sentence is too long (e.g. more than 35 words),
   \item contains demonstrative word (such as \emph{this} and \emph{that}),
   \item starts with a verb.
   \end{itemize}
 
-  Instead of heuristics, we can use more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context to a question being generated from them. This approach was tested by Agarwal \cite{question-gen-textbooks}.
+  Instead of heuristics, we can use a more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context so that questions can generated from them. This approach was tested by Agarwal \cite{question-gen-textbooks}.
 Some of the features used in his classifier were:
   \begin{itemize}
-  \item number of words in the sentence,
-  \item number of nouns,
-  \item frequency of tokens from the headline,
+  \item the number of words in the sentence,
+  \item the number of nouns,
+  \item the number of words from the headline,
   \item contains abbreviation? (binary feature),
   \item contains superlativum? (binary feature).
   \end{itemize}
@@ -741,7 +745,7 @@ but this issue can be solved later by questions ranking and post-filtering
 There might be more possible transformations from a sentence to a question-answer pair.
 Instead of generating all possible questions from the sentence (or picking one of them by random),
 we might select a word from the sentence which would be the correct answer as a first step and then generate a question from the rest of the sentence as a second step.
-Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifier to select the most important word in the sentence. For the classification he used the following three features.
+Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifier to select the most important word in the sentence. For the classification he used the following three features:
 \begin{myItemize}
 \item number of occurences of the word in the document,
 \item is contained in the headline? (binary feature),
@@ -791,7 +795,7 @@ Semantic information which can be used to define patterns are:
 \end{code}
 
 \item \emph{Semantic role labels} which mark predicate of the sentence and its arguments -- agent (subject), patient (object), cause, purpose, manner, location, time etc.
-Semantic roles can be identified using statisctical classifier \cite{semantic-role-labelling}.
+Semantic roles can be identified using statistical classifier \cite{semantic-role-labelling}.
 \begin{code}
 [agent| Pablo Picasso] [predicate| was born] [location| in Spain]
 \end{code}
@@ -802,8 +806,8 @@ Semantic roles can be identified using statisctical classifier \cite{semantic-ro
 
 \subsection*{Examples of transformation rules}
 
-Thi simplest pattern is for the fill-in-the-blank questions
-(used for example by Agarwal and Mannem \cite{question-gen-textbooks}).
+The simplest pattern is for the fill-in-the-blank questions
+(used for example by Agarwal and Mannem \cite{question-gen-textbooks}):
 \begin{code}
 Pattern: beforeTerm term afterTerm.
 <*\arrowlinesplit*>
@@ -857,7 +861,7 @@ Answer: Because B.
 \noindent
 Function \texttt{questionForm(A)} searches for an auxiliary verb in \texttt{A} and if it finds one, it moves the auxiliary verb to the front.
 If there is no auxiliary verb in the sentence, it adds appropriate auxiliary verb to the beginning of the sentence based on the tense of the main verb and the main verb is substituted for its base form (bare infinitive).
-If the main verb \emph{to be} (as in our example), it is moved to the front without adding any auxiliary verb.
+If the main verb is \emph{to be} (as in our example), it is moved to the front without adding any auxiliary verb.
 
 \noindent
 As mentioned above, semantic role labels might be used to describe patterns \cite{question-gen-mannem, questions-eval}.
@@ -869,9 +873,9 @@ Question: <*\emph{How}*> questionForm(agent, predicate) patient<*\emph{?}*>
 Answer: <*\emph{by}*> manner
 \end{code}
 \transformationExample%
-{By reducing problem X to the halting problem, one can show undecibility of the problem X.}%
-{How can one show undecibility of the problem X?}%
-{by reducing problem X to the halting problem}
+{By reducing halting problem to problem X, one can show undecidability of the problem X.}%
+{How can one show undecidability of the problem X?}%
+{by reducing halting problem to problem X}
 
 \noindent
 Even more sophisticated patterns can be created using syntax trees \cite{question-gen-ceist, question-overgenerating-rating}.
@@ -882,9 +886,9 @@ However, machine learning can be put into use to discover them automatically.
 \textit{The-Mentor} system \cite{mentor}
 uses a machine learning technique of \textit{bootstrapping} \cite{question-answering-bootstrapping},
 together with the \textit{QuestionBank}, a corpus of 4000 parse-annotated questions \cite{question-bank},
-and the amount of the information on the Web via \textit{Google} search
+and the large amount of the information on the Web via \textit{Google} search
 to find syntactic patterns automatically from a few question-answer seed pairs.
-They have discovered more then 1000 unique patterns, which is many more then tools with manually created patterns use. This allows for more specific patterns, such as the following:
+They have discovered more than 1000 unique patterns, which is many more than tools with manually created patterns use. This allows for more specific patterns, such as the following:
 \begin{code}
 Pattern: [NP subject] [VBD aux] [VBN verb] <*\emph{in}*> [Location:Country| X].
 <*\arrowlinesplit*>
@@ -994,10 +998,11 @@ Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 \label{sec:distractors}
 
 It is important to present a multiple-choice question with competitive \textit{distractors}.
-As shown by experiments performed by Little and Bjork \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching. As an example, consider the following multiple choice question:
-
+As shown by experiments performed by Little and Bjork \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching.
+%As an example, consider the following multiple choice question:
+As an example, consider exercise \ref{exrc:noncompetitive}.
 \begin{exercise}
-\caption{Question with noncompetitive alternatives}%\label{table:somename}
+\caption{Question with noncompetitive alternatives}\label{exrc:noncompetitive}
   \begin{question}
   Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
   \begin{choices}
@@ -1009,12 +1014,13 @@ As shown by experiments performed by Little and Bjork \cite{optimizing-multiple-
   \end{question}
 \end{exercise}
 
+\noindent
 Clearly, the student does not need to remember who assassinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
 Of course, this was an extreme example to illustrate the point -- you definitely would not come accross such poor distractors in manually created multiple-choice questions.
-Now take a look at the following question:
-
+%Now take a look at the following question:
+Compare the previous question to the exercise \ref{exrc:competitive}.
 \begin{exercise}
-\caption{Question with competitive alternatives}%\label{table:somename}
+\caption{Question with competitive alternatives}\label{exrc:competitive}
   \begin{question}
   Lincoln was assassinated by \sentenceGap , a Confederate sympathizer.
   \begin{choices}
@@ -1026,6 +1032,7 @@ Now take a look at the following question:
   \end{question}
 \end{exercise}
 
+\noindent
 This questions is much more likely to force student to retrieve knowledge about John Wilkes Booth as well as about other alternatives.
 Little and Bjork also showed that competitive distractors are not confused with correct answers in later questions more often than noncompetitive distractors.
 
@@ -1041,11 +1048,13 @@ Agarwal \cite{question-gen-textbooks} uses features such as comparison of words 
 
 \item \textbf{Subjects in the knowledge graph}\\
 In the knowledge graph, subjects play similar role as the named entities in the text.
-The difference is that usually one subject has many types TODO-example.
-Several strategies was proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a subject of the same type as the correct answer. If there are many of them, we can prefer those which have more common types.
+The difference is that usually one subject has many types.
+(For example, the record about \emph{Abraham Lincoln} in DBpedia contains more than 50 types, including
+\emph{agent}, \emph{person}, \emph{office holder}, \emph{president of the United States} and \emph{people murdered in Washington, D.C.})
+Several strategies were proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a subject of the same type as the correct answer. If there are many of them, we can prefer those which have more common types.
 
 \item \textbf{Named entities from external sources}\\
-  Using \textit{WordNet} [citovat] or a knowledge base, we can find similar terms, even if they are not in the text. For example, in \cite{question-gen-mitkov} distractors for a term were found using \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym). If more coordinates were found in WordNet, the ones which occur in the text are preffered.
+  Using \textit{WordNet} \cite{wordnet} or a knowledge base, we can find similar terms, even if they are not in the text. For example, Mitkov et al. \cite{question-gen-mitkov} use \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym) to find appropriate distractors for given term. If more coordinates were found in WordNet, the ones which occur in the text are preferred.
 
 \item \textbf{Correct answer modification}\\
   If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift or (sub)multiplication
@@ -1057,7 +1066,7 @@ For instance, if the correct answer is $1616$ the distractors generated by multi
 All these strategies work only if the correct answer is a named entity or a single word.
 If the correct answer is a full clause
 (e.g. \emph{Why is photosynthesis important? / Because it produces oxygen.}),
-generating meaningfull and competitive distractors is much harder.
+generating meaningful and competitive distractors is much harder.
 Simple (but not very good) way to find at least some distractors would be to use the correct answers of the generated questions of the same question type.
 
 
@@ -1079,10 +1088,12 @@ The goal of the filtering is to discard questions which are:
 As an alternative to direct filtering,
 we can rank questions first and then select $N$ best questions
 (e.g. Mannem \cite{question-gen-mannem} selects $6$ best questions per a paragraph).
-Ranking allows to separate the task of estimating parameters and the task of deciding which question is the best for the student right now, i.e. it allows for adaptive practice.
+Ranking allows to separate the task of estimating parameters and the task of selecting questions for the student based on the already answered questions,
+%deciding which question is the best for the student right now,
+i.e. it allows for adaptive practice (\autoref{chap:practice}).
 We can even separately rank various parameters of questions, such as probability of correctness (validity), relevance and difficulty.
 
-Both filtering and ranking can be implemented either via heurstics decisions
+Both filtering and ranking can be implemented either via heuristic decisions
 or via a machine-learning based classifier.
 Some possible heuristic criteria to discard generated questions are \cite{questions-wolfe}:
 \begin{myItemize}
@@ -1093,7 +1104,7 @@ Some possible heuristic criteria to discard generated questions are \cite{questi
 
 Mannem \cite{question-gen-mannem} uses heuristic ranking,
 with depth of the predicate from which is the question generated as a primary criterion
-(to penalize questions form subordinate clauses)
+(to penalize questions from subordinate clauses)
 and the number of pronouns as a secondary criterion (to penalize possible anaphoric references).
 
 Heilman \cite{question-gen-heilman} trained a machine learning-based classifier for question ranking using features such as:
@@ -1101,11 +1112,13 @@ Heilman \cite{question-gen-heilman} trained a machine learning-based classifier 
 \item question length,
 \item which wh-word (who, where, when, ...) was used (if any),
 \item includes negation (no, not, never)? (binary feature),
-\item number of proper noun, pronons, adjectives etc.,
-\item likelihoods of a question would appear in a text according to an unigram and a trigram language models.
+\item likelihoods of a question would appear in a text according to an unigram and a trigram language models,
+\item number of proper noun, pronons, adjectives, etc.
 \end{myItemize}
 
-TODO (important): ze muzeme rankovat ruzne atributy (napr. korektnost, relevanci, zabavnost a obtiznost), ale ze je to tezke (a nevim, jestli to vubec nekdo delal).
+The presented rankers are primarily concerned with correctness (validity) of generated questions.
+However, for the adaptive practice, difficulty ranking is necessary as well.
+Smartoo uses a simple heuristic for difficulty ranking, which is described in \autoref{sec:smartoo-exercises-grading}.
 
 
 % ===========================  CHAPTER ===========================
