@@ -362,21 +362,35 @@ Information extraction has several subtasks, the two most relevant for us are:
     for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}.
 \end{myItemize}
 
-One way to create exercises is to first perform the relation extraction and then create the exercises from built structured knowledge representation. Another approach is to generate exercises from text with discovered named entities. We will take a closer look at both these approaches in \autoref{chap:exercises}.
+One way to create exercises is to first perform the relation extraction and then create the exercises from built structured knowledge representation. Another approach is to generate exercises from text with discovered named entities. We will take a closer look at both of these approaches in \autoref{chap:exercises}.
 
+Before the discussion of the named entity recognition and relation extraction,
+I will talk about how to represent the extracted knowledge.
+Knowledge can be represented in many ways,
+such as using first order logic, semantic nets or frames \cite{knowledge-representation}.
+In the following section, I will describe \emph{RDF graphs},
+since we will use this knowledge representation in the other chapters.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{images/rdf-graph.pdf}
+  \caption{Simple RDF graph}
+  \label{fig:simple-rdf-graph}
+\end{figure}
 
 % ---------------------------  SECTION  ---------------------------
 \section{RDF Graph}
 \label{sec:rdf-graph}
 
-There are many ways how to represent knowledge [Maybe TODO: zminit nejake ostatni].
-One common way is to represent knowledge as a graph (\textit{knowledge graph}), where vertices are named entities
-and edges indicate relations between the entities.
-The most popular standardization of this approach recently became the \textit{RDF Graph}%
-\footnote{RDF stands for \textit{Resource Description Framework}. [Maybe TODO: odkaz]}.
-RDF graph is a collection of subject -- predicate -- object triples \parencite[][63]{semantic-web},
-each triple is called a \textit{fact}. Simple example of a few facts about Alan Turing and Alonzo Church:
+%One common way is to represent knowledge as a graph (\textit{knowledge graph}), where vertices are named entities
+%and edges indicate relations between the entities.
 
+RDF%
+\footnote{\textit{Resource Description Framework}.
+See \url{http://www.w3.org/standards/techs/rdf} for RDF standards.}
+graph is a collection of subject-predicate-object triples \parencite[][63]{semantic-web}.
+Each triple is called a \textit{fact}.
+Simple example of a few facts about Alan Turing and Alonzo Church follows:
 \begin{code}
 Alan Turing - type - person
 Alan Turing - birthdate - 23 June 1912
@@ -386,34 +400,16 @@ Alonzo Church - type - person
 Alonzo Church - nationality - American
 Alonzo Church - birthdate - 14 June 1903
 \end{code}
-
+\noindent
 \autoref{fig:simple-rdf-graph} shows how can be this collection of facts thought of as a directed graph.
 Vertices corresponds to subjects and objects. Each fact maps to one edge, with direction from the subject to the object and with edge value given by the predicate.
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.9\textwidth]{images/rdf-graph.pdf}
-  \caption{Simple RDF graph}
-  \label{fig:simple-rdf-graph}
-\end{figure}
-
-To avoid possible ambiguity (e.g. between two people who have both name \textit{"Alan Turing"})
-we will use unique URIs%
-\footnote{\emph{Uniform Resource Identifier}, TODO: odkaz/vysvetleni}
-to represent terms (subjects and objects) and relations (predicates).
-URI is composed from a prefix and a name (example in \autoref{fig:uri-prefix-name}).
-
-%\begin{tabular}{ l  l }
-%  %\hline
-%  URI & \texttt{http://dbpedia.org/resource/Alan\_Turing}\\
-%  \hline
-%  prefix & \texttt{http://dbpedia.org/resource/}\\
-%  name & \texttt{Alan\_Turing}\\
-%  %\hline
-%\end{tabular}
-
-\begin{figure}[H]
-  \centering
+To avoid possible ambiguity (e.g. between two people who have both name \textit{Alan Turing})
+unique URIs%
+\footnote{\emph{Uniform Resource Identifier}. See RFC 3986 (\url{https://tools.ietf.org/html/rfc3986}) for details.}
+are used to represent subject, objects and predicates.
+URI consits of a prefix and a name:
+\begin{center}
 \begin{tikzpicture}[scale=1]
     \tikzstyle{part} = [draw,rectangle,dotted,fill=none,minimum height=0.7cm]
     %\tikzstyle{caption} = [plain,draw=none,fill=none]
@@ -423,16 +419,12 @@ URI is composed from a prefix and a name (example in \autoref{fig:uri-prefix-nam
     \node[mylabel] (label1) [below = 0.2mm of prefix] {\textit{prefix}};
     \node[mylabel] (label2) [below = 1.2mm of name] {\textit{name}};
     \node[part,fit=(prefix) (name) (label1) (label2)] (uri) {};
-    \node[mylabel] (label3) [below = 1mm of uri] {\textit{URI}};
+    \node (label3) [left = 1mm of uri] {\textit{URI}};
 \end{tikzpicture}
-  \caption{URI, prefix, name}
-  \label{fig:uri-prefix-name}
-\end{figure}
-
+\end{center}
 \noindent
-Objects can be either URIs or literals, such as number, string or date. (Maybe TODO: priklady)
-Simple example with prefixes (part of the graph above):
-
+Objects can be either URIs or literals, such as numbers, strings or dates (e.g. \emph{1912-06-23}).
+Simple example with prefixes (part of the graph above) follows:
 \begin{code}
 <http://dbpedia.org/resource/Alan_Turing>
     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
@@ -445,12 +437,11 @@ Simple example with prefixes (part of the graph above):
    "British"@en
 \end{code}
 
-Besides this \textit{N-Triple} format
-\cite[][68]{semantic-web}
-there are several others serializations of RDF graph, such as \textit{RDF/XML}
+The used format is called \textit{N-Triples} \cite[][68]{semantic-web}.
+There are several others serializations of RDF graph, such as \textit{RDF/XML}
 \cite[][73]{semantic-web}
 or \emph{Turtle (Terse RDF Triple Language)},
-which makes the serialization shorter by grouping facts by subjects (and predicates) and by using shortcuts for prefixes. The same graph as above would look like this in the Turtle syntax:
+which makes the serialization shorter by grouping facts by subjects (possibly also predicates) and by using shortcuts for prefixes. The same graph as above would look like this in the Turtle syntax:
 
 \begin{code}
 @prefix rsrc: <http://dbpedia.org/resource/>
@@ -465,8 +456,11 @@ rsrc:Alan_Turing
   dbprop:nationality "British"@en .
 \end{code}
 
-RDF graphs are great for representation of simple facts, but it is useful to know about its limitaions. RDF graphs are not designed to capture \textit{procedural knowledge}, such as mathematical problem solving,
-[Maybe TODO: takze nemuzeme pak testovat higher order thinking skills... citace k tomu higher order thinking skills, napr. Bloom's taxonomy]
+RDF graph is great for a representation of simple facts (\emph{declarative knowledge}),
+but it is useful to know about its limitations.
+In particular, RDF graphs are not designed to capture \textit{procedural knowledge}, such as mathematical problem solving.
+
+%[MaybeTODO: takze nemuzeme pak testovat higher order thinking skills... citace k tomu higher order thinking skills, napr. Bloom's taxonomy]
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -476,7 +470,7 @@ RDF graphs are great for representation of simple facts, but it is useful to kno
 \textit{SPARQL}%
 \footnote{The name of this query language is a recursive acronym of \textit{SPARQL Protocol and RDF Query Language}.}
 is a query language for convenient querying of RDF graphs. \parencite[][84]{semantic-web}.
-The most common is the \textit{select query} which resembles SQL select query and has these main parts:
+The most common query is the \textit{select query} which resembles SQL select query and has the following main parts:
 \begin{myItemize}
   \item \textbf{prefix} -- definition of prefixes and assosiated shortcuts,
   \item \textbf{from} -- dataset (RDF graph) on which to run the query,
@@ -484,7 +478,7 @@ The most common is the \textit{select query} which resembles SQL select query an
   \item \textbf{where} -- condition on returned data,
   \item \textbf{order by} -- ordering of results.
 \end{myItemize}
-As an example, take a look at the following SPARQL query, which would return the birthdate and birthplace of Alan Turing:
+Variables are prefixed by a ``?''. As an example, have a look at the following SPARQL query, which would return the birthdate and birthplace of Alan Turing:
 \begin{code}
 PREFIX rsrc: <http://dbpedia.org/resource/>
 PREFIX owl: <http://dbpedia.org/ontology/>
@@ -495,8 +489,7 @@ WHERE {
 }
 \end{code}
 
-MaybeTODO: podrobnosti o SPARQL / komplouikovanejsi priklad.
-More examples of SPARQL queries can be found in the section about creating exercises from knowledge graph
+More examples of SPARQL queries can be found in the section about creating exercises from knowledge graphs
 (\autoref{sec:exercises-from-knowledge-graph}).
 
 %% ---------------------------  SECTION  ---------------------------
@@ -514,11 +507,11 @@ More examples of SPARQL queries can be found in the section about creating exerc
 \section{Named Entity Recognition}
 \label{sec:terms-extraction}
 \textit{Named entities}
-are "information units like names, including person, organization and location names, and numeric expressions including time, date, money and percent expressions" \autocite{named-entity-recognition}.
-Sometimes I will specifically refer to \textit{terms}, which are named entities other than numeric expressions.
-Es an example, \textit{Abraham Lincoln} is a term, while \textit{21 March 2015} is a numeric expression
-(and both are named entities).
-The aim of the \textit{named entity recognion} is to discover all named entities in a text and and label them with their types. Common types of named entites are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
+are ``information units like names, including person, organization and location names, and numeric expressions including time, date, money and percent expressions'' \autocite{named-entity-recognition}.
+Sometimes, I will specifically refer to \textit{terms}, which are named entities other than numeric expressions.
+As an example, \textit{Abraham Lincoln} is a term, while \textit{21 March 2015} is a numeric expression.
+%(and both are named entities).
+The aim of the \textit{named entity recognition} is to discover all named entities in a given text and and label them with their types. Common types of named entites are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
 \begin{myItemize}
 \item \textbf{Regular expressions}\\
   Regular expressions are especially good for numeric expressions as they typical follow reasonably simple rules.
@@ -536,7 +529,6 @@ The aim of the \textit{named entity recognion} is to discover all named entities
     \d{4}
 )
 \end{code}
-MaybeTODO: pridat optional th (21th March 2015)
 
 
 \item \textbf{List of terms}\\
@@ -566,14 +558,15 @@ Often, several of these approaches are combined, e.g. \textit{The Mentor} (quest
 \section{Relation Extraction}
 \label{sec:relations-extraction}
 
-Having discovered named entities, we might want to extract relations between them.
+Having discovered named entities, we can extract relations between them.
 For simplicity, we restrict our attention to binary relations,
-i.e. relations of the form \emph{relation(a, b)} (where \emph{a} and \emph{b} are named entities),
+i.e. relations of the form \emph{relation(a, b)},
+%(where \emph{a} and \emph{b} are named entities),
 for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}.
-Relation of this form can be directly stored in a RDF graph as a subject-predicate-object triple
+Relations of this form can be directly stored in a RDF graph as a subject-predicate-object triple
 \emph{(a, relation, b)}.
 
-One way to solve this task is to consider each pair of consecutive named entities (which are in the same sentence) and decide in which relation they are (or that they are not in any relation) according to words between them \cite[][284]{nlp-python}.
+One way to tackle this task is to consider each pair of consecutive named entities (which are in the same sentence) and decide in which relation they are (or that they are not in any relation) according to words between them \cite[][284]{nlp-python}.
 As an example, consider the following pattern for \emph{birthDate} relation between a person and a date:
 \begin{code}
 Pattern: PERSON was born .* (in | on) DATE
@@ -592,9 +585,9 @@ This pattern covers all of the three following cases:
 Relation extraction can be also formulated as a classification problem:
 given a sentence with two named entities \emph{a} and \emph{b} and a particular relation type $r$,
 decide, if \emph{a} and \emph{b} are in the relation $r$ \cite{rel-extract-review}.
-If there is enough positive and negative labeled examples for each relation of our interest,
-supervised learning can be used, with features such as:
-types of the named entities, words between them (including \emph{part-of-speech} tags),
+If there are enough positive and negative labeled examples for each relation of our interest,
+supervised learning can be used, with features such as
+types of the named entities, words between them,
 number of words between them, path between them in a syntactic tree of the sentence, etc.
 \cite{rel-extract-feature-based}.
 As an alternative to the feature based methods, which take a vector of extracted features as an input,
@@ -602,8 +595,8 @@ As an alternative to the feature based methods, which take a vector of extracted
 % structural information = oznacene named entities a treba shallow parsed sentence
 As creating a large labeled training sets is usually expensive, semi-supervised learning became popular as well,using the bootstrapping method (which was described in the previous section) \cite{rel-extract-bootstrapping}.
 
-The mentioned approaches work if the relation types are known,
-so that patterns are written or a classifier is trained for each of the relation in advance.
+The mentioned approaches work only if the relation types are known in advance,
+so that patterns are written or a classifier is trained for each of the relation.
 For unrestricted domain,
 we can try to find the relation type in the sentence itself.
 For example, from a simple sentences with a subject, a verb and an object,
@@ -617,33 +610,38 @@ However, sentences are often quite complex, so this method requires to preproces
 There are several huge publicly available knowledge bases,
 which try to capture as many facts about the world as possible.
 Examples of popular knowledge bases are
-\textit{DBpedia}\footnote{\url{http://dbpedia.org/}}
-and \textit{Freebase}.\footnote{\url{https://www.freebase.com/}}
+\textit{DBpedia} \cite{dbpedia}
+%\footnote{\url{http://dbpedia.org/}}
+and \textit{Freebase} \cite{freebase}.
+%\footnote{\url{https://www.freebase.com/}}
 Knowledge bases are used for many task in natural lanuage processing,
 such as
 %named entity recognition
 named entity desambiguation \cite{dbpedia-spotlight},
-semantic search [Maybe TODO: co to znamena, citovat Google]
-and question answering -- several knowledge bases (including DBpedia) were used in \emph{DeepQA project} to create \emph{IBM Watson} computer, which won the \emph{Jeopardy!} quiz game against two human champions in 2011 \cite{watson}. And we can make use of information in these knowledge bases to create better exercises as well. [TODO: upravit posledni vetu, zpresnit, kdy a k cemu budeme bazi znalosti vyuzivat]
+semantic search and question answering \cite{watson}.
+%-- several knowledge bases (including DBpedia) were used in \emph{DeepQA project} to create \emph{IBM Watson} computer, which won the \emph{Jeopardy!} quiz game against two human champions in 2011 \cite{watson}.
+And we can make use of the information in these knowledge bases to create better exercises as well,
+for example to select appropiate incorrect alternatives in multiple choice questions
+(see \autoref{sec:distractors}).
 
 DBpedia was built by extracting structured information from Wikipedia,
 such as titles, links between articles, external links, information from infoboxes and categories.
 Facts are stored in the form of an RDF graph.
 Whole knowledge base can be be downloaded%
-\footnote{\url{http://wiki.dbpedia.org/Downloads}, %
-data available under \emph{Creative Commons Attribution-ShareAlike License}
-and \emph{GNU Free Documentation License}}.
-It also possible to use public \textit{DBpedia SPARQL endpoint}.%
+\footnote{\url{http://wiki.dbpedia.org/Downloads}}, %
+%data available under \emph{Creative Commons Attribution-ShareAlike License}
+%and \emph{GNU Free Documentation License}}.
+and it is also possible to use public \textit{DBpedia SPARQL endpoint}.%
 \footnote{\url{http://dbpedia.org/sparql}}
 
-\emph{DBpedia Version 2014}%
-\footnote{\url{http://wiki.dbpedia.org/Downloads2014}}
-contains approximately 580 million facts (RDF triples) retrieved from the English Wikipedia
-describing 4.5 million of things \parencite{dbpedia}.
+\emph{DBpedia Version 2014}
+%\footnote{\url{http://wiki.dbpedia.org/Downloads2014}}
+contains approximately 580 million facts (RDF triples) retrieved from the English Wikipedia,
+describing 4.5 million of things \cite{dbpedia}.
 Ontology%
 \footnote{Ontology is a description of properties, classes and their hierarchy.}
 of DBpedia includes more than 650 classes and 2700 properties.
-In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
+In \autoref{fig:dbpedia-classes}, a fraction of DBpedia class hierarchy is shown.
 \begin{figure}[h]
   \centering
   \includegraphics[width=\textwidth]{images/dbpedia-classes.pdf}
@@ -651,19 +649,6 @@ In \autoref{fig:dbpedia-classes} a fraction of DBpedia class hierarchy is shown.
   \label{fig:dbpedia-classes}
 \end{figure}
 
-%\begin{verbatim}
-%- Thing
-%  - Activity
-%    - Game
-%    - Sport
-%  - Agent
-%    - Deity
-%    - Family
-%    - Organization
-%    - Person
-%      ...
-%    ...
-%\end{verbatim}
 
 % =========================== CHAPTER ===========================
 \chapter{Question Generation}
@@ -738,11 +723,11 @@ modify (rephrase) sentences or even create different (more machine readable) rep
 %which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
 \begin{myItemize}
   \item \textbf{Parsing and labelling}\\
-    The text is split into sentences and each sentence is tokenized (\emph{tokens} are words and puctuation).
+    The text is split into sentences and each sentence is tokenized (\emph{tokens} are words and punctuation).
     Afterwards, each sentence might be \emph{syntactically parsed} (its syntax tree is built)
     or at least \textit{shallow-parsed} (each token is assigned a part-of-the-speech tag).
     Named entities recognition or even semantic role labelling might be performed
-    (see \autoref{sec:sentence-transformations} for deatils).
+    (see \autoref{sec:sentence-transformations} for details).
 
   \item \textbf{Filtering}\\
     The goal of the filtering is to discard sentences which are not relevant to the article or has not enough context to generate a question from them.
@@ -907,7 +892,7 @@ Answer: subject
 {Shakespeare}
 
 \noindent
-Some connectives (beacause, so that, since, when, for example, ...) can be used to generate questions
+Some connectives (because, so that, since, when, for example, ...) can be used to generate questions
 \cite{question-gen-connectives, questions-wolfe}.
 \begin{code}
 Pattern: A, <*\emph{because}*> B.
@@ -971,7 +956,7 @@ In this section, we will consider the situation when we have built knowledge gra
 and want to create exercises from it, instead of from the original text.
 Similarly as with the text, the question generation tool can take a fact one by one
 and transform it to the question if possible.
-For example, fact \texttt{(Alan Turing, birthdate, 23 June 1912)} leads to the question
+For example, fact \texttt{(Alan Turing, birthDate, 23 June 1912)} leads to the question
 \textit{When was Alan Turing born?} with the correct answer \textit{1912}.
 However, there are some predicates which are not suitable for creating questions from them,
 such as \texttt{rdfs:label} or \texttt{rdf:comment} and these need to be filtered.
@@ -982,7 +967,7 @@ Fill-in-the-blanks are created simply by removing subject or object from the fac
 Multiple-choice-questions are fill-the-blanks with 4 provided choices.
 As distractors, subjects or objects of the same type as the removed one are used.
 Finally, true statements in true/false questions are just unmodified facts from the knowledge graph,
-while false statements are created by replacing subject or object for a different one (suitable alternative is found in the same way as the distractors for mulitple choice questions).
+while false statements are created by replacing subject or object for a different one (suitable alternative is found in the same way as the distractors for multiple choice questions).
 
 OntoQue uses \texttt{rdf:label} property to transform facts into sentences,
 so the quality of the generated questions depends on the quality of the labels.
@@ -1268,7 +1253,7 @@ P(k, d, n) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{
 Given enough data, model parameters can be estimated using
 one of \emph{maximum likelihood estimation} algorithm \cite{irt-theory-and-practice}.
 However, since we use generated questions, we do not have any data about students' answers to them.
-That is why we need to have some heuristic estimates of difficulty (\autoref{sec:questions-ranking-filtering}).
+That is why we need to have some heuristic estimates of difficulty.
 Student knowledge is then estimated using questions he or she already answered and their difficulties,
 according to \emph{maximum likelihood principle}, i.e. the knowledge level is selected which maximizes the likelihood of the student history.
 Although this cannot be solved analytically, fast numeric methods can be used,
@@ -1331,7 +1316,7 @@ For this reason, instead of a consant, an attenuation function
 \end{equation}
 ($m$ is the order of the match, $a$ and $b$ are fixed parameters) can be used.
 The main advantage of using the Elo model to estimate the prior knowledge and difficulties in comparision with the maximum likelihoood estimation algorithms is its simplicity and intrinsic online nature.
-Experiments suggest that it leads to similar results as the maximum likelikhood estimation \cite{slepe-mapy-time-elo}.
+Experiments suggest that it leads to similar results as the maximum likelihood estimation \cite{slepe-mapy-time-elo}.
 
 \item \textbf{Performance factors analysis}\\
   Performance factors analysis \cite{performance-factors-analysis} is also similar to the logistic model
@@ -1365,7 +1350,7 @@ each student was assigned to one of 10 groups with different target probability 
 It was also noticed that the actual success rate is usually higher than the target probability of correct answer.
 To approach the desired target succes rate more closely, an algorithm was proposed for dynamic adjustment of target difficulty \cite{slepe-mapy-motivation}.
 It is based on the idea of \textit{proportional controller}.
-If the actual success rate is lower than the target probability of correct answer, the target probability is increased (proportionaly to the ``error'').
+If the actual success rate is lower than the target probability of correct answer, the target probability is increased (proportionally to the ``error'').
 If the actual success rate is higher, the target probability is proportionally decreased.
 The exact adjustment function is shown in \autoref{fig:adjusted-target-probability}.
 
@@ -1594,7 +1579,7 @@ By the term \textit{quasi fact} I mean some information usable for creating exer
 \begin{myEnumerate}
   \item Firstly, an empty graph is created (let us call it $G$).
   \item If it was not already in the past, knowledge graph of the topic term is retrieved from DBpedia (\autoref{sec:knowledge-bases}). All terms in this retrieved knowledge graph and also all terms in the article are added into the graph $G$ together with their types and labels (which are also found using DBpedia).
-  \item Then we take each sentence in the article and check if it contains a term and is understandable without a context. The used heurisic is: it contains between 5 and 35 tokens (or 50, depending on the selected parameters), does not contain pronouns, parentheses or quotations or some typical anaphoric words (reffering to the context) such as "this".
+  \item Then we take each sentence in the article and check if it contains a term and is understandable without a context. The used heurisic is: it contains between 5 and 35 tokens (or 50, depending on the selected parameters), does not contain pronouns, parentheses or quotations or some typical anaphoric words (referring to the context) such as "this".
   \item For each setence which satisfies these conditions, we create an quasi fact about the term in this sentence (and add it to $G$). Each quasi fact consists of several pieces of information: text before the term, text after the term and the term itself (and its label and types). An example of a created quasi fact can be seen in \autoref{fig:quasi-fact}.
   \item Graph $G$ is returned.
 \end{myEnumerate}
@@ -1742,7 +1727,7 @@ are given by the behavior parameters.
 Target difficulty is not exactly $(1 - \tau)$ as it is adjusted according to
 so far success of the user -- if the correct ratio of the user is higher than the target success,
 the target difficulty is set higher than $(1 - \tau)$ and vice versa.
-(experimenty na slepych mapach ukazali statistickou vyznamnost vylepseni pri zaplem dynamic adjustment of target succes \cite{slepe-mapy-motivation})
+(experimenty na slepych mapach ukazali statistickou vyznamnost vylepseni pri zaplem dynamic adjustment of target success \cite{slepe-mapy-motivation})
 (TODO: konkretni vzorec podle zdrojaku)
 
 NOTE: global target success je stejne jako ve slepych mapach \cite{slepe-mapy-motivation}
