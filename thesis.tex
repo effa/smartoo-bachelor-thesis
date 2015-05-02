@@ -359,7 +359,7 @@ Information extraction has several subtasks, the two most relevant for us are:
 \begin{myItemize}
   \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{Abraham Lincoln}) and numeric expressions (e.g. \emph{12 February 1809}) from the text,
   \item \textit{relation extraction} -- extraction of relations between the discovered named entities,
-    for example \texttt{birhDate(Abraham Lincoln, 12 February 1809)}.
+    for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}.
 \end{myItemize}
 
 One way to create exercises is to first perform the relation extraction and then create the exercises from built structured knowledge representation. Another approach is to generate exercises from text with discovered named entities. We will take a closer look at both these approaches in \autoref{chap:exercises}.
@@ -566,53 +566,49 @@ Often, several of these approaches are combined, e.g. \textit{The Mentor} (quest
 \section{Relation Extraction}
 \label{sec:relations-extraction}
 
-obecne:
-- hledame trojice (NE, relace, NE) -- viz RDF graph (subjekt a objekt jsou NE, predikat je relace
-- uvest konkretni priklad trojice (napr. neco s Lincolnem)
-- casto napred named entity recognition
+Having discovered named entities, we might want to extract relations between them.
+For simplicity, we restrict our attention to binary relations,
+i.e. relations of the form \emph{relation(a, b)} (where \emph{a} and \emph{b} are named entities),
+for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}.
+Relation of this form can be directly stored in a RDF graph as a subject-predicate-object triple
+\emph{(a, relation, b)}.
 
-review: \cite{rel-extract-review}
-
-nlp-knizka \cite{nlp-python}:
-- pomoci regexu: hledame sekvenci NE, nejaka slova oznacujici pozadovanou relaci NE,
-priklad: ORG ... in ... LOC (vzory mohou obsahovat i POS-tagy, lemmata)
-- vzory jsou zadany rucne, nebo muzeme zkusit se je naucit pomoci strojoveho uceni from a training corpus.
-
-Priklad vzoru pro ...
-
-\begin{myItemize}
-  \item \emph{Abraham Lincol was born in 1809.}
-  \item \emph{Abraham Lincol was born on 12 February, 1809.}
-  \item \emph{Abraham Lincol was born in Hodgenville, Kentucky, on 12 February, 1809.}
-\end{myItemize}
+One way to solve this task is to consider each pair of consecutive named entities (which are in the same sentence) and decide in which relation they are (or that they are not in any relation) according to words between them \cite[][284]{nlp-python}.
+As an example, consider the following pattern for \emph{birthDate} relation between a person and a date:
 \begin{code}
-Pattern: PERSON was born .*? (in | on) DATE
+Pattern: PERSON was born .* (in | on) DATE
 <*\arrowlinesplit*>
-Relation: (PERSON, birthDate, DATE)
+Relation: birthDate(PERSON, DATE)
 \end{code}
-(Note: *? je lazy quantifier/operator... aby to bylo opravdu 1. datum ve vete (dulezite))
+This pattern covers all of the three following cases:
+\begin{myItemize}
+  \item \emph{Abraham Lincoln was born in 1809.}
+  \item \emph{Abraham Lincoln was born on 12 February, 1809.}
+  \item \emph{Abraham Lincoln was born in Hodgenville, Kentucky, on 12 February, 1809.}
+\end{myItemize}
 
-Takze moznosti (itemize)
-- rucne psane vzory (regexy viz knizka): uvest priklad
-- odvozeni vzoru pomoci strojoveho uceni
+%- vzory jsou zadany rucne, nebo muzeme zkusit se je naucit pomoci strojoveho uceni from a training corpus.
 
+Relation extraction can be also formulated as a classification problem:
+given a sentence with two named entities \emph{a} and \emph{b} and a particular relation type $r$,
+decide, if \emph{a} and \emph{b} are in the relation $r$ \cite{rel-extract-review}.
+If there is enough positive and negative labeled examples for each relation of our interest,
+supervised learning can be used, with features such as:
+types of the named entities, words between them (including \emph{part-of-speech} tags),
+number of words between them, path between them in a syntactic tree of the sentence, etc.
+\cite{rel-extract-feature-based}.
+As an alternative to the feature based methods, which take a vector of extracted features as an input,
+\emph{kernel methods} are sometimes used, which take the full representation of the sentence, possibly with some structural information as an input \cite{rel-extract-kernel}.
+% structural information = oznacene named entities a treba shallow parsed sentence
+As creating a large labeled training sets is usually expensive, semi-supervised learning became popular as well,using the bootstrapping method (which was described in the previous section) \cite{rel-extract-bootstrapping}.
 
-\parencite{triples-acquisition}
-- pristup z knizky vyzaduje zadat relace, takze je to domain-dependent,
-tento clanek se snazi o domain-independent relation extraction
-subject-verb-object triples
-concpet-verb-concept
-- musi resit problem nedostatku kontextu ve vetach,
-treba pronouns resolution, allocating missing subject or object or fragments (protoze pracuji s pozanmkami)
-- priklad extrakce: (S (NP subtree = subject) (VP subtree - v nem se hleda nejzanorenejsi sloveso (verb), object se hleda v PP, NP a ADJP potomcich VP\_subtree (v NP a PP se vybere prvni podstatne jmeno or compound noun, v ADJP prvni pridavne jmeno.
-
-Artequakt -- clanek ontology-based-knowledge-extraction.pdf: ?
-
-pouziti strojoveho uceni (konkretne SVM) \cite{rel-extract-kernel}
-
-Procvicnik-v1:
-- date-event: pre-date date post-date => date = pre-date + post-date
-- uplne analogicky pro person-event, place-cokoliv
+The mentioned approaches work if the relation types are known,
+so that patterns are written or a classifier is trained for each of the relation in advance.
+For unrestricted domain,
+we can try to find the relation type in the sentence itself.
+For example, from a simple sentences with a subject, a verb and an object,
+relation \emph{verb(subject, object)} may be extracted \cite{triples-acquisition}.
+However, sentences are often quite complex, so this method requires to preprocess and simplify the text in order to work.
 
 % ---------------------------  SECTION  ---------------------------
 \section{Knowledge Bases}
