@@ -265,19 +265,29 @@ Answer:   & \emph{#3}\\
 \end{ThesisDeclaration}
 
 \begin{ThesisThanks}
-  TODO (Sir, NLP, ALG, a dalsim lidem, kteri to pomohli otestovat a meli dobre pripominky)
+  I would like to thank Jan Rygl
+  for his guidance and support, and for his wisdom and infinite kindness.
+  I would also like to thank members of the Natural Language Processing Centre
+  and Adaptive Learning group for fruitful discussions,
+  and all my friends who helped me to test the develeped application
+  and came up with a lot of great suggestions for future development.
 \end{ThesisThanks}
 
 \begin{ThesisAbstract}
-When studying, it is more efficient not just to read about the topic, but also to practice the knowledge, e.g. by answering some multiple choice questions. Today, there is a huge amount of information to study (consider Wikipedia) and it is not possible to create a set of question for all topics manually. However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing. This thesis explores the state-of-the-art approaches to question generation and describes their advantages and disadvantages. The thesis also suggests a design of the general framework for practicing knowledge from articles. This framework is implemented and publicly accessible through a web interface.
+When studying, it is more efficient not just to read about the topic, but also to practice the knowledge, e.g. by answering some multiple choice questions.
+Today, there is a huge amount of information to study (consider Wikipedia) and it is not possible to create a set of questions for all topics manually.
+However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing.
+This thesis explores the state-of-the-art approaches to question generation and describes their advantages and disadvantages.
+The thesis also suggests a design of the general framework for practicing knowledge from articles.
+The framework is implemented and publicly accessible through a web interface.
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
 % TODO: profiltrovat na ty opravdu relevantni
 question generation, adaptive practice,
-knowledge representation, knowledge extraction,
 learning,
-multiple choice questions
+multiple choice questions,
+knowledge representation, knowledge extraction
 %artificial intelligence, natural language processing,
 \end{ThesisKeyWords}
 
@@ -288,62 +298,38 @@ multiple choice questions
 \chapter{Introduction}
 \label{chap:intro}
 
-TODO: intro, goal of the thesis (dodelat podle oficialniho zadani / abstraktu)
+Repeated reading of the text is an unefficient method of learning,
+while answering to the related questions leads to better understanding and remembering \cite{edu-improve}.
+Creating questions for a given topic is a time-consuming task
+and it is not possible to create a set of questions for each topic manually.
+However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing.
+This thesis explores the state-of-the-art approaches to question generation and describes their advantages and disadvantages.
 
-Mere repeated reading of the text which one is traying to learn is unefficient method of learning, while answering to related questions leads to [better long-term knowledge / dlouhodobemu zapamatovani] \parencite{edu-improve} taky mozna citovat \cite{adaptive-practice}
+In spite of an active research in the field of question generation
+(boosted by the question generation shared task and evaluation challenge in 2009 \cite{shared-task2009}),
+there is still no publicly available web application to solve this task (as of April 2015).
+An online application for question generation would be invaluable.
+Typical example of usage is to make self-studying more efficient by answering a few generated questions after reading an article to verify and consolidate the knowledge acquired from the text.
 
-TODO: 2 ruzne cile: procvicovani (uceni) tematu vs. testovani; i pri procvicovani tematu muzu chtit i to testovani (abych vedel, jak na tom jsem) (budu se venovat obema (?) a v implementovanem systemu to bude nekde na pomezi)
-
-TODO: neco o tom, ze vytvaret testy manualne je time-consuming, takze by bylo fajn to autmatizovat
-
-In spite of active and [dlouhodoby nebo tak neco] research of question generation
-(started already in 1970s \parencite{questions-wolfe} and [hodne pozornosti po roce 2000, jako ilustraci 2009 Qustion Generation Shared Task \cite{shared-task2009}).
-there is still no publicly available web application to solve this task.
-And I am sure that such application would be really useful. Typical example is to make self-studying more efficient by answering a few generated questions after reading an article to verify and consolidate the new knowledge.
-[overit aktualnost a jasne urcit moment o kterem mluvim (neexistuje tady a ted)]
-
-That is why I have implemented \textit{Smartoo, Smart Artificially Intelligent Tutor}, modular and extensible framework for question generation and adaptive practice
-of knowledge from \emph{Wikipedia}%
+That is why I have implemented the \textit{Smartoo, Smart Artificially Intelligent Tutor}, modular and extensible framework for question generation and adaptive practice
+of knowledge from the \emph{Wikipedia}%
 \footnote{\url{http://en.wikipedia.org/}}
 articles.
-The Smartoo Framework is licensed under the GNU General Public License, version 2 [citovat?, licenci rozmyslet].
-The source code is available from project's page on \textit{GitHub}.%
-\footnote{\url{http://github.com/effa/smartoo}}
-I have used the framework to create a simple [instance/demo/prototype?] of the web application for practicing knowledge from Wikipedia articles.%
-\footnote{\url{http://smartoo.thran.cz}}
+The Smartoo framework is licensed under the GNU General Public License, version 2.
+The source code is available from its \textit{GitHub repository}%
+\footnote{\url{http://github.com/effa/smartoo}}.
+The protype behavior has been deployed and is publicly available%
+\footnote{\url{http://smartoo.thran.cz}}.
 
-The whole practicing process consists of four steps.
-First step is to extract facts from the given article.
-Besides the knowledge extraction itself, knowledge representation is an important issue as well.
-Extraction and representation of the knowledge is the topic of \autoref{chap:knowledge}.
+The thesis text is structured as follows.
+In \autoref{chap:knowledge}, I discuss the knowledge extraction from the text,
+which might precede the actual question generation.
+The question generation, together with the issue of ranking and filtering of the generated questions are the subject of \autoref{chap:exercises}.
+In \autoref{chap:practice}, I talk about some common strategies for the adaptive practice, which is essential for a good learning experience.
+In \autoref{chap:smartoo}, I describe the implemented Smartoo framework
+and \autoref{chap:evaluation} contains details about its deployment and evaluation.
+Finally, in \autoref{chap:future}, I present planned future development of the Smartoo framework.
 
-In \autoref{chap:exercises}, excercises generation is discussed.
-Usually, exercises will be just multiple choice questions, but other exercises types are possible as well.
-In this step major concerns are: selection of a fact (or set of facts) from which the exercise will be generated, transformation from the fact (or facts) to the exercise and in case of multiple choice questions selection of good \textit{distractors} (incorrect choices).
-
-TODO: upravit podle aktualniho rozdeleni na kapitoly: Although we could stop here and submit all generated questions to the user, it has been proven to be useful to make two more steps.
-In \autoref{chap:exercises-grading}, I talk about exercises grading.
-We can be interested in various parameters, such as difficulty, relevance to the article or probability that the question is gramatically [?].
-
-Having the exercises graded, we can filter them and only present these with reasonable difficulty, relevance and correctness probability.
-But again, we can introduce one more step to make learning more efficient -- adaptive practice.
-According to the user performance, we can choose easier or more difficult questions. I talk about some common strategies for this task in \autoref{chap:practice}.
-
-In \autoref{chap:smartoo}, I describe the Smartoo Framework in detail
-and we will see how these four steps are transparently glued and how a component for each step should look like.
-I also mention how each of the four components is implemented in the online prototype system.
-
-Smartoo is designed to collect both implicit and explicit feedback from users.
-I analyze feedback from about one month testing period in \autoref{chap:evaluation}.
-
-Finally, in the \autoref{chap:future}, I present planned future development of Smartoo application.
-
-
-%The thesis text was typeset in \LaTeX{} using the \textit{fithesis2} package created by Stanislav Filipčík \parencite{fithesis}.
-
-%TODO: (?) The text of the thesis is licensed under a Creative Commons Attribution 3.0 Unported License.
-
-[Maybe TODO: diagram kroku a vystupu (napr. aby bylo jasne, ze knowledge extraction je moznost, nikoliv nutnost)]
 
 
 
@@ -1839,6 +1825,10 @@ The typical sequence of client requests and server responses is shown in
 % ===========================  CHAPTER ===========================
 \chapter{Deployment and Evaluation}
 \label{chap:evaluation}
+
+Smartoo is designed to collect both implicit and explicit feedback from users.
+I analyze feedback from testing period..
+
 
 TODO: podrobnosti o nasazeni (server, db, virtualni prostredi, mozna nejake sturcne shrnuti potrebnych Pythonich knihoven)
 
