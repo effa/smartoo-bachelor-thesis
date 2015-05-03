@@ -1,5 +1,4 @@
-%\documentclass[12pt,oneside]{fithesis2}		% pc version
-\documentclass[a4paper, 12pt, twoside]{fithesis2}		% print version
+\documentclass[12pt, twoside]{fithesis2}		% print version
 
 % ===== LOADING PACKAGES =====
 % language settings, main documnet language last
@@ -32,7 +31,7 @@
 %\usepackage{newfloat}
 % package for drawing
 \usepackage{tikz}
-\usetikzlibrary{shapes,positioning,fit}
+\usetikzlibrary{shapes,positioning,fit,plotmarks}
 % code listings
 \usepackage{listings}
 %\usepackage{verbatim}
@@ -226,31 +225,19 @@ Answer:   & \emph{#3}\\
 
 %--------------------------------------------------------------------
 
-% ===== CHEAT SHEET =====
-
-% == full width image
-
-%\begin{figure}[b!]
-%\centering
-%\includegraphics[width=\textwidth]{images/bla.bla}
-%\caption{bla bla bla}
-%\label{fig:bla-bla}
-%\end{figure}
-
-
-% == myItemize
-
-%\begin{myItemize}
-%\item \textbf{Bla}\\
-%  bla
-%\item \textbf{Bla}\\
-%  bla
-%\item \textbf{Bla}\\
-%  bla
-%\end{myItemize}
-
-% == quotation marks
-%``the sweet sport of learning''
+% ===== DATA =====
+\begin{filecontents}{knowledge-estimate.data}
+0 0
+1 0.29
+2 -0.05
+3 0.35
+4 0.76
+5 1.25
+6 1.31
+7 1.29
+8 0.94
+9 1.19
+\end{filecontents}
 
 
 % ===== BEGIN DOCUMENT =====
@@ -1172,7 +1159,7 @@ If the practice is too easy, the learner doesn't learn anything new and quickly 
 On the other hand, if it is too difficult, the learner becomes anxious and frustrated.
 Hence, the key of efficient adaptive practice is to find the optimal difficulty --
 Thomas Butt talks about ``the sweet spot of learning'' \cite{adaptive-practice}.
-Generally, the ideal state of absolute immersion, focus and enjoyement is called \emph{flow} \cite{flow}.
+Generally, the ideal state of absolute immersion, focus and enjoyment is called \emph{flow} \cite{flow}.
 
 \begin{figure}[h]
   \centering
@@ -1203,7 +1190,7 @@ The generated questions are brand-new, so we necessarily need to rank them for r
 otherwise there is no way to distinguish between generated questions.
 
 Having the limitations in mind, we can now formulate the goal of the adaptive practice in the settings of the automatically generated questions.
-The system shall ask questions, which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequatly difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
+The system shall ask questions, which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequately difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
 
 In \autoref{sec:knowledge-estimation}, I describe several common models of a student used to estimate one's knowledge, then I briefly mention dynamic adjustment of target difficulty (\autoref{sec:target-difficulty}),
 and finally I discuss the selection of best question (\autoref{sec:question-selection}).
@@ -1225,13 +1212,13 @@ in the following paragraphs.
 \item \textbf{Logistic model}\\
   One-parameter logistic model is the basic model of student in the
   \emph{item response theory} \cite{visual-irt}.
-  This model uses logistic function with a paremeter $d$, which denotes the difficulty of the fact.
-  The probabily, that the student with knowledge $k$ knows a fact with difficulty $d$ is given by the formula:
+  This model uses logistic function with a parameter $d$, which denotes the difficulty of the fact.
+  The probability, that the student with knowledge $k$ knows a fact with difficulty $d$ is given by the formula:
   \begin{equation}\label{eq:logistic}
   P(k, d) = \frac{1}{1 + e^{-(k - d)}}
   \end{equation}
-  The logistic funcion is suitable for probability modeling, because it ranges from $0$ to $1$ for any possible input.
-  In case of multiple choice questions, we need to adjust the formula a little bit to account for the possiblity of guessing.
+  The logistic function is suitable for probability modeling, because it ranges from $0$ to $1$ for any possible input.
+  In case of multiple choice questions, we need to adjust the formula a little bit to account for the possibility of guessing.
   With $n$ options, the probability of correct guess is $\frac{1}{n}$.
 \begin{equation}\label{eq:logistic-mcq}
 P(k, d, n) = \frac{1}{n} + \left( 1 - \frac{1}{n} \right) \cdot \frac{1}{1 + e^{-(k - d)}}
@@ -1295,13 +1282,13 @@ The $K$ parameter influences the weight of the last match to the current estimat
 % NOTE: lze podotknout, ze misto konstanty K se casto pouziva funkce (uncertainty function), mozna citace na Glicko
 Although the primary use of Elo model was to describe the process of learning,
 it can be also used for the gradual improvements of estimates for prior knowledge of students and difficulty of facts \cite{slepe-mapy}.
-However, the constat $K$ is problematic -- if it's too large, estimation is unstable; if it's too small, estimation converges too slowly.
-For this reason, instead of a consant, an attenuation function
+However, the constant $K$ is problematic -- if it's too large, estimation is unstable; if it's too small, estimation converges too slowly.
+For this reason, instead of a constant, an attenuation function
 \begin{equation}\label{eq:attenuation}
   K(m) = \frac{a}{1 + bm}
 \end{equation}
 ($m$ is the order of the match, $a$ and $b$ are fixed parameters) can be used.
-The main advantage of using the Elo model to estimate the prior knowledge and difficulties in comparision with the maximum likelihoood estimation algorithms is its simplicity and intrinsic online nature.
+The main advantage of using the Elo model to estimate the prior knowledge and difficulties in comparison with the maximum likelihood estimation algorithms is its simplicity and intrinsic online nature.
 Experiments suggest that it leads to similar results as the maximum likelihood estimation \cite{slepe-mapy-time-elo}.
 
 \item \textbf{Performance factors analysis}\\
@@ -1314,7 +1301,7 @@ Experiments suggest that it leads to similar results as the maximum likelihood e
   \text{~~where~~} k = \alpha \cdot a + \beta \cdot b - d
   \end{equation}
   The main drawback of this model is that it ignores the order of answers,
-  so answering firstly 10 times incorrecly and then 10 time incorrecly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
+  so answering firstly 10 times incorrectly and then 10 time incorrectly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
   To take the order of answers into account, performance factors analysis can be combined with the Elo model \cite{slepe-mapy} -- after each answer, estimate of knowledge parameter $k$ is updated according to the rule \ref{eq:elo}.
 \end{myItemize}
 
@@ -1325,7 +1312,7 @@ Experiments suggest that it leads to similar results as the maximum likelihood e
 \label{sec:target-difficulty}
 
 As we mentioned in the introduction to this chapter,
-the key to the efficient practice is to provide the student with adequatly difficult questions.
+the key to the efficient practice is to provide the student with adequately difficult questions.
 Although the ideal success rate may vary for different people (and even for one person in different conditions),
 for simplicity it is usually treated as a constant and set e.g. on 75 \% \cite{slepe-mapy, adaptive-practice-irt-math}.
 
@@ -1334,7 +1321,7 @@ This result was obtained by self-reports of students (after some number of answe
 each student was assigned to one of 10 groups with different target probability of correct answer (from 50 to 95 \%).
 
 It was also noticed that the actual success rate is usually higher than the target probability of correct answer.
-To approach the desired target succes rate more closely, an algorithm was proposed for dynamic adjustment of target difficulty \cite{slepe-mapy-motivation}.
+To approach the desired target success rate more closely, an algorithm was proposed for dynamic adjustment of target difficulty \cite{slepe-mapy-motivation}.
 It is based on the idea of \textit{proportional controller}.
 If the actual success rate is lower than the target probability of correct answer, the target probability is increased (proportionally to the ``error'').
 If the actual success rate is higher, the target probability is proportionally decreased.
@@ -1366,7 +1353,7 @@ This dynamic adjustment of target probability proved to be useful -- it increase
 
 In the previous sections, we discussed how to estimate students' knowledge and how to dynamically adjust target difficulty of questions.
 Using these two components, we can find the question with the optimal difficulty.
-However, several criteria should be considered to select the question which is the most useful for the student and difficulty is just one of them. Let us review the most imporatn criteria.
+However, several criteria should be considered to select the question which is the most useful for the student and difficulty is just one of them. Let us review the most important criteria.
 \begin{myItemize}
   \item \textbf{Relevance}\\
     The question should be relevant to the practiced topic.
@@ -1386,7 +1373,7 @@ However, several criteria should be considered to select the question which is t
   \item \textbf{Variability}\\
     Especially important is the variability in the practiced concepts.
     If one concept is practiced in several questions in a row, it gets quickly boring, and it negatively influences both the relevance (as the student would like to practice other concepts from the article as well) and the difficulty (since it is easier to answer questions about the same concept which was already practiced).
-    Besides this crucial variabilty of concepts,
+    Besides this crucial variability of concepts,
     variability of question types may also help, because diversity increases enjoyment.
     %\cite{question-gen-adapt-bayes}.
 \end{myItemize}
@@ -1400,19 +1387,20 @@ The question with the highest total score is selected and presented to the stude
 \chapter{Smartoo Framework}
 \label{chap:smartoo}
 
-TODO: obecny uvod, framework x prototype (deployed), modularita (zduraznit) - decomposition into the following components:
+Smartoo is a framework for question generation and adaptive practice.
+It is written in a modular way and decomposes the process into the following components:
 \begin{myItemize}
-\item \textbf{KnowledgeBuilder} -- takes an article as the input and builds knowledge graph -- RDF graph of facts contained in the article.
-\item \textbf{ExercisesCreator} -- creates a set of questions (or other types of exercises) using the built knowledge graph.
-\item \textbf{ExercisesGrader} -- evaluates exercises with respect to attributes such as difficulty or relevance to the original article.
-\item \textbf{Practicer} -- controls the practice session itself, i.e. gives the student one exercise at a time based on previous exercises and answers.
+\item \textbf{KnowledgeBuilder} -- takes an article as the input and extracts knowledge, building a RDF graph of facts contained in the article.
+\item \textbf{ExercisesCreator} -- creates a set of questions (or possibly other types of exercises) using the built knowledge graph.
+\item \textbf{ExercisesGrader} -- ranks generated exercises with respect to attributes such as difficulty or relevance to the original article.
+\item \textbf{Practicer} -- controls the practice session itself, i.e. gives the student one exercise at a time based on the previous exercises and answers.
 \end{myItemize}
 Each component (e.g. \textit{KnowledgeBuilder}) has variable behavior (e.g. \textit{KnowledgeBuilderBehavior}), which is a parametrised code, i.e. an implementation of the behavior (the code) and a set of parameters which the code uses.
 Component itself is just a wrapper around the behavior which performs common tasks, most importantly persistence management.
 %(For example \textit{KnowledgeBuilder} stores the knowledge graph built byt its behavior.)
-At the beginning of a new session, random 4-tuple of components with behaviors is chosen.%
-\footnote{The selection is not actualy completely random, behaviors with better performance in the past are preferred over the behaviors with worse performance, see section \autoref{sec:smartoo-behaviors-selection} for details.} The described relationships are visualized in \autoref{fig:smartoo-architecture}.
-
+At the beginning of each new session, 4-tuple of components with behaviors is chosen.%
+%\footnote{The selection is not actualy completely random, behaviors with better performance in the past are preferred over the behaviors with worse performance, see section \autoref{sec:smartoo-behaviors-selection} for details.}
+%The described relationships are visualized in \autoref{fig:smartoo-architecture}.
 
 \begin{figure}[h]
   \centering
@@ -1421,12 +1409,17 @@ At the beginning of a new session, random 4-tuple of components with behaviors i
   \label{fig:smartoo-architecture}
 \end{figure}
 
-Except from \textit{ExercisesCreator} and \textit{ExercisesGrader}
+The proposed modular design allows for easy integration and testing of new behaviors.
+Simple prototype behaviors based on heuristic approaches were implemented.
+More sophisticated behaviors will be the subject of future development.
+
+Except from \textit{ExercisesCreator} and \textit{ExercisesGrader},
 the components does not communicate with each other directly,
 but via results (knowledge graphs and exercises) stored in the database.
 The communication and the flow of data is depicted in \autoref{fig:data-flow-diagram}.
-Individual processes are triggered by signals from client.
-Time ordering of the signals and processes is showed in \autoref{fig:client-server-communication}.
+Individual processes are triggered by signals from the client.
+Time ordering of the signals and processes is shown in \autoref{fig:client-server-communication}
+on page~\pageref{fig:client-server-communication}.
 
 \begin{figure}[h]
   \centering
@@ -1439,16 +1432,16 @@ Time ordering of the signals and processes is showed in \autoref{fig:client-serv
 \section{Behaviors Selection}
 \label{sec:smartoo-behaviors-selection}
 
-Each session has assigned a \textit{performance} which is computed as a weighted sum of the user final rating and the number of exercises marked as invalid or irrelevant. [Maybe TODO: presny vzorec]
-As we know which behaviors participated in each session, we can compute the average performance of a 4-tuple of behaviors $p(x_1, x_2, x_3, x_4)$.
+Each session has assigned a \textit{performance} which is computed as a weighted sum of the user final rating and the ratio of exercises marked as invalid or irrelevant.
+As we know which behaviors participated in which sessions, we can compute the average performance of a 4-tuple of behaviors $p(x_1, x_2, x_3, x_4)$.
 
 At the beginning of each new session, 4-tuple of behaviors $(k_1, k_2, k_3, k_4)$ ($k_1$ is knowledge builder, $k_2$ exercises creator, etc.) is chosen in a partially random way
 which prioritizes behaviors with better performance in the past.
 Ideally, the probability of a certain 4-tuple being selected would be proportional to its expected relative performance
-(relative with respect to the expected performance of other 4-tuples).
-As we do not know the future, our best guess for expected performance is the performance in the past.
+(relative to the expected performances of other 4-tuples).
+As we do not know the future, our best guess for the expected performance is the performance in the past.
 Using conditional probability we can easily derive formulae for probability $P$ of components $(x_1, x_2, x_3, x_4)$ being selected.
-I use asterisk ($*$) to denote "any behavior", so e.g. $p((x_1, *, *, *))$ means average performance of all sessions in which knowledge builder was $x_1$.
+I use asterisk ($*$) to denote ``any behavior'', so e.g. $p((x_1, *, *, *))$ means average performance of all sessions in which knowledge builder was $x_1$.
 $$
 P(k_1 = x_1) = p((x_1, *, *, *)),
 $$
@@ -1462,11 +1455,12 @@ P(k_3 = x_3 \mid k_1 = x_1 \land k_2 = x_2)
   = \frac{P(k_1 = x_1 \land k_2 = x_2 \land k_3 = x_3)}{P(k_1 = x_1 \land k_2 = x_2)}
   = \frac{p((x_1, x_2, x_3, *))}{p((x_1, x_2, *, *))},
 $$
-and similarly for the fourth component.
+$$
+P(k_4 = x_4 \mid k_1 = x_1 \land k_2 = x_2 \land k_3 = x_3)
+  = \ldots
+  = \frac{p((x_1, x_2, x_3, x_4))}{p((x_1, x_2, x_3, *))}.
+$$
 
-
-
-TODO: Rozepsat a odargumentovat poradneji. (Bayes...)
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -1475,12 +1469,13 @@ TODO: Rozepsat a odargumentovat poradneji. (Bayes...)
 
 If the user requests topic which were never requested before,
 the corresponding article is looked up and retrieved from Wikipedia.
-Some text preprocessing is performed, e.g. sections without useful content, such as "See also", "External links" or "References", are discarded.
-Then the article is parsed into sentence trees with marked terms occurences.
+Some text preprocessing is performed, e.g. sections without useful content, such as ``See also'', ``External links'' or ``References'', are discarded.
+Then the article is parsed into sentence trees with marked terms occurrences.
 
-\subsection*{Shallow Parsing}
-Text is split into sentences, each sentence is tokenized
-and each token is assigned part-of-speech tag (\autoref{sec:sentence-transformations}).
+%\subsection*{Shallow Parsing}
+At first, text is split into sentences, each sentence is tokenized
+and each token is assigned a part-of-speech tag.
+%(\autoref{sec:sentence-transformations}).
     For these natural language processing tasks I have used the \textit{NLTK} (Natural Language Toolkit) library \cite{nlp-python}. NLTK uses \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset}.
 
 \begin{table}[h]
@@ -1499,7 +1494,7 @@ and each token is assigned part-of-speech tag (\autoref{sec:sentence-transformat
 \caption{Part-of-speech tags examples \cite{penn-tagset} }
 \end{table}
 
-As an example, consider sentence \textit{"Six days after the surrender of Confederate commaning general Robert E. Lee, Lincoln was assassinated byt John Wilkes Booth, a Confederate sympathizer."} This sentence would be tokenized and tagged as follows:
+As an example, consider sentence ``Six days after the surrender of Confederate commanding general Robert E. Lee, Lincoln was assassinated byt John Wilkes Booth, a Confederate sympathizer.'' This sentence would be tokenized and tagged as follows:
 \begin{code}
 [['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
 ['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
@@ -1511,39 +1506,16 @@ As an example, consider sentence \textit{"Six days after the surrender of Confed
 ['sympathizer', 'NN'], ['.', '.']],
 \end{code}
 
-\subsection*{Terms Occurences Inference}
-In addition to text of the article, I also retrieve lists of titles of \textit{internal links}, i.e. links to another page on the Wikipedia.
-These link titles can be thought of as a terms (as they have their page on the Wikipedia).
-This terms are shallowed-parsed (tokenized and tagged)
-and then I try to infer their occurences in the text.
-In order to make the inference fast (meaning time complexity of $\mathcal{O}(n)$, where $n$ is the number of tokens in text), I first build a trie [TODO: vysvetlit nebo aspon odkaz] from all terms and then make a single pass through the text searching for longest matching terms in the trie. [TODO: urcite jde o nejaky znamy algoritmus nad retezci (nebo jeho variaci), pak by bylo fajn zminit jeho jmeno]
-[TODO: uvest odkaz nebo odargumentovat casovou slozitost: sestaveni trie: celkovy soucet tokenu termu < delka textu, pak staci jediny pruchod textem]
-
-%Stored content of an article looks like this:
-%\begin{code}
-%{'terms': [
-%    ['Abraham Lincoln', [['Abraham', 'NNP'], ['Lincoln', 'NNP']]],
-%    ['Robert E. Lee', [['Robert', 'NNP'], ['E.', 'NNP'], ['Lee', 'NNP']]],
-%    ... ],
-%'sentences': [ ...,
-%    [['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
-%     ['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
-%     ['commanding', 'NN'], ['general', 'NN'], ['Robert', 'NNP'],
-%     ['E.', 'NNP'], ['Lee', 'NNP'], [',', ','], ['Lincoln', 'NNP'],
-%     ['was', 'VBD'], ['assassinated', 'VBN'], ['by', 'IN'],
-%     ['John', 'NNP'], ['Wilkes', 'NNP'], ['Booth', 'NNP'],
-%     [',', ','], ['a', 'DT'], ['Confederate', 'NNP'],
-%     ['sympathizer', 'NN'], ['.', '.']],
-%    ... ]
-%}
-%\end{code}
-
-[Maybe TODO: terms inference podrobneji (a diagram)]
-
-To represent shallowed parsed sentces with marked terms occurences,
+%\subsection*{Terms Occurences Inference}
+In addition to the text of the article, I also retrieve a list of titles of \textit{internal links}, i.e. links to another pages on the Wikipedia.
+These link titles can be thought of as terms (as they have their page in an encyclopedia).
+The terms are shallowed-parsed (tokenized and tagged)
+and their occurrences in the text are inferred.
+As there are often hundreds of terms in an article,
+I first made a trie from all terms, which then enables to search for all terms simultaneously.
+To represent shallowed parsed sentences with marked terms occurrences,
 I use shallow sentence trees.
 You can see an example of a sentence tree in \autoref{fig:sentence-tree}.
-
 \begin{figure}[h]
   \centering
   \includegraphics[width=\textwidth]{images/sentence-tree.pdf}
@@ -1555,8 +1527,8 @@ You can see an example of a sentence tree in \autoref{fig:sentence-tree}.
 \section{Knowledge Building}
 \label{sec:smartoo-knowledge}
 
-\textit{KnowledgeBuilder} component is responsible for building knowledge graph from given article.
-Knowledge graph is RDF graph of facts contained in the article.
+\textit{KnowledgeBuilder} component is responsible for building knowledge graph from a given article.
+Knowledge graph is a RDF graph of facts contained in the article.
 
 %\subsection*{Prototype Behavior}
 
@@ -1565,8 +1537,8 @@ By the term \textit{quasi fact} I mean some information usable for creating exer
 \begin{myEnumerate}
   \item Firstly, an empty graph is created (let us call it $G$).
   \item If it was not already in the past, knowledge graph of the topic term is retrieved from DBpedia (\autoref{sec:knowledge-bases}). All terms in this retrieved knowledge graph and also all terms in the article are added into the graph $G$ together with their types and labels (which are also found using DBpedia).
-  \item Then we take each sentence in the article and check if it contains a term and is understandable without a context. The used heurisic is: it contains between 5 and 35 tokens (or 50, depending on the selected parameters), does not contain pronouns, parentheses or quotations or some typical anaphoric words (referring to the context) such as "this".
-  \item For each setence which satisfies these conditions, we create an quasi fact about the term in this sentence (and add it to $G$). Each quasi fact consists of several pieces of information: text before the term, text after the term and the term itself (and its label and types). An example of a created quasi fact can be seen in \autoref{fig:quasi-fact}.
+  \item Then we take each sentence in the article and check if it contains a term and is understandable without a context. The used heuristic is: it contains between 5 and 35 tokens (or 50, depending on the selected parameters), does not contain pronouns, parentheses or quotations or some typical anaphoric words (referring to the context) such as ``this''.
+  \item For each sentence which satisfies these conditions, we create an quasi fact about the term in this sentence (and add it to $G$). Each quasi fact consists of several pieces of information: text before the term, text after the term and the term itself (and its label and types). An example of a created quasi fact can be seen in \autoref{fig:quasi-fact}.
   \item Graph $G$ is returned.
 \end{myEnumerate}
 
@@ -1574,7 +1546,7 @@ By the term \textit{quasi fact} I mean some information usable for creating exer
 \begin{figure}[h]
   \centering
   \includegraphics[width=\textwidth]{images/quasi-fact-lincoln.pdf}
-  \caption{Example of a quasi-fact}
+  \caption{Example of a quasi fact}
   \label{fig:quasi-fact}
 \end{figure}
 
@@ -1583,18 +1555,18 @@ By the term \textit{quasi fact} I mean some information usable for creating exer
 \label{sec:smartoo-exercises}
 
 \textit{ExerciseCreator} component uses built knowledge graph to generate a set of exercises.
-Exercises consists of presentaion data and semantic information.
+Exercises consists of presentation data and semantic information.
 \begin{myItemize}
   \item \textbf{presentation data}\\
-    Currently the only supported type of exercise is a multiple choice question. Presentation data for multple choice question consists of the a question string, a list of choices labels and a correct answer label (which must be one of the choices labels).
+    Currently the only supported type of exercise is a multiple choice question. Presentation data for multiple choice question consists of a question string, a list of choice labels and a correct answer label (which must be one of the choice labels).
   \item \textbf{semantic information}\\
-    Semantic information is used for exercises graders. For this purpose I decided to use a list of term pairs for which holds, that if the user confuses them, it can lead to an incorrect answer.
-    For a multiple choice question which correct answer $A$ and distractors $B$, $C$ and $D$,
-    the semantic pairs are $(A, B)$, $(A, C)$ and $(A, D)$.
+    Semantic information is used for exercises grading. For this purpose, I decided to use a list of term pairs for which holds, that if the user confuses them, it can lead to an incorrect answer.
+    For a multiple choice question with correct answer $A$ and distractors $B$, $C$ and $D$,
+    the term pairs are $(A, B)$, $(A, C)$ and $(A, D)$.
 \end{myItemize}
 
 
-Protype behavior uses all the quasi facts about terms in a sentence and creates "fill in the gap" questions with multiple options.
+Prototype behavior uses all the quasi facts about terms in a sentence and creates \emph{fill in the gap} questions with multiple options.
 All quasi facts about terms in sentence can be retrieved from the knowledge graph with the following simple SPARQL query:
 \begin{code}
 SELECT ?before ?term ?after
@@ -1606,7 +1578,7 @@ WHERE {
 }
 \end{code}
 
-As we have multple choice question, we also need to select appropriate distractors.
+As we deal with multiple choice question, we also need to select appropriate distractors.
 Guided by the results about distractors presented in \autoref{sec:distractors},
 the most similar terms to the correct answer are chosen.
 Terms similarity heuristics is based on the number of common types
@@ -1615,7 +1587,7 @@ $$
 sim(t_1, t_2) = 2 \left( \frac{1}{1 + \exp({-|C(t_1, t_2)| / \kappa})} \right) - 1
 $$
 The constants $\kappa$ influences the speed of convergence to $1$.
-Terms without any common type would have $0$ similarity and the more common types they have, the more close to $1$ the similarity is. [Maybe TODO: 2 konkretni priklady podle poctu spolecnych typu, graf teto funkce v zavislosti na poctu spolecnych typu]
+Terms without any common type would have $0$ similarity and the more common types they have, the more close to $1$ the similarity is.
 
 As an example, let us look at the exercise created from the quasi fact in \autoref{fig:quasi-fact}. The presentation data looks like this:
 \begin{code}
@@ -1626,24 +1598,26 @@ As an example, let us look at the exercise created from the quasi fact in \autor
             'Abraham Lincoln', 'Franklin D. Roosevelt'],
 'correct-answer': 'Abraham Lincoln'}
 \end{code}
-It corresponds to the following presentation of the exercise:
-\begin{exercise}
-\label{exrc:assassination}
-\caption{Example of a created question}
-  \begin{question}
-  Six days after the surrender of Confederate commanding general Robert E. Lee
-  \sentenceGap
-  was assassinated by John Wilkes Booth, a Confederate sympathizer.
 
-  \begin{choices}
-    \choice Andrew Johnson
-    \choice James Buchanan
-    \choice Abraham Lincoln
-    \choice Franklin D. Roosevelt
-  \end{choices}
-  \end{question}
-\end{exercise}
+%It corresponds to the following presentation of the exercise:
+%\begin{exercise}
+%\label{exrc:assassination}
+%\caption{Example of a created question}
+%  \begin{question}
+%  Six days after the surrender of Confederate commanding general Robert E. Lee
+%  \sentenceGap
+%  was assassinated by John Wilkes Booth, a Confederate sympathizer.
 
+%  \begin{choices}
+%    \choice Andrew Johnson
+%    \choice James Buchanan
+%    \choice Abraham Lincoln
+%    \choice Franklin D. Roosevelt
+%  \end{choices}
+%  \end{question}
+%\end{exercise}
+
+\noindent
 And the respective semantic information is following:
 \begin{code}
 {'term-pairs': [
@@ -1656,14 +1630,15 @@ And the respective semantic information is following:
 \section{Exercises Grading}
 \label{sec:smartoo-exercises-grading}
 
-\textit{ExerciseGrader} takes an exercise (in particular the semantic part) and assigns it grades for difficulty, relevance to the article and possibly any other attributes, e.g. syntactic and grammatical correctness probability. All grades are numbers between $0$ and $1$. For the relevance, $1$ means the most relevant, for the difficulty $1$ means the most difficult.
+\textit{ExerciseGrader} takes an exercise (in particular the semantic part) and assigns it grades for difficulty, relevance to the article and possibly any other attributes, e.g. grammatical correctness probability.
 
-In prototype behavior, grading is done via simple heuristics.
-Difficulty of an exercise is estimated as the average similarity between all term pairs which can be mistaken.
-Similarity of two terms is measured in the same way as in exercise creating (\autoref{sec:smartoo-exercises}).
-[Maybe TODO: priklad paru u nejake otazky] [Maybe TODO: pro bylo zvoleno, vlastnosti, vyhody, nevyhody]
+In the prototype behavior, difficulty of an exercise is estimated as the average similarity between all term pairs which can be mistaken.
+Similarity of two terms is measured in the same way as during exercise creating (\autoref{sec:smartoo-exercises}).
+The value is than normalized to range from $-2$ to $2$
+(-2 means extremely simple, 0 average, 2 extremely difficult),
+because it is later used by the practicer in the logistic model.
 
-Relevance of the exercise is estimated as the \textit{cosine similarity} meassure between the exercise and the article,
+Relevance of the exercise is estimated as the \textit{cosine similarity} measure between the exercise and the article,
 i.e. cosine of an angle between the article and the exercise represented as sparse vectors mapping terms to their frequency in the article or the exercise
 \cite[][121]{information-retrieval}.
 Cosine similarity between two documents (in our case one document is the article $A$ and another is the exercise $E$) is given by the following formula:
@@ -1672,114 +1647,111 @@ similarity(A, E)
 = \frac{A \cdot E}{|A| |E|}
 = \frac{\sum_{i=1}^{n} A_i E_i}{\sqrt{\sum_{i=1}^{n} A_i^2}\sqrt{\sum_{i=1}^{n} E_i^2}}
 $$
-where $A_i$ ($E_i$) denotes numbers of occurences of the $i$-th term in article (exercise).
-This measure is commonly used in the information retrieval for estimating similarity between two documents of arbitrary length. The cosine similarity is a real number between $0$ and $1$, the higher it is, the smaller is the angle between documents in the vector space and the more similar the documents are. [Maybe TODO: obrazek s grafickym znazornenim onoho uhlu mezi article a exercise]
+where $A_i$ ($E_i$) denotes numbers of occurrences of the $i$-th term in article (exercise).
+This measure is commonly used in the information retrieval for estimating similarity between two documents of arbitrary length. The cosine similarity is a real number between $0$ and $1$, the higher it is, the smaller is the angle between documents in the vector space and the more similar the documents are.
+In other words, the closer the grade is to 1, the more relevant the exercise is.
 
 
 \section{Adaptive Practice}
 \label{sec:smartoo-practice}
 
-Task of the \textit{Practicer} is to control the practice session itself, i.e. to give the student one exercise at a time based on previous exercises and answers.
-
-Prototype behavior of adaptive practicer is a .... [TODO: jak modeluje studenta... spis nijak, proste se snazim cilit na pozadovanou pravdepodobnost uspechu / simple heuristic...]
-To select the most suitable exercise, three attributes of exercises are considered:
+The task of the \textit{Practicer} is to control the practice session itself, i.e. to give the student one exercise at a time based on the previous exercises and answers.
+In the prototype behavior, three attributes are considered to select the most suitable exercise:
 \begin{myItemize}
   \item relevance to the article,
   \item difficulty (compared to the so far success of the user),
   \item repetitiveness (to not ask about one term over and over again).
 \end{myItemize}
-Weights of these three attributes as well as the target success
-are given by the behavior parameters.
+Weights of these three attributes in the total score, as well as the target success
+are given by the behavior parameters (\autoref{tbl:practicers-parameters}).
 \begin{table}[h]
 \begin{center}
-\begin{tabular}{| l | c | r | r |  r  |  r |  r | r |}
+\begin{tabular}{| c | l | r | r |  r  |  r |  r | r |}
   \hline
-  parameter & symbol & \multicolumn{6}{|c|}{used values} \\
-  \hline \hline
-  target success & $\tau$          & $0.75$ & $0.75$ & $0.75$ & $0.75$ & $0.75$ & $0.75$\\ \hline
-  relevance weight & $\alpha$      & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$ & $1.25$\\ \hline
-  difficulty weight & $\beta$      & $1.00$ & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$\\ \hline
-  repetitiveness weight & $\gamma$ & $0.30$ & $0.30$ & $0.30$ & $0.60$ & $0.60$ & $0.60$\\ \hline
+           & parameter & \multicolumn{6}{c|}{used values} \\
+  \hline
+  $\tau$   & target success        & $0.65$ & $0.65$ & $0.65$ & $0.65$ & $0.65$ & $0.65$\\
+  $\alpha$ & relevance weight      & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$ & $1.25$\\
+  $\beta$  & difficulty weight     & $1.00$ & $1.00$ & $1.25$ & $1.00$ & $1.00$ & $1.25$\\
+  $\gamma$ & repetitiveness weight & $1.00$ & $1.00$ & $1.00$ & $1.25$ & $1.25$ & $1.25$\\
+  \hline
 \end{tabular}
 \end{center}
 \caption{Parameters of prototype adaptive practice behavior}
+\label{tbl:practicers-parameters}
 \end{table}
 
-\begin{myItemize}
-  \item Relevance of the exercise was computed by \textit{ExercisesGrader}
+Relevance of the exercise to the article was computed by \textit{ExercisesGrader}
 (\autoref{sec:smartoo-exercises-grading}).
-
-  \item Difficulty penalization is based on the difference between the target difficulty and the exercise difficulty.
-Target difficulty is not exactly $(1 - \tau)$ as it is adjusted according to
-so far success of the user -- if the correct ratio of the user is higher than the target success,
-the target difficulty is set higher than $(1 - \tau)$ and vice versa.
-(experimenty na slepych mapach ukazali statistickou vyznamnost vylepseni pri zaplem dynamic adjustment of target success \cite{slepe-mapy-motivation})
-(TODO: konkretni vzorec podle zdrojaku)
-
-NOTE: global target success je stejne jako ve slepych mapach \cite{slepe-mapy-motivation}
-NOTE: funkce, podle ktere obtiznost upravuji (graf) \cite{slepe-mapy-motivation}
-... "dynamic adjustment", stejne jako ja pouzivaji ve slepych mapach "student’s recent performance (as a measure of recent performance we use the success rate on the last ten questions)."
-
-  \item Repetitiveness penalization is based on the cosine similarity between the scored exercise and the exercises already used in the current session
+Repetitiveness score is set to the opposite of cosine similarity between the exercise and the exercises already used in the current practice session
 (see \autoref{sec:smartoo-exercises-grading} for the explanation and formula of the cosine similarity).
-\end{myItemize}
-The total score is given as weighted sum of the three individual scores described above.
-$$
-\text{totalScore} = \alpha \cdot \text{relevanceScore} + \beta \cdot \text{difficultyPenalty} + \gamma \cdot \text{repetitivenessPenalty}
-$$
-An exercise with the highest score is chosen.
 
-TODO: priklad 1 session, otazek a odpovidani na, aby bylo videt prizpusobovani -- takze mozna jen pomoci nejakeho grafu s vyznacenymi dobrymi a spatnymi odpovedmi a aktualni target difficulty.
+The most interesting part is the difficulty score.
+To estimate the probability that the student correctly answers a question with given difficulty (taking into account the possibility of guessing),
+I use the logistic model of student as described in \autoref{sec:knowledge-estimation}.
+I have also implemented the dynamic adjusting of the target probability \autoref{sec:target-difficulty}.
+The difficulty penalization is then set to a difference between the adjusted target probability and the expected probability as calculated by the student model.
+
+Difficulty adjustment is especially useful for students with extremely high knowledge -- the more time student answers correctly, the lower is the adjusted target difficulty, the more difficult exercises are preferred.
+In \autoref{fig:knowledge-estimate}, an example of knowledge estimation process during one session is shown.
+\autoref{tbl:practice-example} contains detailed information about the same session.
 
 \begin{figure}[h]
-  \centering
-
-  \begin{tikzpicture}[xscale=1,yscale=2]
-  \draw [thick, ->] (0,0) -- (9,0) node [below right] {$questions$};
-  \draw [thick, ->] (0,-0.15) -- (0,1.5) node [align=right, left] {$knowledge$\\$estimate$};
-  %\draw [thick] (-0.1,1) node [left] {$0.5$} -- (0.1,1);
-  %\draw [thick] (-0.1,2) node [left] {$1$} -- (0.1,2);
-  \draw [thin, dashed] (0,1.2) -- (9.2,1.2) node [right] {$true~knowledge$};
-  \draw [very thick] (0,0)
-    -- (1,0.29)
-    -- (2,-0.05)
-    -- (3,0.35)
-    -- (4,0.76)
-    -- (5,1.25)
-    -- (6,1.31)
-    -- (7,1.29)
-    -- (8,0.94)
-    -- (4(9,1.19);
-  \end{tikzpicture}
-  \caption{Convergency of knowledge estimate}
-  \label{fig:logistic-function}
+\centering
+\begin{tikzpicture}[x=1cm,y=2cm,font=\sffamily]
+  % axis
+  \draw (0,0) -- coordinate (x axis mid) (9,0);
+  \draw (0,0) -- coordinate (y axis mid) (0,1.6);
+  % ticks
+  \foreach \x in {0,...,9}
+          \draw (\x,2pt) -- (\x,-4pt)
+                  node[anchor=north] {\x};
+  \foreach \y in {0,0.4,0.8,1.2,1.6}
+          \draw (2pt,\y) -- (-4pt,\y)
+                  node[anchor=east] {\y};
+  % labels
+  \node[below=0.7cm] at (x axis mid) {questions answered};
+  \node[align=right,left=1.1cm] at (y axis mid) {knowledge\\estimate};
+  % plot
+  \draw [thin, dashed] (0,1.2) -- (9.2,1.2) node [right] {true~knowledge};
+  \draw plot[mark=square*, mark options={fill=black}] file {knowledge-estimate.data};
+\end{tikzpicture}
+  \caption{Knowledge estimation during a session}
+  \label{fig:knowledge-estimate}
 \end{figure}
 
-TODO: tikz - popisky os
 
 \begin{table}[h]
 \begin{center}
 \begin{tabular}{| c | c | c | c | c | c | c |}
   \hline
   & knowledge est. &  target & difficulty & probability est. & true probability & answer\\
-  \hline \hline
-  $1$ & $+0.000$ & $0.65$ & $-0.2$ & $0.662$ & $0.852$ &  correct   \\ \hline
-  $2$ & $+0.290$ & $0.52$ & $+0.8$ & $0.531$ & $0.699$ &  incorrect \\ \hline
-  $3$ & $-0.050$ & $0.69$ & $-0.4$ & $0.690$ & $0.874$ &  correct   \\ \hline
-  $4$ & $+0.346$ & $0.63$ & $+0.4$ & $0.615$ & $0.767$ &  correct   \\ \hline
-  $5$ & $+0.760$ & $0.50$ & $+1.4$ & $0.509$ & $0.588$ &  correct   \\ \hline
-  $6$ & $+1.250$ & $0.41$ & $+1.8$ & $0.524$ & $0.516$ &  correct   \\ \hline
-  $7$ & $+1.305$ & $0.34$ & $+1.8$ & $0.534$ & $0.516$ &  incorrect \\ \hline
-  $8$ & $+1.294$ & $0.54$ & $+1.8$ & $0.532$ & $0.516$ &  incorrect \\ \hline
-  $9$ & $+0.941$ & $0.66$ & $+0.8$ & $0.651$ & $0.699$ &  correct   \\ \hline
- $10$ & $+1.191$ & $0.62$ & $+1.2$ & $0.623$ & $0.625$ &  incorrect \\ \hline
+  \hline
+  $0$ & $+0.000$ & $0.65$ & $-0.2$ & $0.662$ & $0.852$ &  correct   \\
+  $1$ & $+0.290$ & $0.52$ & $+0.8$ & $0.531$ & $0.699$ &  incorrect \\
+  $2$ & $-0.050$ & $0.69$ & $-0.4$ & $0.690$ & $0.874$ &  correct   \\
+  $3$ & $+0.346$ & $0.63$ & $+0.4$ & $0.615$ & $0.767$ &  correct   \\
+  $4$ & $+0.760$ & $0.50$ & $+1.4$ & $0.509$ & $0.588$ &  correct   \\
+  $5$ & $+1.250$ & $0.41$ & $+1.8$ & $0.524$ & $0.516$ &  correct   \\
+  $6$ & $+1.305$ & $0.34$ & $+1.8$ & $0.534$ & $0.516$ &  incorrect \\
+  $7$ & $+1.294$ & $0.54$ & $+1.8$ & $0.532$ & $0.516$ &  incorrect \\
+  $8$ & $+0.941$ & $0.66$ & $+0.8$ & $0.651$ & $0.699$ &  correct   \\
+  $9$ & $+1.191$ & $0.62$ & $+1.2$ & $0.623$ & $0.625$ &  incorrect \\
+  \hline
 \end{tabular}
 \end{center}
 \caption{Adaptive practice for a student with knowledge 1.2}
+\label{tbl:practice-example}
 \end{table}
 
 
-Zminit uzitecnost dynamickeho prizpusobovani obtiznosti, zejm. pro studenty, kteri toho vi hodne / malo.
+After the partial scores for relevance, difficulty and repetitiveness are calculated,
+they are summed (with weights given by behavior parameters) to obtain the total score.
+$$
+\text{totalScore} = \alpha \cdot \text{relevanceScore} + \beta \cdot \text{difficultyScore} + \gamma \cdot \text{repetitivenessScore}
+$$
+An exercise with the highest total score is chosen.
+
 
 
 
@@ -1788,31 +1760,37 @@ Zminit uzitecnost dynamickeho prizpusobovani obtiznosti, zejm. pro studenty, kte
 \section{Web Interface}
 \label{sec:smartoo-web}
 
-I have created a simple web interface for Smartoo,
-using \textit{Boostrap}%
-\footnote{\url{http://getbootstrap.com/}},
-HTML and CSS framework for responsive design,
-and {\textit{AngularJS}%
-\footnote{\url{https://angularjs.org/}},
-JavaScript framework for \textit{MVC} (Model -- View -- Controller) design%
-\footnote{Actually, AngularJS states it is \textit{MVW} (Model -- View -- Whatever) framework, as it supports more aprroaches than just MVC.}.
+%I have created a simple web interface for Smartoo,
+%following the \emph{model-view-controller (MVC)} architectural pattern.
+The client controls triggering of processes by requests to the server -- start session, build knowledge, create exercises, next exercise (repeatedly) and session feedback.
+\emph{Next exercise} requests (with the exception of the first one) have also a feedback from the previous exercise attached to them.
+Feedback includes whether the question was answered correctly or incorrectly, and whether the exercise was marked as invalid or irrelevant.
+%Each session consists of at most 10 exercises.
+After the last exercise, a session feedback form is displayed, prompting user to express his or her overall feeling from the practice session (with 3 choices: ``Bad'', ``So so'', and ``Good'').
+A typical sequence of client requests and server responses is shown in
+\autoref{fig:client-server-communication} (gray zones denotes computation, black zones waiting for user response).
+%The web page design can be seen in \autoref{fig:smartoo-home} and \autoref{fig:question-unanswered}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\textwidth]{images/home-page.png}
+  \includegraphics[width=0.84\textwidth]{images/home-page.png}
   \caption{Smartoo home page}
   \label{fig:smartoo-home}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\textwidth]{images/answered-correctly.png}
-  \caption{Correctly answered question}
-  \label{fig:correctly-answered-question}
+  \includegraphics[width=0.84\textwidth]{images/question-unanswered.png}
+  \caption{Question about the history of Denmark}
+  \label{fig:question-unanswered}
 \end{figure}
 
-The typical sequence of client requests and server responses is shown in
-\autoref{fig:client-server-communication}
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=0.9\textwidth]{images/answered-correctly.png}
+%  \caption{Correctly answered question}
+%  \label{fig:correctly-answered-question}
+%\end{figure}
 
 \begin{figure}[h]
   \centering
@@ -1826,15 +1804,57 @@ The typical sequence of client requests and server responses is shown in
 \chapter{Deployment and Evaluation}
 \label{chap:evaluation}
 
+obecne o tom kde to bylo nasazeno, ze to bylo testovano a tak
+
 Smartoo is designed to collect both implicit and explicit feedback from users.
 I analyze feedback from testing period..
 
+% ---------------------------  SECTION  ---------------------------
+\section{Used tools and libraries}
+\label{sec:tools}
 
 TODO: podrobnosti o nasazeni (server, db, virtualni prostredi, mozna nejake sturcne shrnuti potrebnych Pythonich knihoven)
 
-TODO: vyhodnoceni jednotlivych komponent, (2 KB, 6 PR, a taky celkovy prumerny vykon): pocet ok otazek, a jaka byla skutecna uspesnost, prip. zpetne vazby, pokud nejake budou.
+Virtualenv + Python + DB (tested with SQLlite and MySQL, should also work for PosgreSQL)
 
-TODO: bylo by pekne, kdybych mohl ze ziskanych dat take zmerit RMSE tech 6 ruznych pracitce komponent (resp. te jejich casti, ktera modeluje studenta, tj. jak moc dobre ohdaduji, ze to uzivatel zvladne)
+dulezite knihovny:
+Django==1.7.3 (web framework)
+Jinja2==2.7.3 (server side templatin)
+SPARQLWrapper==1.6.4 (interface to DBpedia public SPARQL endpoint)
+nltk==3.0.1 (natural language processing)
+rdflib==4.1.2 (working with RDF graphs)
+wikipedia==1.4.0 (interface to Wikipedia)
+
+JavaScript, HTML, CSS, Bootstrap, Angular, ...?
+
+using \textit{Boostrap}%
+\footnote{\url{http://getbootstrap.com/}},
+HTML and CSS framework for responsive design,
+and {\textit{AngularJS}%
+\footnote{\url{https://angularjs.org/}},
+JavaScript framework for \textit{MVC} (Model -- View -- Controller) design%
+\footnote{Actually, AngularJS states it is \textit{MVW} (Model -- View -- Whatever) framework, as it supports more aprroaches than just MVC.}.
+
+
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Evaluation}
+\label{sec:feedback}
+
+TODO: obecne info (kolik session, kolik otazek)
+
+TODO: celkove statistiky (celkova uspenost)
+
+TODO zpetne vazby (slovni) - jenom strucny vytah (a napady do budoucna spis vyclenit do dalsi kapitoly)
+
+
+% ---------------------------  SECTION  ---------------------------
+\section{Performance of components}
+\label{sec:analysis}
+
+TODO: vyhodnoceni jednotlivych komponent, (2 KB, 6 PR, a taky celkovy prumerny vykon): pocet ok otazek, a jaka byla skutecna uspesnost,
+
 
 
 % ===========================  CHAPTER ===========================
@@ -1867,8 +1887,37 @@ Plany/vylepseni:
 % print complete bibliography
 \printbibliography
 
-\chapter{Data attachment}
+\chapter{Project Structure}
 
-TODO: data attachment structure description
+TODO: project structure description (proste adresarova struktura projektu se strucnym popisem)
+
+simplified project structure:
+
+\begin{tabular}{l l l}
+\multicolumn{2}{l}{\texttt{+ common}} & bla bla\\
+& \texttt{- fields.py} & bla bla\\
+& \texttt{- utils/} & bla bla\\
+& \texttt{- tests.py} & bla bla\\
+\multicolumn{2}{l}{\texttt{+ abstract\_component}} & bla bla\\
+& \texttt{- models.py} & bla bla\\
+& \texttt{- component\_behavior.py} & bla bla\\
+
+\end{tabular}
+
+\begin{myItemize}
+\item \texttt{common} -- bla bla
+\begin{itemize}
+\item \texttt{fields.py} -- bla bla
+\item \texttt{utils} -- utility classes
+\item \texttt{tests.py} -- bla bla
+\end{itemize}
+
+\item \texttt{abstract\_component}\\ bla bla
+\begin{itemize}
+\item \texttt{models.py}\\ bla bla
+\item \texttt{component\_behavior.py}\\ bla bla
+\end{itemize}
+
+\end{myItemize}
 
 \end{document}
