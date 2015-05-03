@@ -226,18 +226,18 @@ Answer:   & \emph{#3}\\
 %--------------------------------------------------------------------
 
 % ===== DATA =====
-\begin{filecontents}{knowledge-estimate.data}
-0 0
-1 0.29
-2 -0.05
-3 0.35
-4 0.76
-5 1.25
-6 1.31
-7 1.29
-8 0.94
-9 1.19
-\end{filecontents}
+%\begin{filecontents}{knowledge-estimate.data}
+%0 0
+%1 0.29
+%2 -0.05
+%3 0.35
+%4 0.76
+%5 1.25
+%6 1.31
+%7 1.29
+%8 0.94
+%9 1.19
+%\end{filecontents}
 
 
 % ===== BEGIN DOCUMENT =====
@@ -1804,57 +1804,96 @@ A typical sequence of client requests and server responses is shown in
 \chapter{Deployment and Evaluation}
 \label{chap:evaluation}
 
-obecne o tom kde to bylo nasazeno, ze to bylo testovano a tak
-
-Smartoo is designed to collect both implicit and explicit feedback from users.
-I analyze feedback from testing period..
+The source code of the project is available from its repository%
+\footnote{\url{http://github.com/effa/smartoo}}.
+Smartoo has been deployed on \url{http://smartoo.thran.cz}.
+In this chapter, I describe a few deployment details
+and then I analyze the feedback collected from the users.
 
 % ---------------------------  SECTION  ---------------------------
 \section{Used tools and libraries}
 \label{sec:tools}
 
-TODO: podrobnosti o nasazeni (server, db, virtualni prostredi, mozna nejake sturcne shrnuti potrebnych Pythonich knihoven)
+The main tools and libraries used in the project are:
+\begin{myItemize}
+\item \texttt{Python 2.7}\\
+The backend of the application is developed in Python 2.7%
+\footnote{\url{https://www.python.org/download/releases/2.7/}}.
+To create an isolated Pyhton environment for the project, use \texttt{Virtualenv}%
+\footnote{\url{https://virtualenv.pypa.io}}.
+After activating a new virtual environment, all necessary Python packages can be installed simply by
+command \texttt{pip install -r requirements.txt} executed in the project root directory.
+%\begin{code}
+%pip install -r requirements.txt
+%\end{code}
 
-Virtualenv + Python + DB (tested with SQLlite and MySQL, should also work for PosgreSQL)
+\item \texttt{Django 1.7}\\
+Django%
+\footnote{\url{https://www.djangoproject.com/}}
+is a Python web framework, using \emph{Model--View--Template} archicture.
 
-dulezite knihovny:
-Django==1.7.3 (web framework)
-Jinja2==2.7.3 (server side templatin)
-SPARQLWrapper==1.6.4 (interface to DBpedia public SPARQL endpoint)
-nltk==3.0.1 (natural language processing)
-rdflib==4.1.2 (working with RDF graphs)
-wikipedia==1.4.0 (interface to Wikipedia)
+%\item \texttt{Jinja2 2.7}\\
+%Jinja2%
+%\footnote{\url{https://www.djangoproject.com/}}
 
-JavaScript, HTML, CSS, Bootstrap, Angular, ...?
+\item \texttt{NLTK 3.0}\\
+NLTK%
+\footnote{\url{http://www.nltk.org/}}
+(Natural Language Toolkit) is a Python library for natural language processing tasks,
+such as tokenization and part-of-speech-tagging.
 
-using \textit{Boostrap}%
-\footnote{\url{http://getbootstrap.com/}},
-HTML and CSS framework for responsive design,
-and {\textit{AngularJS}%
-\footnote{\url{https://angularjs.org/}},
-JavaScript framework for \textit{MVC} (Model -- View -- Controller) design%
-\footnote{Actually, AngularJS states it is \textit{MVW} (Model -- View -- Whatever) framework, as it supports more aprroaches than just MVC.}.
+\item \texttt{SPARQLWrapper 1.6}\\
+SPARQLWrapper%
+\footnote{\url{http://rdflib.github.io/sparqlwrapper/}}
+provides an interface to DBpedia public SPARQL endpoint.
+
+\item \texttt{RDFLib 4.1}\\
+RDFLib%
+\footnote{\url{https://rdflib.readthedocs.org/}}
+is a Python library for working with RDF graphs.
+
+\item \texttt{Wikipedia 1.4}\\
+Wikipedia%
+\footnote{\url{https://github.com/goldsmith/Wikipedia}}
+is a simple Python wrapper for the Wikipedia API.
+
+\item \texttt{SQLite} or \texttt{MySQL}\\
+Database is accessed through Django,
+so PostgreSQL should probably work as well.
+%python manage.py syncdb
+%python manage.py migrate
+
+\item \texttt{AngularJS}\\
+AngularJS%
+\footnote{\url{https://angularjs.org/}}
+is a popular JavaScript framework for a simple developmnet of the \emph{Model--View--Controller (MVC)} architecture at the client side.
+
+\item \texttt{Bootstrap}\\
+Bootstrap%
+\footnote{\url{http://getbootstrap.com/}}
+is a HTML and CSS framework for responsive design of the web.
+\end{myItemize}
+
 
 
 
 
 % ---------------------------  SECTION  ---------------------------
-\section{Evaluation}
-\label{sec:feedback}
+\section{Performance Evaluation}
+\label{sec:performance-evaluation}
 
 TODO: obecne info (kolik session, kolik otazek)
 
 TODO: celkove statistiky (celkova uspenost)
 
-TODO zpetne vazby (slovni) - jenom strucny vytah (a napady do budoucna spis vyclenit do dalsi kapitoly)
-
-
-% ---------------------------  SECTION  ---------------------------
-\section{Performance of components}
-\label{sec:analysis}
-
 TODO: vyhodnoceni jednotlivych komponent, (2 KB, 6 PR, a taky celkovy prumerny vykon): pocet ok otazek, a jaka byla skutecna uspesnost,
 
+MaybeTODO: zpetne vazby (slovni) - jenom strucny vytah (a napady do budoucna spis vyclenit do dalsi kapitoly)
+
+
+%% ---------------------------  SECTION  ---------------------------
+%\section{Performance of components}
+%\label{sec:analysis}
 
 
 % ===========================  CHAPTER ===========================
