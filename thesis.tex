@@ -1910,9 +1910,9 @@ Slovni zpetne vazby, nejcastejsi pripominky
 
 There is no doubt that despite the effort of the bachelor thesis,
 the question generation remained an open problem of the natural language processing.
-Evalution showed clear limitations of used heuristic approaches.
+Evaluation showed clear limitations of used heuristic approaches.
 However, the system was developed with the importance of modularity and extensibility in mind.
-New, more sophisticated behaviors for knowledge building, questions creating, questions grading and adaptive practice may be implemented and easily itegrated into the current system.
+New, more sophisticated behaviors for knowledge building, questions creating, questions grading and adaptive practice may be implemented and easily integrated into the current system.
 
 Besides the implementation of advanced behaviors for knowledge extraction and questions creation using machine learning approaches, there are some other improvements I would like to do in the future.
 For example, extend the system for the possibility of accepting a plain text, instead of Wikipedia articles.
@@ -1938,7 +1938,7 @@ Average performance in a few practice sessions would serve as a fitness function
 crossover and mutation operations can be straightforwardly done on parameter values,
 although this is only applicable for behaviors with same or similar code.
 
-For me, automatic question generation and adaptive practice is an amazing field full of challengess
+For me, automatic question generation and adaptive practice is an amazing field full of challenges
 and I would like to continue to devote my effort to create an online question generation tool which makes learning more efficient and fun.
 
 
@@ -1956,35 +1956,56 @@ and I would like to continue to devote my effort to create an online question ge
 \chapter{Project Structure}
 \label{chap:project-structure}
 
-TODO: project structure description (proste adresarova struktura projektu se strucnym popisem)
+Simplified project structure:
 
-simplified project structure:
-
+\hspace{-0.8cm}
 \begin{tabular}{l l l}
-\multicolumn{2}{l}{\texttt{+ common}} & bla bla\\
-& \texttt{- fields.py} & bla bla\\
-& \texttt{- utils/} & bla bla\\
-& \texttt{- tests.py} & bla bla\\
-\multicolumn{2}{l}{\texttt{+ abstract\_component}} & bla bla\\
-& \texttt{- models.py} & bla bla\\
-& \texttt{- component\_behavior.py} & bla bla\\
+\multicolumn{2}{l}{\texttt{+ common}} & \\
+& \texttt{- utils/} & utilities, e.g. metrics, language processing\\
+& \texttt{- fields.py} & custom field for dictionary\\
+& \texttt{- tests.py} & \\
 
+\multicolumn{2}{l}{\texttt{+ abstract\_component}} & \\
+& \texttt{- models.py} & base class for all 4 components\\
+& \texttt{- component\_behavior.py} & base class for all behaviors\\
+
+\multicolumn{2}{l}{\texttt{+ knowledge}} & \\
+& \texttt{- utils/} & utilities, e.g. SPARQL and terms trie\\
+& \texttt{- fields.py} & custom fields for terms and graphs\\
+& \texttt{- models.py} & article, knowledge builder, knowledge graph\\
+& \texttt{- knowledge-builder-behaviors/} & implementation of behaviors\\
+& \texttt{- tests/} & \\
+
+\multicolumn{2}{l}{\texttt{+ exercises}} & \\
+& \texttt{- utils/} & selecting distractors, difficulty normalization\\
+& \texttt{- exercises-creator-behaviors/} & behaviors for exercises creators\\
+& \texttt{- exercises-grader-behaviors/} & behaviors for exercises graders\\
+& \texttt{- models.py} & exercises creator and grader, (graded) exercise\\
+& \texttt{- tests.py} & \\
+
+\multicolumn{2}{l}{\texttt{+ practice}} & \\
+& \texttt{- utils/} & logistic model, target probability adjustment\\
+& \texttt{- exercises-grader-behaviors/} &  behaviors for practicers\\
+& \texttt{- models.py} & class for practicers\\
+& \texttt{- tests.py} & \\
+
+\multicolumn{2}{l}{\texttt{+ smartoo}} & \\
+& \texttt{- management/} & commands for data dumping and statistics\\
+& \texttt{- fixtures/} & data for testing and DB initialization\\
+& \texttt{- templates/} & HTML templates\\
+& \texttt{- static/} & JavaScript and CSS files, images\\
+& \texttt{- models.py} & session and feedback\\
+& \texttt{- components\_selector.py} & selecting components for new session\\
+& \texttt{- views.py} & functions for processing requests\\
+& \texttt{- urls.py} & mappings from URLs to corresponding views\\
+& \texttt{- exceptions.py} & \\
+& \texttt{- tests.py} & \\
+
+\multicolumn{2}{l}{\texttt{+ production}} & \\
+& \texttt{- settings.py} & django settings (database, caching, logging, etc.)\\
+
+\multicolumn{2}{l}{\texttt{+ requirements.txt}} & list of dependencies\\
+\multicolumn{2}{l}{\texttt{+ manage.py}} & script for django-related tasks\\
 \end{tabular}
-
-\begin{myItemize}
-\item \texttt{common} -- bla bla
-\begin{itemize}
-\item \texttt{fields.py} -- bla bla
-\item \texttt{utils} -- utility classes
-\item \texttt{tests.py} -- bla bla
-\end{itemize}
-
-\item \texttt{abstract\_component}\\ bla bla
-\begin{itemize}
-\item \texttt{models.py}\\ bla bla
-\item \texttt{component\_behavior.py}\\ bla bla
-\end{itemize}
-
-\end{myItemize}
 
 \end{document}
