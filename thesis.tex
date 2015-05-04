@@ -1804,10 +1804,11 @@ A typical sequence of client requests and server responses is shown in
 \chapter{Deployment and Evaluation}
 \label{chap:evaluation}
 
-The source code of the project is available from its repository%
+The project structure is described in \autoref{chap:project-structure},
+the source code is available from its repository%
 \footnote{\url{http://github.com/effa/smartoo}}.
-Smartoo has been deployed on \url{http://smartoo.thran.cz}.
-In this chapter, I describe a few deployment details
+Smartoo has been deployed at \url{http://smartoo.thran.cz}.
+In this chapter, I mention a few deployment details
 and then I analyze the feedback collected from the users.
 
 % ---------------------------  SECTION  ---------------------------
@@ -1891,6 +1892,13 @@ TODO: vyhodnoceni jednotlivych komponent, (2 KB, 6 PR, a taky celkovy prumerny v
 MaybeTODO: zpetne vazby (slovni) - jenom strucny vytah (a napady do budoucna spis vyclenit do dalsi kapitoly)
 
 
+Slovni zpetne vazby, nejcastejsi pripominky
+- otazky jsou spise jednoduche, nekdy trochu sporne, nekdy vytrzene z kontextu
+- [souvisejici] spravne odpovedi se dost opakuji (obvykle tema clanku)
+- [souvisejici] nekdy lze spravnou odpoved urcit jednoduchym vyloucenim ostatnich moznosti (napr. spravna odpoved je kontinent a distraktory jsou staty)
+- mel by byt videt prubeh cviceni, zejmena kolik otazek zbyva do konce (a taky moznost ukoncit procvicovani a jit zpet na uvodni strunku)
+
+
 %% ---------------------------  SECTION  ---------------------------
 %\section{Performance of components}
 %\label{sec:analysis}
@@ -1900,19 +1908,38 @@ MaybeTODO: zpetne vazby (slovni) - jenom strucny vytah (a napady do budoucna spi
 \chapter{Conclusions and Future Plans}
 \label{chap:future}
 
-TODO: strucne shrnuti a hlavne zavery na zaklade statistik a strucne budouci plany...
+There is no doubt that despite the effort of the bachelor thesis,
+the question generation remained an open problem of the natural language processing.
+Evalution showed clear limitations of used heuristic approaches.
+However, the system was developed with the importance of modularity and extensibility in mind.
+New, more sophisticated behaviors for knowledge building, questions creating, questions grading and adaptive practice may be implemented and easily itegrated into the current system.
 
-TODO: what to improve (... in diploma thesis)
+Besides the implementation of advanced behaviors for knowledge extraction and questions creation using machine learning approaches, there are some other improvements I would like to do in the future.
+For example, extend the system for the possibility of accepting a plain text, instead of Wikipedia articles.
+This would require reasonably good detection of named entities in the text.
 
-TODO: evolucni algoritmy pro hledani optimalnich parameteru (nebo i kodu!) komponent
+%- vyzkouset pouziti jinych bazi znalosti (Freebase)
 
-TODO: nejaka ukazka zajimavejsiho cviceni
+I would also like to generate different types of questions and exercises,
+for example
+asking for the cause (why something happens),
+open questions with short answers (e.g. who invented something),
+matching pairs (scientist -- discovery,  event -- date, ...),
+what is on the picture,
+ordering time events, etc.
+%creation of own multiple choice quesiton
 
-TODO: procist si sve napady z notes.txt v Procvicniku-v1
+In case of long articles, it could be useful to interleave reading and practice.
+It would be also great to make the practice length variable based on the student performance and provide exercises until we are relatively confident that the student knows the topic.
+This would require to possible present one question several times and to use a student model which can capture learning.
 
-Plany/vylepseni:
-- misto fixnich 10 otazek by to melo detekovat, ze to neumim a poslat me znova precist clanek, resp. rict, ze uz to umim
+Another idea is to employ an evolutionary algorithm for incremental improvements of used population of behaviors.
+Average performance in a few practice sessions would serve as a fitness function,
+crossover and mutation operations can be straightforwardly done on parameter values,
+although this is only applicable for behaviors with same or similar code.
 
+For me, automatic question generation and adaptive practice is an amazing field full of challengess
+and I would like to continue to devote my effort to create an online question generation tool which makes learning more efficient and fun.
 
 
 
@@ -1927,6 +1954,7 @@ Plany/vylepseni:
 \printbibliography
 
 \chapter{Project Structure}
+\label{chap:project-structure}
 
 TODO: project structure description (proste adresarova struktura projektu se strucnym popisem)
 
