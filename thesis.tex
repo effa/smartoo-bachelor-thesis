@@ -1883,25 +1883,71 @@ is a HTML and CSS framework for responsive design of the web.
 \section{Performance Evaluation}
 \label{sec:performance-evaluation}
 
-TODO: obecne info (kolik session, kolik otazek)
+Besides the correct or incorrect answers, Smartoo collects feedback from users through
+the ``Invalid'' and ``Irrelevant'' buttons under each generated question,
+the practice session final rating form (``bad'', ``so so'' or ``good'')
+and an optional ``Write to us'' button.
 
-TODO: celkove statistiky (celkova uspenost)
+During testing, 66 practice sessions were taken, with total of 566 questions
+(counting only the questions with some response to them, i.e. which were either answered or marked as invalid/irrelevant).
+From 544 questions with answers, 394 were answered correctly and 150 incorrectly,
+resulting in overall 72 \% success rate.
+Thirty seven questions (7 \%) were marked as invalid or irrelevant.
+Concerning the practice session final ratings, 24 \% were rated as ``good'', 70 \% as ``so so'' and 6 \% as ``bad''.
 
-TODO: vyhodnoceni jednotlivych komponent, (2 KB, 6 PR, a taky celkovy prumerny vykon): pocet ok otazek, a jaka byla skutecna uspesnost,
+Tested version of Smartoo used 2 behaviors for knowledge building.
+%, 1 for exercise creating and grading and 6 for practicing.
+Knowledge builder behaviors were nearly the same, they only differ in the ``maximum sentence length'' parameter.
+Their average performances are shown in \autoref{tbl:builders-performances}.
+The behavior using shorter maximum length (30 tokens) performed slightly better.
 
-MaybeTODO: zpetne vazby (slovni) - jenom strucny vytah (a napady do budoucna spis vyclenit do dalsi kapitoly)
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| c | c | c |}
+  \hline
+      & max length & performance\\
+  \hline
+  $1$ & $40$ & $0.699$\\
+  $2$ & $30$ & $0.738$\\
+  \hline
+\end{tabular}
+\end{center}
+\caption{Performances of knowledge builder behaviors}
+\label{tbl:builders-performances}
+\end{table}
 
+Six different behaviors were used for practicers.
+They differ in 3 parameters: relevance weight, difficulty weight and repetitiveness weight.
+The used values and their performances are shown in \autoref{tbl:practicers-performances}.
+One observation we can made is that setting relevance or difficulty weight higher than repetitiveness weight (behaviors 2 and 3), decreases the performance.
 
-Slovni zpetne vazby, nejcastejsi pripominky
-- otazky jsou spise jednoduche, nekdy trochu sporne, nekdy vytrzene z kontextu
-- [souvisejici] spravne odpovedi se dost opakuji (obvykle tema clanku)
-- [souvisejici] nekdy lze spravnou odpoved urcit jednoduchym vyloucenim ostatnich moznosti (napr. spravna odpoved je kontinent a distraktory jsou staty)
-- mel by byt videt prubeh cviceni, zejmena kolik otazek zbyva do konce (a taky moznost ukoncit procvicovani a jit zpet na uvodni strunku)
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| c | c  c  c | c |}
+  \hline
+      & relevance & difficulty & repetitiveness & performance\\
+  \hline
+  $1$ & $1.00$ & $1.00$ & $1.00$ & $0.781$\\
+  $2$ & $1.25$ & $1.00$ & $1.00$ & $0.671$\\
+  $3$ & $1.00$ & $1.25$ & $1.00$ & $0.629$\\
+  $4$ & $1.00$ & $1.00$ & $1.25$ & $0.718$\\
+  $5$ & $1.25$ & $1.00$ & $1.25$ & $0.783$\\
+  $6$ & $1.00$ & $1.25$ & $1.25$ & $0.728$\\
+  \hline
+\end{tabular}
+\end{center}
+\caption{Performances of practicer behaviors}
+\label{tbl:practicers-performances}
+\end{table}
 
+In the written notes from users, some comments appeared several times.
+A lot of questions are either quite easy or not completely clear and out of context.
+Topic of the article is often used as a correct answer and this usually leads to very simple questions.
+Sometimes, the correct answer can be determined just from its type
+(e.g. the correct answer is a continent and all distractors are countries).
+The practice session progress (in particular, how many questions still remain) should be shown
+and a button for terminating the session and jumping back to the home page should be available.
 
-%% ---------------------------  SECTION  ---------------------------
-%\section{Performance of components}
-%\label{sec:analysis}
 
 
 % ===========================  CHAPTER ===========================
