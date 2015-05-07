@@ -1,7 +1,7 @@
-\documentclass[12pt, twoside]{fithesis2}		% print version
+\documentclass[12pt, twoside]{fithesis2}
 
 % ===== LOADING PACKAGES =====
-% language settings, main documnet language last
+% language settings
 \usepackage[english]{babel}
 % enabling new fonts support (nicer)
 \usepackage{lmodern}
@@ -12,8 +12,7 @@
 % fithesis2 requires csquotes
 \usepackage{csquotes}
 % set page margins
-%\usepackage[top=3.0cm, bottom=3.5cm, left=2.4cm, right=2.4cm]{geometry}	% pc version
-\usepackage[top=3.0cm, bottom=3.5cm, left=2.9cm, right=1.9cm]{geometry}	% print version
+\usepackage[top=3.0cm, bottom=3.5cm, left=2.9cm, right=1.9cm]{geometry}
 % package to make bullet list nicer
 \usepackage{enumitem}
 % math symbols and environments
@@ -22,23 +21,15 @@
 \usepackage{amssymb}
 % packages for complex tables
 \usepackage{tabularx}
-%\usepackage{multirow}
-%\usepackage{dcolumn}
-%\usepackage{array}
 % package for defining new floating environments
 \usepackage{float}
 \usepackage[labelfont=]{caption}
-%\usepackage{newfloat}
 % package for drawing
 \usepackage{tikz}
 \usetikzlibrary{shapes,positioning,fit,plotmarks}
 % code listings
 \usepackage{listings}
-%\usepackage{verbatim}
 
-% indentation
-% vertical space between paragrahps, no indentation
-%\usepackage[parfill]{parskip}  % TODO: nefunguje -> zfunkcnit (ale asi je to tak dobre, maji to tak vsici)
 % space between paragraphs
 \setlength{\parskip}{0.6em plus0.2em minus0.2em} % zkraceni vzdalenosti mezi odstavci
 
@@ -256,7 +247,7 @@ Answer:   & \emph{#3}\\
   for his guidance and support, and for his wisdom and infinite kindness.
   I would also like to thank members of the Natural Language Processing Centre
   and Adaptive Learning group for fruitful discussions,
-  and all my friends who helped me to test the develeped application
+  and all my friends who helped me to test the developed application
   and came up with a lot of great suggestions for future development.
 \end{ThesisThanks}
 
@@ -285,7 +276,7 @@ knowledge representation, knowledge extraction
 \chapter{Introduction}
 \label{chap:intro}
 
-Repeated reading of the text is an unefficient method of learning,
+Repeated reading of the text is an inefficient method of learning,
 while answering to the related questions leads to better understanding and remembering \cite{edu-improve}.
 Creating questions for a given topic is a time-consuming task
 and it is not possible to create a set of questions for each topic manually.
@@ -305,7 +296,7 @@ articles.
 The Smartoo framework is licensed under the GNU General Public License, version 2.
 The source code is available from its \textit{GitHub repository}%
 \footnote{\url{http://github.com/effa/smartoo}}.
-The protype behavior has been deployed and is publicly available%
+The prototype behavior has been deployed and is publicly available%
 \footnote{\url{http://smartoo.thran.cz}}.
 
 The thesis text is structured as follows.
@@ -330,9 +321,10 @@ i.e. convert the text into the structured data.
 This process is called \textit{information extraction} \cite[][262]{nlp-python}.
 Information extraction has several subtasks, the two most relevant for us are:
 \begin{myItemize}
-  \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{Abraham Lincoln}) and numeric expressions (e.g. \emph{12 February 1809}) from the text,
+  \item \textit{named entity recognition} -- extraction of terms (e.g. \textit{Abraham Lincoln}) and numeric expressions (e.g. \emph{12 February 1809}) (more detailed definition is in \autoref{sec:terms-extraction}),
   \item \textit{relation extraction} -- extraction of relations between the discovered named entities,
-    for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}.
+    for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}
+    (\autoref{sec:relations-extraction}).
 \end{myItemize}
 
 One way to create exercises is to first perform the relation extraction and then create the exercises from built structured knowledge representation. Another approach is to generate exercises from text with discovered named entities. We will take a closer look at both of these approaches in \autoref{chap:exercises}.
@@ -381,7 +373,8 @@ To avoid possible ambiguity (e.g. between two people who have both name \textit{
 unique URIs%
 \footnote{\emph{Uniform Resource Identifier}. See RFC 3986 (\url{https://tools.ietf.org/html/rfc3986}) for details.}
 are used to represent subject, objects and predicates.
-URI consits of a prefix and a name:
+URI consists of a prefix and a name:%
+\footnote{Different entities can have same name, for example \texttt{http://dbpedia.org/resource/Apple} and \texttt{http://smartoo.com/term/Apple}.}
 \begin{center}
 \begin{tikzpicture}[scale=1]
     \tikzstyle{part} = [draw,rectangle,dotted,fill=none,minimum height=0.7cm]
@@ -442,10 +435,10 @@ In particular, RDF graphs are not designed to capture \textit{procedural knowled
 
 \textit{SPARQL}%
 \footnote{The name of this query language is a recursive acronym of \textit{SPARQL Protocol and RDF Query Language}.}
-is a query language for convenient querying of RDF graphs. \parencite[][84]{semantic-web}.
+is a query language for convenient querying of RDF graphs \parencite[][84]{semantic-web}.
 The most common query is the \textit{select query} which resembles SQL select query and has the following main parts:
 \begin{myItemize}
-  \item \textbf{prefix} -- definition of prefixes and assosiated shortcuts,
+  \item \textbf{prefix} -- definition of prefixes and associated shortcuts,
   \item \textbf{from} -- dataset (RDF graph) on which to run the query,
   \item \textbf{select} -- which information to return,
   \item \textbf{where} -- condition on returned data,
@@ -484,7 +477,7 @@ are ``information units like names, including person, organization and location 
 Sometimes, I will specifically refer to \textit{terms}, which are named entities other than numeric expressions.
 As an example, \textit{Abraham Lincoln} is a term, while \textit{21 March 2015} is a numeric expression.
 %(and both are named entities).
-The aim of the \textit{named entity recognition} is to discover all named entities in a given text and and label them with their types. Common types of named entites are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
+The aim of the \textit{named entity recognition} is to discover all named entities in a given text and label them with their types. Common types of named entities are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
 \begin{myItemize}
 \item \textbf{Regular expressions}\\
   Regular expressions are especially good for numeric expressions as they typical follow reasonably simple rules.
@@ -511,20 +504,20 @@ Another problem is ambiguity of words, e.g. \textit{Reading} is a town in the Un
   There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
 
 \item \textbf{Frequency counting}\\
-  After identifying nouns and noun phrases in the text, their frequencies are counted and these which exceed some given threshold are considered as terms.
-  This method is used for example in \cite{question-gen-mitkov}. It works reasonable well for terms recognition, but it can't discover numeric expressions.
-This method can unfortunatelly also label as terms common names which are frequently used.
+  After identifying nouns and noun phrases in the text, their relative frequencies are calculated and these which exceed a given threshold are considered as terms.
+  This method is used by Mitkov \cite{question-gen-mitkov}. It works reasonable well for terms recognition, but it can't discover numeric expressions.
+This method can unfortunately also label as terms common names which are frequently used.
 A solution to this problem is to apply \textit{tf-idf weighting} which normalizes term frequency in the document by its frequency in all documents (or in common texts) \cite[][118]{information-retrieval}.
 
 \item \textbf{Machine learning}\\
   The most difficult, but also the most powerful method is to use a machine learning-based classifier.
   Traditionally, supervised learning dominated in this field,
   but as it requires a lot of annotated sentences,
-  novel approaches using semi-supervised or even unsupervised learing are developed
+  novel approaches using semi-supervised or even unsupervised learning are developed
   \cite{named-entity-recognition}.
   Semi-supervised learning is often based on the method of \emph{bootstrapping} -- a few named entities of each type are given to the system, the system finds them in a large unannotated corpus a uses their context to find other similar named entities, and the whole process is repeated many times with increasing number of discovered named entities and contexts.
 \end{myItemize}
-Often, several of these approaches are combined, e.g. \textit{The Mentor} (question generation tool) uses regular experssions, gazetteers and a machine learning recognizer \cite{mentor}).
+Often, several of these approaches are combined, e.g. \textit{The Mentor} (question generation tool) uses regular expressions, gazetteers and a machine learning recognizer \cite{mentor}).
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -539,7 +532,7 @@ for example \emph{birhDate(Abraham Lincoln, 12 February 1809)}.
 Relations of this form can be directly stored in a RDF graph as a subject-predicate-object triple
 \emph{(a, relation, b)}.
 
-One way to tackle this task is to consider each pair of consecutive named entities (which are in the same sentence) and decide in which relation they are (or that they are not in any relation) according to words between them \cite[][284]{nlp-python}.
+One way to tackle this task is to consider each pair of named entities which are in the same sentence and decide in which relation they are (or that they are not in any relation) according to words between them \cite[][284]{nlp-python}.
 As an example, consider the following pattern for \emph{birthDate} relation between a person and a date:
 \begin{code}
 Pattern: PERSON was born .* (in | on) DATE
@@ -587,14 +580,14 @@ Examples of popular knowledge bases are
 %\footnote{\url{http://dbpedia.org/}}
 and \textit{Freebase} \cite{freebase}.
 %\footnote{\url{https://www.freebase.com/}}
-Knowledge bases are used for many task in natural lanuage processing,
+Knowledge bases are used for many task in natural language processing,
 such as
 %named entity recognition
-named entity desambiguation \cite{dbpedia-spotlight},
+named entity disambiguation \cite{dbpedia-spotlight},
 semantic search and question answering \cite{watson}.
 %-- several knowledge bases (including DBpedia) were used in \emph{DeepQA project} to create \emph{IBM Watson} computer, which won the \emph{Jeopardy!} quiz game against two human champions in 2011 \cite{watson}.
 And we can make use of the information in these knowledge bases to create better exercises as well,
-for example to select appropiate incorrect alternatives in multiple choice questions
+for example to select appropriate incorrect alternatives in multiple choice questions
 (see \autoref{sec:distractors}).
 
 DBpedia was built by extracting structured information from Wikipedia,
@@ -633,7 +626,7 @@ Every system uses different methods and although usually the authors perform som
 For example some systems try to assess vocabulary \cite{question-gen-vocabulary}
 or reading comprehension \cite{question-overgenerating-rating},
 some focus on factual texts \cite{question-gen-heilman}
-and sometimes authors use for evalution only a single textbook or a topic, such as linguistics \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
+and sometimes authors use for evaluation only a single textbook or a topic, such as linguistics \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
 
 Based on reported performances of the systems, it can be concluded that question generation is still open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
 Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system,
@@ -648,13 +641,13 @@ However, complex exercises are more difficult to implement and evaluate,
 so usually only questions are generated, most often multiple choice questions.
 \textit{Multiple choice questions} consist of a question text (called \textit{stem})
 and a few (e.g. four) \textit{choices}, from which one is the \textit{correct answer}
-and the rest are incorect alternatives (called \textit{distractors}).
+and the rest are incorrect alternatives (called \textit{distractors}).
 Special type of multiple choice question is \textit{fill-in-the-blank multiple choice question},
 in which the stem is a sentence with a blank space which should be filled with the correct answer.
 
 Although the approaches to the question generation are diverse,
-some common tasks can be identifed throughout the systems.
-The general worklow has the following 5 steps, although some of them may be missing in some systems:
+some common tasks can be identified throughout the systems.
+The general workflow has the following 5 steps, although some of them may be missing in some systems:
 \begin{myEnumerate}
 \item First, text of the article is pre-processed.
 Pre-processing can range from mere sentence filtering,
@@ -662,9 +655,9 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 (\autoref{sec:text-pre-processing}).
 
 \item The text is then scanned for the patterns which define transformations from sentences to a question-answer pairs.
-  Everytime a pattern is matched, a new question and the corresponding answer are generated
+  Every time a pattern is matched, a new question and the corresponding answer are generated
   (\autoref{sec:sentence-transformations}).
-  If a knowledge graph is used instead of text, the procedure is similar, except that now we have transformations from facts in the knowledge graph. The main advatage is that we can make use of relationships between subjects in the graph and thus create questions which span more then one sentence in the original article
+  If a knowledge graph is used instead of text, the procedure is similar, except that now we have transformations from facts in the knowledge graph. The main advantage is that we can make use of relationships between subjects in the graph and thus create questions which span more then one sentence in the original article
   (\autoref{sec:exercises-from-knowledge-graph}).
 
 \item In case of multiple choice questions, suitable distractors (incorrect alternatives) are selected
@@ -704,7 +697,7 @@ modify (rephrase) sentences or even create different (more machine readable) rep
 
   \item \textbf{Filtering}\\
     The goal of the filtering is to discard sentences which are not relevant to the article or has not enough context to generate a question from them.
-    Typical example of a sentence without sufficent context are \emph{anaphoric references},
+    Typical example of a sentence without sufficient context are \emph{anaphoric references},
     i.e. referring back to something mentioned earlier in the text.
     For example, in the sentence \emph{He was the 16th President of the United States.},
     the word \emph{he} refers to \emph{Abraham Lincoln}.
@@ -715,7 +708,7 @@ modify (rephrase) sentences or even create different (more machine readable) rep
   \item starts with a verb.
   \end{itemize}
 
-  Instead of heuristics, we can use a more sofisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enought context so that questions can generated from them. This approach was tested by Agarwal \cite{question-gen-textbooks}.
+  Instead of heuristics, we can use a more sophisticated machine learning-based classifier to select only the sentences which are informative, relevant to the topic and have enough context so that questions can generated from them. This approach was tested by Agarwal \cite{question-gen-textbooks}.
 Some of the features used in his classifier were:
   \begin{itemize}
   \item the number of words in the sentence,
@@ -767,7 +760,7 @@ Instead of generating all possible questions from the sentence (or picking one o
 we might select a word from the sentence which would be the correct answer as a first step and then generate a question from the rest of the sentence as a second step.
 Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifier to select the most important word in the sentence. For the classification he used the following three features:
 \begin{myItemize}
-\item number of occurences of the word in the document,
+\item number of occurrences of the word in the document,
 \item is contained in the headline? (binary feature),
 \item depth of the word in the parse tree of the sentence.
 \end{myItemize}
@@ -795,7 +788,7 @@ Many approaches are somewhere in between these two extremes and use syntactic an
 \end{code}
     where NNP stands for proper noun, VBD for past tense verb, VBN for past participle verb and IN for preposition.
 
-  \item \textit{Syntax tree} (also called \emph{parse tree}) -- tree representation of the deep stracture of a sentence.
+  \item \textit{Syntax tree} (also called \emph{parse tree}) -- tree representation of the deep structure of a sentence.
     On the \autoref{fig:parse-tree}, syntax tree for the sentence from previous paragraph is shown.
     Besides POS-tags, the tree contains tags for sentence (S), noun phrase (NP), verb phrase (VP) and prepositional phrase (PP).
   \begin{figure}[h]
@@ -1018,7 +1011,7 @@ Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
 \label{sec:distractors}
 
 It is important to present a multiple-choice question with competitive \textit{distractors}.
-As shown by experiments performed by Little and Bjork \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously nontested questions for which these alternatives may be the correct answers. If the alternatives are not competive, a student can recognize the correct answer without retrieval, just by pattern matching.
+As shown by experiments performed by Little and Bjork \cite{optimizing-multiple-choice}, multiple choice questions with competitive incorrect alternatives not only help to remember the correct answers to the original questions, but they also improve later performance on the previously non-tested questions for which these alternatives may be the correct answers. If the alternatives are not competitive, a student can recognize the correct answer without retrieval, just by pattern matching.
 %As an example, consider the following multiple choice question:
 As an example, consider exercise \ref{exrc:noncompetitive}.
 \begin{exercise}
@@ -1036,7 +1029,7 @@ As an example, consider exercise \ref{exrc:noncompetitive}.
 
 \noindent
 Clearly, the student does not need to remember who assassinated Lincoln to answer this question correctly and they are also not forced to retrieve any knowledge about alternatives.
-Of course, this was an extreme example to illustrate the point -- you definitely would not come accross such poor distractors in manually created multiple-choice questions.
+Of course, this was an extreme example to illustrate the point -- you definitely would not come across such poor distractors in manually created multiple-choice questions.
 %Now take a look at the following question:
 Compare the previous question to the exercise \ref{exrc:competitive}.
 \begin{exercise}
@@ -1079,7 +1072,7 @@ Several strategies were proposed to select the most competitive distractors in t
 \item \textbf{Correct answer modification}\\
   If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift or (sub)multiplication
 \cite{question-gen-domain-ontologies}.
-For instance, if the correct answer is $1616$ the distractors generated by multiplying the corrent answer by $0.92$, $0.95$ and $1.04$ would be $1487$, $1535$ and $1680$.
+For instance, if the correct answer is $1616$ the distractors generated by multiplying the correct answer by $0.92$, $0.95$ and $1.04$ would be $1487$, $1535$ and $1680$.
 \end{myItemize}
 
 \noindent
@@ -1133,7 +1126,7 @@ Heilman \cite{question-gen-heilman} trained a machine learning-based classifier 
 \item which wh-word (who, where, when, ...) was used (if any),
 \item includes negation (no, not, never)? (binary feature),
 \item likelihoods of a question would appear in a text according to an unigram and a trigram language models,
-\item number of proper noun, pronons, adjectives, etc.
+\item number of proper noun, pronouns, adjectives, etc.
 \end{myItemize}
 
 The presented rankers are primarily concerned with correctness (validity) of generated questions.
@@ -1193,7 +1186,7 @@ Having the limitations in mind, we can now formulate the goal of the adaptive pr
 The system shall ask questions, which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequately difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
 
 In \autoref{sec:knowledge-estimation}, I describe several common models of a student used to estimate one's knowledge, then I briefly mention dynamic adjustment of target difficulty (\autoref{sec:target-difficulty}),
-and finally I discuss the selection of best question (\autoref{sec:question-selection}).
+and finally I discuss the selection of the best question (\autoref{sec:question-selection}).
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -1375,7 +1368,7 @@ However, several criteria should be considered to select the question which is t
     If one concept is practiced in several questions in a row, it gets quickly boring, and it negatively influences both the relevance (as the student would like to practice other concepts from the article as well) and the difficulty (since it is easier to answer questions about the same concept which was already practiced).
     Besides this crucial variability of concepts,
     variability of question types may also help, because diversity increases enjoyment.
-    %\cite{question-gen-adapt-bayes}.
+    The variability of question types is taken into account e.g. in \emph{Slepé mapy} \cite{slepe-mapy} and \emph{DynaLearn} \cite{question-gen-adapt-bayes}.
 \end{myItemize}
 Common approach is to use an appropriate scoring function for each of the considered criteria, and then obtain the total score as a linear combination of individual scores \cite{slepe-mapy}.
 The question with the highest total score is selected and presented to the student.
@@ -1820,7 +1813,7 @@ The main tools and libraries used in the project are:
 \item \texttt{Python 2.7}\\
 The backend of the application is developed in Python 2.7%
 \footnote{\url{https://www.python.org/download/releases/2.7/}}.
-To create an isolated Pyhton environment for the project, use \texttt{Virtualenv}%
+To create an isolated Python environment for the project, use \texttt{Virtualenv}%
 \footnote{\url{https://virtualenv.pypa.io}}.
 After activating a new virtual environment, all necessary Python packages can be installed simply by
 command \texttt{pip install -r requirements.txt} executed in the project root directory.
@@ -1831,7 +1824,7 @@ command \texttt{pip install -r requirements.txt} executed in the project root di
 \item \texttt{Django 1.7}\\
 Django%
 \footnote{\url{https://www.djangoproject.com/}}
-is a Python web framework, using \emph{Model--View--Template} archicture.
+is a Python web framework, using \emph{Model--View--Template} architecture.
 
 %\item \texttt{Jinja2 2.7}\\
 %Jinja2%
@@ -1867,7 +1860,7 @@ so PostgreSQL should probably work as well.
 \item \texttt{AngularJS}\\
 AngularJS%
 \footnote{\url{https://angularjs.org/}}
-is a popular JavaScript framework for a simple developmnet of the \emph{Model--View--Controller (MVC)} architecture at the client side.
+is a popular JavaScript framework for a simple development of the \emph{Model--View--Controller (MVC)} architecture at the client side.
 
 \item \texttt{Bootstrap}\\
 Bootstrap%
