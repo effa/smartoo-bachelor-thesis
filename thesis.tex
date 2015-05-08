@@ -334,7 +334,7 @@ I will talk about how to represent the extracted knowledge.
 Knowledge can be represented in many ways,
 such as using first order logic, semantic nets or frames \cite{knowledge-representation}.
 In the following section, I will describe \emph{RDF graphs},
-since we will use this knowledge representation in the other chapters.
+since we will use this knowledge representation in other chapters.
 
 \begin{figure}[h]
   \centering
@@ -367,7 +367,7 @@ Alonzo Church - birthdate - 14 June 1903
 \end{code}
 \noindent
 \autoref{fig:simple-rdf-graph} shows how can be this collection of facts thought of as a directed graph.
-Vertices corresponds to subjects and objects. Each fact maps to one edge, with direction from the subject to the object and with edge value given by the predicate.
+Vertices correspond to subjects and objects. Each fact maps to one edge, with direction from the subject to the object and with edge value given by the predicate.
 
 To avoid possible ambiguity (e.g. between two people who have both name \textit{Alan Turing})
 unique URIs%
@@ -407,7 +407,7 @@ The used format is called \textit{N-Triples} \cite[][68]{semantic-web}.
 There are several others serializations of RDF graph, such as \textit{RDF/XML}
 \cite[][73]{semantic-web}
 or \emph{Turtle (Terse RDF Triple Language)},
-which makes the serialization shorter by grouping facts by subjects (possibly also predicates) and by using shortcuts for prefixes. The same graph as above would look like this in the Turtle syntax:
+which makes the serialization shorter by grouping facts by subjects (possibly also by predicates) and by using shortcuts for prefixes. The same graph as above would look like this in the Turtle syntax:
 
 \begin{code}
 @prefix rsrc: <http://dbpedia.org/resource/>
@@ -480,7 +480,7 @@ As an example, \textit{Abraham Lincoln} is a term, while \textit{21 March 2015} 
 The aim of the \textit{named entity recognition} is to discover all named entities in a given text and label them with their types. Common types of named entities are organization, person, location, date, time, money, percent, facility and geo-political entity \cite[][281]{nlp-python}. There are several approaches to the task of named entity recognition:
 \begin{myItemize}
 \item \textbf{Regular expressions}\\
-  Regular expressions are especially good for numeric expressions as they typical follow reasonably simple rules.
+  Regular expressions are especially good for numeric expressions as they typically follow reasonably simple rules.
   As an example, consider the following regular expression (in Python dialect%
   \footnote{\url{https://docs.python.org/2/library/re.html}})
   to capture dates such as \emph{21 March 2015}:
@@ -501,7 +501,7 @@ The aim of the \textit{named entity recognition} is to discover all named entiti
   A simple way to find if some word or phrase is a named entity is to try to look it up in a list of named entities. There are for example publicly available \textit{gazetteers} -- lists of well-known geographical locations. However, this method is quite limited as it is impossible to have complete lists of all named entities.
 (In particular there is infinitely many numeric expressions.)
 Another problem is ambiguity of words, e.g. \textit{Reading} is a town in the United Kingdom, but not in the sentence \textit{Reading is important for everyone's personal development.}
-  There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
+  There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example, for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
 
 \item \textbf{Frequency counting}\\
   After identifying nouns and noun phrases in the text, their relative frequencies are calculated and these which exceed a given threshold are considered as terms.
@@ -515,9 +515,9 @@ A solution to this problem is to apply \textit{tf-idf weighting} which normalize
   but as it requires a lot of annotated sentences,
   novel approaches using semi-supervised or even unsupervised learning are developed
   \cite{named-entity-recognition}.
-  Semi-supervised learning is often based on the method of \emph{bootstrapping} -- a few named entities of each type are given to the system, the system finds them in a large unannotated corpus a uses their context to find other similar named entities, and the whole process is repeated many times with increasing number of discovered named entities and contexts.
+  Semi-supervised learning is often based on the method of \emph{bootstrapping} -- a few named entities of each type are given to the system, the system finds them in a large unannotated corpus and uses their context to find other similar named entities, and the whole process is repeated many times with increasing number of discovered named entities and contexts.
 \end{myItemize}
-Often, several of these approaches are combined, e.g. \textit{The Mentor} (question generation tool) uses regular expressions, gazetteers and a machine learning recognizer \cite{mentor}).
+Often, several approaches are combined, e.g. \textit{The Mentor} (a question generation tool) uses regular expressions, gazetteers and a machine learning recognizer \cite{mentor}).
 
 
 % ---------------------------  SECTION  ---------------------------
@@ -557,12 +557,13 @@ types of the named entities, words between them,
 number of words between them, path between them in a syntactic tree of the sentence, etc.
 \cite{rel-extract-feature-based}.
 As an alternative to the feature based methods, which take a vector of extracted features as an input,
-\emph{kernel methods} are sometimes used, which take the full representation of the sentence, possibly with some structural information as an input \cite{rel-extract-kernel}.
+\emph{kernel methods} are sometimes used, which take the full representation of the sentence, possibly with some structural information, as an input \cite{rel-extract-kernel}.
 % structural information = oznacene named entities a treba shallow parsed sentence
-As creating a large labeled training sets is usually expensive, semi-supervised learning became popular as well,using the bootstrapping method (which was described in the previous section) \cite{rel-extract-bootstrapping}.
+As creating a large labeled training sets is usually expensive, semi-supervised learning became popular as well,
+using the bootstrapping method (which was described in the previous section) \cite{rel-extract-bootstrapping}.
 
 The mentioned approaches work only if the relation types are known in advance,
-so that patterns are written or a classifier is trained for each of the relation.
+so that patterns can be written or a classifier trained for each of the relation.
 For unrestricted domain,
 we can try to find the relation type in the sentence itself.
 For example, from a simple sentences with a subject, a verb and an object,
