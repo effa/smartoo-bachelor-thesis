@@ -257,7 +257,7 @@ Today, there is a huge amount of information to study (consider Wikipedia) and i
 However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing.
 This thesis explores the state-of-the-art approaches to question generation and describes their advantages and disadvantages.
 The thesis also suggests a design of the general framework for practicing knowledge from articles.
-The framework is implemented and publicly accessible through a web interface.
+The framework is implemented and publicly accessible through a~web interface.
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
@@ -564,7 +564,7 @@ The mentioned approaches work only if the relation types are known in advance,
 so that patterns can be written or a classifier trained for each of the relation.
 For unrestricted domain,
 we can try to find the relation type in the sentence itself.
-For example, from a simple sentences with a subject, a verb and an object,
+For example, from a~simple sentences with a subject, a verb and an object,
 relation \emph{verb(subject, object)} may be extracted \cite{triples-acquisition}.
 However, sentences are often quite complex, so this method requires to preprocess and simplify the text in order to work.
 
@@ -625,7 +625,7 @@ Every system uses different methods and although usually the authors perform som
 For example, some systems try to assess vocabulary \cite{question-gen-vocabulary}
 or reading comprehension \cite{question-overgenerating-rating},
 some focus on factual texts \cite{question-gen-heilman}
-and sometimes authors use for evaluation only a single textbook or a topic, such as linguistics \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
+and sometimes authors use for evaluation only a~single textbook or a~topic, such as linguistics \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
 
 Based on reported performances of the systems, it can be concluded that question generation is still an open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
 Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system,
@@ -766,12 +766,12 @@ Agarwal \cite{question-gen-textbooks} employed a machine learning-based classifi
 
 \textit{Transformation rules} describe how to create a question-answer pair from a sentence
 which satisfies a given pattern,
-such as \textit{The sentence starts with a term followed by a verb and an object}.
+such as \textit{The sentence starts with a term followed by a~verb and an object}.
 These transformation rules may be either hard-coded into the program (\textit{imperative rules})
 \cite{questions-wolfe, question-overgenerating-rating, question-gen-connectives}
 or stored in the external templates (\textit{declarative rules})
 \cite{question-gen-ceist, questions-eval}.
-The latter case is more difficult to implement, but it allows for a simple modification of transformation rules and addition of new ones.
+The latter case is more difficult to implement, but it allows for a~simple modification of transformation rules and addition of new ones.
 
 Patterns may be defined on syntactic or semantic level.
 Many approaches are somewhere in between these two extremes and use syntactic and a little bit of semantic information (such as which words denote terms), but do not rely on complete semantic roles labeling. Syntactic information used in patterns include:
@@ -787,7 +787,7 @@ Many approaches are somewhere in between these two extremes and use syntactic an
 \end{code}
     where NNP stands for proper noun, VBD for past tense verb, VBN for past participle verb and IN for preposition.
 
-  \item \textit{Syntax tree} (also called \emph{parse tree}) -- tree representation of the deep structure of a sentence.
+  \item \textit{Syntax tree} (also called \emph{parse tree}) -- tree representation of the deep structure of a~sentence.
     On the \autoref{fig:parse-tree}, syntax tree for the sentence from previous paragraph is shown.
     Besides POS-tags, the tree contains tags for sentence (S), noun phrase (NP), verb phrase (VP) and prepositional phrase (PP).
   \begin{figure}[h]
@@ -844,7 +844,7 @@ Answer: subject
 \transformationExample{Logic studies reasoning.}{Which discipline studies reasoning?}{logic}
 
 \noindent
-The following example shows that sometimes, questions might be generated just from a phrase, instead of the full sentence and it also makes use of named entities \cite{mentor}.
+The following example shows that sometimes, questions might be generated just from a~phrase, instead of the full sentence and it also makes use of named entities \cite{mentor}.
 \begin{code}
 Pattern: [NP object] [VBN predicate] <*\emph{by}*> [Human subject]
 <*\arrowlinesplit*>
@@ -897,7 +897,7 @@ In most tools, transformation rules were created manually.
 However, machine learning can be put into use to discover them automatically.
 \textit{The-Mentor} system \cite{mentor}
 uses a machine learning technique of \textit{bootstrapping} \cite{question-answering-bootstrapping},
-together with the \textit{QuestionBank}, a corpus of 4000 parse-annotated questions \cite{question-bank},
+together with the \textit{QuestionBank}, a~corpus of 4000 parse-annotated questions \cite{question-bank},
 and the large amount of the information on the Web via \textit{Google} search
 to find syntactic patterns automatically from a few question-answer seed pairs.
 They have discovered more than 1000 unique patterns, which is many more than tools with manually created patterns use. This allows for more specific patterns, such as the following:
@@ -1063,7 +1063,7 @@ In the knowledge graph, subjects play similar role as the named entities in the 
 The difference is that usually one subject has many types.
 (For example, the record about \emph{Abraham Lincoln} in DBpedia contains more than 50 types, including
 \emph{agent}, \emph{person}, \emph{office holder}, \emph{president of the United States} and \emph{people murdered in Washington, D.C.})
-Several strategies were proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a subject of the same type as the correct answer. If there are many of them, we can prefer those which have more shared types.
+Several strategies were proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a~subject of the same type as the correct answer. If there are many of them, we can prefer those which have more shared types.
 
 \item \textbf{Named entities from external sources}\\
   Using \textit{WordNet} \cite{wordnet} or a knowledge base, we can find similar terms, even if they are not in the text. For example, Mitkov et al. \cite{question-gen-mitkov} use \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym) to find appropriate distractors for given term. If more coordinates were found in WordNet, the ones which occur in the text are preferred.
@@ -1124,7 +1124,7 @@ Heilman \cite{question-gen-heilman} trained a machine learning-based classifier 
 \item question length,
 \item which wh-word (who, where, when, ...) was used (if any),
 \item includes negation (no, not, never)? (binary feature),
-\item likelihoods of a question would appear in a text according to an unigram and a trigram language models,
+\item likelihoods of a question would appear in a text according to an unigram and a~trigram language models,
 \item numbers of proper noun, pronouns, adjectives, etc.
 \end{myItemize}
 
@@ -1259,7 +1259,7 @@ e.g. \emph{Newton-Raphson method} \cite{irt-ability-estimation}.
 
 \item \textbf{Elo model}\\
   Elo model extends the logistic model to capture changing knowledge.
-  The model is inspired by the rating of chess players \cite{elo-rating} and interprets each attempt of a student to answer an question as a ``match'' between the student and the question.
+  The model is inspired by the rating of chess players \cite{elo-rating} and interprets each attempt of a~student to answer an question as a ``match'' between the student and the question.
   According to the result $R$ of the match (1 for correct and 0 for incorrect answer)
   and the expected result $P(k, d)$
   (computed by the logistic function \ref{eq:logistic}, or \ref{eq:logistic-mcq} for multiple choice questions)
@@ -1381,7 +1381,7 @@ The question with the highest total score is selected and presented to the stude
 \label{chap:smartoo}
 
 Smartoo is a framework for question generation and adaptive practice.
-It is written in a modular way and decomposes the process into the following components:
+It is written in a~modular way and decomposes the process into the following components:
 \begin{myItemize}
 \item \textbf{KnowledgeBuilder} -- takes an article as the input and extracts knowledge, building a RDF graph of facts contained in the article.
 \item \textbf{ExercisesCreator} -- creates a set of questions (or possibly other types of exercises) using the built knowledge graph.
@@ -1426,7 +1426,7 @@ on page~\pageref{fig:client-server-communication}.
 \label{sec:smartoo-behaviors-selection}
 
 Each session has assigned a \textit{performance} which is computed as a weighted sum of the user final rating and the ratio of exercises marked as invalid or irrelevant.
-As we know which behaviors participated in which sessions, we can compute the average performance of a 4-tuple of behaviors $p(x_1, x_2, x_3, x_4)$.
+As we know which behaviors participated in which sessions, we can compute the average performance of a~4-tuple of behaviors $p(x_1, x_2, x_3, x_4)$.
 
 At the beginning of each new session, 4-tuple of behaviors $(k_1, k_2, k_3, k_4)$ ($k_1$ is knowledge builder, $k_2$ exercises creator, etc.) is chosen in a partially random way
 which prioritizes behaviors with better performance in the past.
@@ -1434,7 +1434,7 @@ Ideally, the probability of a certain 4-tuple being selected would be proportion
 (relative to the expected performances of other 4-tuples).
 As we do not know the future, our best guess for the expected performance is the performance in the past.
 Using conditional probability we can easily derive formulae for probability $P$ of components $(x_1, x_2, x_3, x_4)$ being selected.
-I use asterisk ($*$) to denote ``any behavior'', so e.g. $p((x_1, *, *, *))$ means average performance of all sessions in which knowledge builder was $x_1$.
+I~use asterisk ($*$) to denote ``any behavior'', so e.g. $p((x_1, *, *, *))$ means average performance of all sessions in which knowledge builder was $x_1$.
 $$
 P(k_1 = x_1) \propto p((x_1, *, *, *)),
 $$
@@ -1507,7 +1507,7 @@ and their occurrences in the text are inferred.
 As there are often hundreds of terms in an article,
 I first made a trie from all terms, which then enables to search for all terms simultaneously.
 To represent shallowed parsed sentences with marked terms occurrences,
-I use shallow sentence trees.
+I~use shallow sentence trees.
 You can see an example of a sentence tree in \autoref{fig:sentence-tree}.
 \begin{figure}[h]
   \centering
@@ -1953,7 +1953,7 @@ Evaluation showed clear limitations of used heuristic approaches.
 However, the system was developed with the importance of modularity and extensibility in mind.
 New, more sophisticated behaviors for knowledge building, questions creating, questions grading and adaptive practice may be implemented and easily integrated into the current system.
 
-Besides the implementation of advanced behaviors for knowledge extraction and questions creation using machine learning approaches, there are some other improvements I would like to do in the future.
+Besides the implementation of advanced behaviors for knowledge extraction and questions creation using machine learning approaches, there are some other improvements I~would like to do in the future.
 For example, extend the system for the possibility of accepting a plain text, instead of Wikipedia articles.
 This would require reasonably good detection of named entities in the text.
 
