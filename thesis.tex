@@ -261,12 +261,10 @@ The framework is implemented and publicly accessible through a web interface.
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
-% TODO: profiltrovat na ty opravdu relevantni
 question generation, adaptive practice,
+knowledge representation, knowledge extraction,
 learning,
-multiple choice questions,
-knowledge representation, knowledge extraction
-%artificial intelligence, natural language processing,
+multiple choice questions
 \end{ThesisKeyWords}
 
 \MainMatter
@@ -624,12 +622,12 @@ In \autoref{fig:dbpedia-classes}, a fraction of DBpedia class hierarchy is shown
 The first question generation tool was introduced as early as in the 1970s \cite{questions-wolfe}
 and up to now (2015), several approaches to the task of question generation were proposed.
 Every system uses different methods and although usually the authors perform some kind of evaluation (e.g. by two people ranking generated questions as good or bad), it is not possible to say which approach is the best as the systems work in different settings, use different source texts from which the questions are generated, create different question types, have different target groups and use different evaluation metrics.
-For example some systems try to assess vocabulary \cite{question-gen-vocabulary}
+For example, some systems try to assess vocabulary \cite{question-gen-vocabulary}
 or reading comprehension \cite{question-overgenerating-rating},
 some focus on factual texts \cite{question-gen-heilman}
 and sometimes authors use for evaluation only a single textbook or a topic, such as linguistics \cite{question-gen-mitkov} or biology \cite{question-gen-textbooks}.
 
-Based on reported performances of the systems, it can be concluded that question generation is still open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
+Based on reported performances of the systems, it can be concluded that question generation is still an open problem in the natural language processing and there is plenty of room for improvements or even completely new ideas.
 Some systems proved to be usable in the offline mode, in which a teacher submits a text to the system,
 the system outputs a list of questions and it is assumed that the teacher will filter them and make some corrections in the generated questions. Ideally, there is only a few questions that need to be discarded or corrected and so this semi-automated process of creating questions is faster than creating them fully manually
 \cite{question-gen-mitkov}.
@@ -655,7 +653,7 @@ Pre-processing can range from mere sentence filtering,
 to text rephrasing, and even to knowledge extraction from the text and building a knowledge graph
 (\autoref{sec:text-pre-processing}).
 
-\item The text is then scanned for the patterns which define transformations from sentences to a question-answer pairs.
+\item The text is then scanned for the patterns which define transformations from sentences to question-answer pairs.
   Every time a pattern is matched, a new question and the corresponding answer are generated
   (\autoref{sec:sentence-transformations}).
   If a knowledge graph is used instead of text, the procedure is similar, except that now we have transformations from facts in the knowledge graph. The main advantage is that we can make use of relationships between subjects in the graph and thus create questions which span more then one sentence in the original article
@@ -671,7 +669,7 @@ to text rephrasing, and even to knowledge extraction from the text and building 
 In adaptive practice, decisions about which question is next presented to the student
 are not made in advance, but during the practice itself,
 based on already answered questions and success of the student.
-(Adaptive practice is discussed in detail in chapter \autoref{chap:practice}.)
+(Adaptive practice is discussed in detail in \autoref{chap:practice}.)
 \end{myEnumerate}
 
 % ---------------------------  SECTION  ---------------------------
@@ -680,7 +678,7 @@ based on already answered questions and success of the student.
 
 Usually, the text of the document is pre-processed before it is used for question generation.
 Pre-processing may
-add useful information to the text (e.g. part-of-the-speech tags, semantic role labels),
+add useful information to the text (e.g. part-of-speech tags, semantic role labels),
 remove useless sentences (e.g. sentences without information about the topic),
 modify (rephrase) sentences or even create different (more machine readable) representation of the knowledge contained in the article, such as a knowledge graph.
 %Pre-processing can be conservative or non-conservative.
@@ -689,20 +687,20 @@ modify (rephrase) sentences or even create different (more machine readable) rep
 %Furthermore, we can distinguish between \textit{strongly conservative pre-processing},
 %which does not add anything to the text, just filters some of the original sentences, and \textit{weakly conservative pre-processing}, which modifies the actual text of the sentences.
 \begin{myItemize}
-  \item \textbf{Parsing and labelling}\\
+  \item \textbf{Parsing and labeling}\\
     The text is split into sentences and each sentence is tokenized (\emph{tokens} are words and punctuation).
     Afterwards, each sentence might be \emph{syntactically parsed} (its syntax tree is built)
-    or at least \textit{shallow-parsed} (each token is assigned a part-of-the-speech tag).
-    Named entities recognition or even semantic role labelling might be performed
+    or at least \textit{shallow-parsed} (each token is assigned a part-of-speech tag).
+    Named entities recognition or even semantic role labeling might be performed
     (see \autoref{sec:sentence-transformations} for details).
 
   \item \textbf{Filtering}\\
     The goal of the filtering is to discard sentences which are not relevant to the article or has not enough context to generate a question from them.
     Typical example of a sentence without sufficient context are \emph{anaphoric references},
     i.e. referring back to something mentioned earlier in the text.
-    For example, in the sentence \emph{He was the 16th President of the United States.},
-    the word \emph{he} refers to \emph{Abraham Lincoln}.
-  Some possible heuristics to detect which sentences cannot be used to generate good questions \cite{questions-wolfe} are:
+    For example, in the sentence ``He was the 16th President of the United States.'',
+    the word ``he'' refers to Abraham Lincoln.
+  Some possible heuristics to detect which sentences cannot be used to generate good questions are \cite{questions-wolfe}:
   \begin{itemize}
   \item sentence is too long (e.g. more than 35 words),
   \item contains demonstrative word (such as \emph{this} and \emph{that}),
@@ -776,12 +774,12 @@ or stored in the external templates (\textit{declarative rules})
 The latter case is more difficult to implement, but it allows for a simple modification of transformation rules and addition of new ones.
 
 Patterns may be defined on syntactic or semantic level.
-Many approaches are somewhere in between these two extremes and use syntactic and a little bit of semantic information (such as which words denotes terms), but do not rely on complete semantic roles labelling. Syntactic information used in patterns include:
+Many approaches are somewhere in between these two extremes and use syntactic and a little bit of semantic information (such as which words denote terms), but do not rely on complete semantic roles labeling. Syntactic information used in patterns include:
 \begin{myItemize}
   \item Words in the sentence, such as \emph{Pablo}, \emph{Picasso}, \emph{was}, \emph{born}, \emph{in}, \emph{Spain}
     or their canonical forms (\textit{lemmas}) -- \emph{Pablo}, \emph{Picasso}, \emph{be}, \emph{bear}, \emph{in}, \emph{Spain}.
 
-  \item \textit{Part-of-speech (POS) tags} -- lexical categories (also known as word classes) such as noun, verb, adjective or determiner.
+  \item \textit{Part-of-speech (POS) tags} -- lexical categories (also known as word classes), such as noun, verb, adjective or determiner.
     Using \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset},
     the sentence \emph{Pablo Picasso was born in Spain.} would be POS-tagged as follows.
 \begin{code}
@@ -801,7 +799,7 @@ Many approaches are somewhere in between these two extremes and use syntactic an
 \end{myItemize}
 
 \noindent
-Semantic information which can be used to define patterns are:
+Semantic information which can be used to define patterns is:
 \begin{myItemize}
 \item Named entities and their types, discovered by named entity recognition described in \autoref{sec:terms-extraction}. Example for the same sentence as in the paragraph above:
 \begin{code}
@@ -809,7 +807,7 @@ Semantic information which can be used to define patterns are:
 \end{code}
 
 \item \emph{Semantic role labels} which mark predicate of the sentence and its arguments -- agent (subject), patient (object), cause, purpose, manner, location, time etc.
-Semantic roles can be identified using statistical classifier \cite{semantic-role-labelling}.
+Semantic roles can be found using a statistical classifier \cite{semantic-role-labeling}.
 \begin{code}
 [agent| Pablo Picasso] [predicate| was born] [location| in Spain]
 \end{code}
@@ -919,7 +917,7 @@ Answer: X
 \section{Creating Exercises from Knowledge Graph}
 \label{sec:exercises-from-knowledge-graph}
 
-In this section, we will consider the situation when we have built knowledge graph
+In this section, we will consider the situation when we have built a knowledge graph
 and want to create exercises from it, instead of from the original text.
 Similarly as with the text, the question generation tool can take a fact one by one
 and transform it to the question if possible.
@@ -940,11 +938,11 @@ OntoQue uses \texttt{rdf:label} property to transform facts into sentences,
 so the quality of the generated questions depends on the quality of the labels.
 Consider two situations shown in \autoref{fig:rdf-graphs-labels}.
 From the left graph, OntoQue could generate fill-in-the-blank question
-\emph{Alan Turing was born in \sentenceGap},
+``Alan Turing was born in \sentenceGap'',
 while the right graph would be transformed into the question
-\emph{Alan Turing birth date \sentenceGap}
+``Alan Turing birth date \sentenceGap''.
 Another possible problem could be with the answer, sometimes it needs to be modified
-(in our example \emph{1912-06-23} could be simplified to \emph{1912}).
+(in our example, \emph{1912-06-23} could be simplified to \emph{1912}).
 
 \begin{figure}[h]
   \centering
@@ -954,7 +952,7 @@ Another possible problem could be with the answer, sometimes it needs to be modi
 \end{figure}
 
 For this reason we might want to use more specific patterns to influence transformation from facts to sentences and simplify answers. For convenient retrieval of information from a knowledge graph, we can use SPARQL which was described in \autoref{sec:sparql}.
-As a simple example, rule for \emph{When was X born?} question would look like this:
+As a simple example, rule for ``When was X born?'' question would look like this:
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -985,8 +983,8 @@ Answer: date
 \end{code}
 
 \noindent
-But the great thing about the knowledge graph is that we can select more facts and then ask a question which span more than one sentence, such as
-\textit{Could hypothetically Leonhard Euler meet Carl Friedrich Gauss?}
+But the great thing about knowledge graphs is that we can select more facts and then ask a question which spans more than one sentence, such as
+``Could hypothetically Leonhard Euler meet Carl Friedrich Gauss?''
 This transformation is described in the following example.
 \begin{code}
 PREFIX ont: <http://dbpedia.org/ontology/>
@@ -998,12 +996,12 @@ WHERE {
       ont:deathDate ?death1 .
   ?subject2 a ont:Person ;
       rdfs:label name2 ;
-      ont:birthDate ?bith2 ;
+      ont:birthDate ?birth2 ;
       ont:deathDate ?death2 .
 }
 <*\arrowlinesplit*>
-Question: <*\emph{Could hypothetically}*> subject1 <*\emph{meet}*> subject2 <*\emph{?}*>
-Answer: bool(birth2 <*$\leq$*> death1 <*$\land$*> death1 <*$\geq$*> birth2)
+Question: <*\emph{Could hypothetically}*> name1 <*\emph{meet}*> name2 <*\emph{?}*>
+Answer: bool(death2 <*$\geq$*> birth1 <*$\land$*> death1 <*$\geq$*> birth2)
 \end{code}
 
 
@@ -1058,28 +1056,28 @@ Common strategies for distractor selection are:
 \item \textbf{Named entities from the text}\\
   One possibility is to use named entities from the text discovered by named entity recognition (\autoref{sec:terms-extraction}). As distractors, named entities of the same type are chosen (e.g. if the correct answer is person, choose people as distractors). This approach was used for example in the Mentor \cite{mentor}.
 As an alternative to common types, common context can be used to select appropriate distractors.
-Agarwal \cite{question-gen-textbooks} uses features such as comparison of words and their POS tags before and after the correct answer and the distractor or frequency of common words in the question sentence and a sentence with the distractor.
+Agarwal \cite{question-gen-textbooks} uses features such as comparison of words and their POS tags before and after the correct answer and the distractor or frequency of shared words in the question sentence and a sentence with the distractor.
 
 \item \textbf{Subjects in the knowledge graph}\\
 In the knowledge graph, subjects play similar role as the named entities in the text.
 The difference is that usually one subject has many types.
 (For example, the record about \emph{Abraham Lincoln} in DBpedia contains more than 50 types, including
 \emph{agent}, \emph{person}, \emph{office holder}, \emph{president of the United States} and \emph{people murdered in Washington, D.C.})
-Several strategies were proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a subject of the same type as the correct answer. If there are many of them, we can prefer those which have more common types.
+Several strategies were proposed to select the most competitive distractors in the knowledge graph \cite{ontoque, question-gen-domain-ontologies}. One of them is to select a subject of the same type as the correct answer. If there are many of them, we can prefer those which have more shared types.
 
 \item \textbf{Named entities from external sources}\\
   Using \textit{WordNet} \cite{wordnet} or a knowledge base, we can find similar terms, even if they are not in the text. For example, Mitkov et al. \cite{question-gen-mitkov} use \textit{coordination relation} in WordNet (coordinates are words sharing at least one hypernym) to find appropriate distractors for given term. If more coordinates were found in WordNet, the ones which occur in the text are preferred.
 
 \item \textbf{Correct answer modification}\\
-  If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift or (sub)multiplication
+  If the correct answer is a numerical expression, we can easily obtain distractors by changing the date or value by some partially random relative shift or multiplication
 \cite{question-gen-domain-ontologies}.
-For instance, if the correct answer is $1616$ the distractors generated by multiplying the correct answer by $0.92$, $0.95$ and $1.04$ would be $1487$, $1535$ and $1680$.
+For instance, if the correct answer is $1616$, the distractors generated by multiplying the correct answer by $0.92$, $0.95$ and $1.04$ would be $1487$, $1535$ and $1680$.
 \end{myItemize}
 
 \noindent
 All these strategies work only if the correct answer is a named entity or a single word.
 If the correct answer is a full clause
-(e.g. \emph{Why is photosynthesis important? / Because it produces oxygen.}),
+(e.g. ``Why is photosynthesis important?'' -- ``Because it produces oxygen.''),
 generating meaningful and competitive distractors is much harder.
 Simple (but not very good) way to find at least some distractors would be to use the correct answers of the generated questions of the same question type.
 
@@ -1094,7 +1092,7 @@ is to overgenerate questions and then filter them
 The goal of the filtering is to discard questions which are:
 
 \begin{myItemize}
-  \item invalid (e.g. because they contain anaphoric references, such as \emph{Where is there?}),
+  \item invalid (e.g. because they contain anaphoric references, such as ``Where is there?''),
   \item irrelevant to the topic,
   \item too easy (e.g. because of noncompetitive distractors).
 \end{myItemize}
@@ -1112,7 +1110,7 @@ or via a machine-learning based classifier.
 Some possible heuristic criteria to discard generated questions are \cite{questions-wolfe}:
 \begin{myItemize}
 \item Question or answer is too long.
-\item Question contains word \emph{and}, colon or quotes.
+\item Question contains word ``and'', colon or quotes.
 \item The first word in the answer is a relative pronoun.
 \end{myItemize}
 
@@ -1127,7 +1125,7 @@ Heilman \cite{question-gen-heilman} trained a machine learning-based classifier 
 \item which wh-word (who, where, when, ...) was used (if any),
 \item includes negation (no, not, never)? (binary feature),
 \item likelihoods of a question would appear in a text according to an unigram and a trigram language models,
-\item number of proper noun, pronouns, adjectives, etc.
+\item numbers of proper noun, pronouns, adjectives, etc.
 \end{myItemize}
 
 The presented rankers are primarily concerned with correctness (validity) of generated questions.
@@ -1180,11 +1178,12 @@ In each practice session, tens (or even hundreds) of new questions are generated
 and we don't know much neither about the questions, nor about the learner's knowledge of the topic.
 As there is usually so many generated questions, we can't ask learner all of them,
 but carefully select just a few questions, which are the most relevant to the learner and are not too easy nor too difficult.
-The generated questions are brand-new, so we necessarily need to rank them for relevance and difficulty estimation (and possibly other attributes as well) as described in \autoref{sec:questions-ranking-filtering},
+The generated questions are brand-new, so we necessarily need to rank them for relevance and difficulty estimation (and possibly other attributes as well),
+%as described in \autoref{sec:questions-ranking-filtering},
 otherwise there is no way to distinguish between generated questions.
 
-Having the limitations in mind, we can now formulate the goal of the adaptive practice in the settings of the automatically generated questions.
-The system shall ask questions, which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequately difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
+Having these limitations in mind, we can now formulate the goal of the adaptive practice in the settings of the automatically generated questions.
+The system shall ask questions which are relevant to the topic, ideally covering the whole article and which are not answerable without thinking. Furthermore, the system shall attempt to estimate the global knowledge of the student about the topic as quickly as possible and using this estimate, prefer adequately difficult questions, so that the student is neither bored by too easy questions, nor frustrated from too difficult questions.
 
 In \autoref{sec:knowledge-estimation}, I describe several common models of a student used to estimate one's knowledge, then I briefly mention dynamic adjustment of target difficulty (\autoref{sec:target-difficulty}),
 and finally I discuss the selection of the best question (\autoref{sec:question-selection}).
@@ -1211,7 +1210,7 @@ in the following paragraphs.
   \begin{equation}\label{eq:logistic}
   P(k, d) = \frac{1}{1 + e^{-(k - d)}}
   \end{equation}
-  The logistic function is suitable for probability modeling, because it ranges from $0$ to $1$ for any possible input.
+  The logistic function (\autoref{fig:logistic-function}) is suitable for probability modeling, because it ranges from $0$ to $1$ for any possible input.
   In case of multiple choice questions, we need to adjust the formula a little bit to account for the possibility of guessing.
   With $n$ options, the probability of correct guess is $\frac{1}{n}$.
 \begin{equation}\label{eq:logistic-mcq}
@@ -1295,7 +1294,7 @@ Experiments suggest that it leads to similar results as the maximum likelihood e
   \text{~~where~~} k = \alpha \cdot a + \beta \cdot b - d
   \end{equation}
   The main drawback of this model is that it ignores the order of answers,
-  so answering firstly 10 times incorrectly and then 10 time incorrectly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
+  so answering firstly 10 times incorrectly and then 10 time correctly leads to the same prediction as answering alternately correctly and incorrectly (and while the first case suggests that the student has learned the item, in the second case it's clear that the student hasn't learned it already).
   To take the order of answers into account, performance factors analysis can be combined with the Elo model \cite{slepe-mapy} -- after each answer, estimate of knowledge parameter $k$ is updated according to the rule \ref{eq:elo}.
 \end{myItemize}
 
@@ -1407,7 +1406,7 @@ The proposed modular design allows for easy integration and testing of new behav
 Simple prototype behaviors based on heuristic approaches were implemented.
 More sophisticated behaviors will be the subject of future development.
 
-Except from \textit{ExercisesCreator} and \textit{ExercisesGrader},
+Except for \textit{ExercisesCreator} and \textit{ExercisesGrader},
 the components does not communicate with each other directly,
 but via results (knowledge graphs and exercises) stored in the database.
 The communication and the flow of data is depicted in \autoref{fig:data-flow-diagram}.
@@ -1437,22 +1436,22 @@ As we do not know the future, our best guess for the expected performance is the
 Using conditional probability we can easily derive formulae for probability $P$ of components $(x_1, x_2, x_3, x_4)$ being selected.
 I use asterisk ($*$) to denote ``any behavior'', so e.g. $p((x_1, *, *, *))$ means average performance of all sessions in which knowledge builder was $x_1$.
 $$
-P(k_1 = x_1) = p((x_1, *, *, *)),
+P(k_1 = x_1) \propto p((x_1, *, *, *)),
 $$
 $$
 P(k_2 = x_2 \mid k_1 = x_1)
   = \frac{P(k_1 = x_1 \land k_2 = x_2)}{P(k_1 = x_1)}
-  = \frac{p((x_1, x_2, *, *))}{p((x_1, *, *, *))},
+  \propto \frac{p((x_1, x_2, *, *))}{p((x_1, *, *, *))},
 $$
 $$
 P(k_3 = x_3 \mid k_1 = x_1 \land k_2 = x_2)
   = \frac{P(k_1 = x_1 \land k_2 = x_2 \land k_3 = x_3)}{P(k_1 = x_1 \land k_2 = x_2)}
-  = \frac{p((x_1, x_2, x_3, *))}{p((x_1, x_2, *, *))},
+  \propto \frac{p((x_1, x_2, x_3, *))}{p((x_1, x_2, *, *))},
 $$
 $$
 P(k_4 = x_4 \mid k_1 = x_1 \land k_2 = x_2 \land k_3 = x_3)
   = \ldots
-  = \frac{p((x_1, x_2, x_3, x_4))}{p((x_1, x_2, x_3, *))}.
+  \propto \frac{p((x_1, x_2, x_3, x_4))}{p((x_1, x_2, x_3, *))}.
 $$
 
 
@@ -1470,7 +1469,7 @@ Then the article is parsed into sentence trees with marked terms occurrences.
 At first, text is split into sentences, each sentence is tokenized
 and each token is assigned a part-of-speech tag.
 %(\autoref{sec:sentence-transformations}).
-    For these natural language processing tasks I have used the \textit{NLTK} (Natural Language Toolkit) library \cite{nlp-python}. NLTK uses \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset}.
+    For these natural language processing tasks I use the \textit{NLTK} (Natural Language Toolkit) library \cite{nlp-python}. NLTK uses \textit{The University of Pennsylvania (Penn) Treebank Tag-set} \cite{penn-tagset}.
 
 \begin{table}[h]
 \begin{center}
@@ -1488,7 +1487,7 @@ and each token is assigned a part-of-speech tag.
 \caption{Part-of-speech tags examples \cite{penn-tagset} }
 \end{table}
 
-As an example, consider sentence ``Six days after the surrender of Confederate commanding general Robert E. Lee, Lincoln was assassinated byt John Wilkes Booth, a Confederate sympathizer.'' This sentence would be tokenized and tagged as follows:
+As an example, consider sentence ``Six days after the surrender of Confederate commanding general Robert E. Lee, Lincoln was assassinated by John Wilkes Booth, a Confederate sympathizer.'' This sentence would be tokenized and tagged as follows:
 \begin{code}
 [['Six', 'CD'], ['days', 'NNS'], ['after', 'IN'], ['the', 'DT'],
 ['surrender', 'NN'], ['of', 'IN'], ['Confederate', 'NNP'],
@@ -1549,7 +1548,7 @@ By the term \textit{quasi fact} I mean some information usable for creating exer
 \label{sec:smartoo-exercises}
 
 \textit{ExerciseCreator} component uses built knowledge graph to generate a set of exercises.
-Exercises consists of presentation data and semantic information.
+Exercises consist of presentation data and semantic information.
 \begin{myItemize}
   \item \textbf{presentation data}\\
     Currently the only supported type of exercise is a multiple choice question. Presentation data for multiple choice question consists of a question string, a list of choice labels and a correct answer label (which must be one of the choice labels).
@@ -1565,31 +1564,31 @@ All quasi facts about terms in sentence can be retrieved from the knowledge grap
 \begin{code}
 SELECT ?before ?term ?after
 WHERE {
-    ?quasifact a "term-in-sentence" .
-    ?quasifact smartoo:part-before-term ?before .
-    ?quasifact smartoo:part-after-term ?after .
-    ?quasifact smartoo:term ?term .
+    ?quasifact a "term-in-sentence" ;
+        smartoo:part-before-term ?before ;
+        smartoo:part-after-term ?after ;
+        smartoo:term ?term .
 }
 \end{code}
 
 As we deal with multiple choice question, we also need to select appropriate distractors.
 Guided by the results about distractors presented in \autoref{sec:distractors},
 the most similar terms to the correct answer are chosen.
-Terms similarity heuristics is based on the number of common types
+Terms similarity heuristics is based on the number of shared types
 $C(t_1, t_2) = |types(t_1) \cap types(t_2)|$:
 $$
 sim(t_1, t_2) = 2 \left( \frac{1}{1 + \exp({-|C(t_1, t_2)| / \kappa})} \right) - 1
 $$
 The constants $\kappa$ influences the speed of convergence to $1$.
-Terms without any common type would have $0$ similarity and the more common types they have, the more close to $1$ the similarity is.
+Terms without any shared type would have $0$ similarity and the more common types they have, the more close to $1$ the similarity is.
 
 As an example, let us look at the exercise created from the quasi fact in \autoref{fig:quasi-fact}. The presentation data looks like this:
 \begin{code}
 {'question': 'Six days after the surrender of Confederate commanding
-              general Robert E. Lee, _______ was assassinated by
-              John Wilkes Booth, a Confederate sympathizer.',
+               general Robert E. Lee, _______ was assassinated by
+               John Wilkes Booth, a Confederate sympathizer.',
 'choices': ['Andrew Johnson', 'James Buchanan',
-            'Abraham Lincoln', 'Franklin D. Roosevelt'],
+             'Abraham Lincoln', 'Franklin D. Roosevelt'],
 'correct-answer': 'Abraham Lincoln'}
 \end{code}
 
@@ -1629,7 +1628,7 @@ And the respective semantic information is following:
 In the prototype behavior, difficulty of an exercise is estimated as the average similarity between all term pairs which can be mistaken.
 Similarity of two terms is measured in the same way as during exercise creating (\autoref{sec:smartoo-exercises}).
 The value is than normalized to range from $-2$ to $2$
-(-2 means extremely simple, 0 average, 2 extremely difficult),
+($-2$ means extremely simple, 0 average, 2 extremely difficult),
 because it is later used by the practicer in the logistic model.
 
 Relevance of the exercise is estimated as the \textit{cosine similarity} measure between the exercise and the article,
@@ -1683,10 +1682,10 @@ Repetitiveness score is set to the opposite of cosine similarity between the exe
 The most interesting part is the difficulty score.
 To estimate the probability that the student correctly answers a question with given difficulty (taking into account the possibility of guessing),
 I use the logistic model of student as described in \autoref{sec:knowledge-estimation}.
-I have also implemented the dynamic adjusting of the target probability \autoref{sec:target-difficulty}.
+I have also implemented the dynamic adjusting of the target probability (\autoref{sec:target-difficulty}).
 The difficulty penalization is then set to a difference between the adjusted target probability and the expected probability as calculated by the student model.
 
-Difficulty adjustment is especially useful for students with extremely high knowledge -- the more time student answers correctly, the lower is the adjusted target difficulty, the more difficult exercises are preferred.
+Difficulty adjustment is especially useful for students with extremely high knowledge -- the more time a student answers correctly, the lower is the adjusted target probability, the more difficult exercises are preferred.
 In \autoref{fig:knowledge-estimate}, an example of knowledge estimation process during one session is shown.
 \autoref{tbl:practice-example} contains detailed information about the same session.
 
@@ -1814,8 +1813,8 @@ The main tools and libraries used in the project are:
 \item \texttt{Python 2.7}\\
 The backend of the application is developed in Python 2.7%
 \footnote{\url{https://www.python.org/download/releases/2.7/}}.
-To create an isolated Python environment for the project, use \texttt{Virtualenv}%
-\footnote{\url{https://virtualenv.pypa.io}}.
+To create an isolated Python environment for the project, \texttt{Virtualenv}%
+\footnote{\url{https://virtualenv.pypa.io}} is used.
 After activating a new virtual environment, all necessary Python packages can be installed simply by
 command \texttt{pip install -r requirements.txt} executed in the project root directory.
 %\begin{code}
@@ -1971,7 +1970,7 @@ ordering time events, etc.
 
 In case of long articles, it could be useful to interleave reading and practice.
 It would be also great to make the practice length variable based on the student performance and provide exercises until we are relatively confident that the student knows the topic.
-This would require to possible present one question several times and to use a student model which can capture learning.
+This would require to possibly present one question several times and to use a student model which can capture learning.
 
 Another idea is to employ an evolutionary algorithm for incremental improvements of used population of behaviors.
 Average performance in a few practice sessions would serve as a fitness function,
@@ -1979,7 +1978,7 @@ crossover and mutation operations can be straightforwardly done on parameter val
 although this is only applicable for behaviors with same or similar code.
 
 For me, automatic question generation and adaptive practice is an amazing field full of challenges
-and I would like to continue to devote my effort to create an online question generation tool which makes learning more efficient and fun.
+and I would like to continue to devote my effort to create an online question generation tool which would make learning more efficient and fun.
 
 
 
@@ -2002,7 +2001,7 @@ Simplified project structure:
 \begin{tabular}{l l l}
 \multicolumn{2}{l}{\texttt{+ common}} & \\
 & \texttt{- utils/} & utilities, e.g. metrics, language processing\\
-& \texttt{- fields.py} & custom field for dictionary\\
+& \texttt{- fields.py} & custom DB field for dictionary\\
 & \texttt{- tests.py} & \\
 
 \multicolumn{2}{l}{\texttt{+ abstract\_component}} & \\
