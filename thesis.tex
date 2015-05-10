@@ -244,7 +244,7 @@ Answer:   & \emph{#3}\\
 
 \begin{ThesisThanks}
   I would like to thank Jan Rygl
-  for his guidance and support, and for his wisdom and infinite kindness.
+  for his guidance, support and also for his wisdom and infinite kindness.
   I would also like to thank members of the Natural Language Processing Centre
   and Adaptive Learning group for fruitful discussions,
   and all my friends who helped me to test the developed application
@@ -252,13 +252,26 @@ Answer:   & \emph{#3}\\
 \end{ThesisThanks}
 
 \begin{ThesisAbstract}
-When studying, it is more efficient not just to read about the topic, but also to practice the knowledge, e.g. by answering some multiple choice questions.
-Today, there is a huge amount of information to study (consider Wikipedia) and it is not possible to create a set of questions for all topics manually.
-However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing.
-This thesis explores the state-of-the-art approaches to question generation and describes their advantages and disadvantages.
-The thesis also suggests a design of the general framework for practicing knowledge from articles.
-The framework is implemented and publicly accessible through a~web interface.
+%When studying, it is more efficient not just to read about the topic, but also to practice the knowledge, e.g. by answering some multiple choice questions.
+%Today, there is a huge amount of information to study and it is not possible to create a set of questions for all topics manually.
+%However, we can generate questions automatically, using techniques of artificial intelligence and natural language processing.
+%The thesis explores approaches to automatic factual question generation and describes their advantages and disadvantages.
+%The thesis also suggests a design of a framework for practicing knowledge from articles on Wikipedia.
+%The framework is implemented and is publicly accessible through a~web interface.
+The thesis focuses on automatic question generation from text.
+Various approaches based on methods of artificial intelligence and natural language processing are described and the possibility of adaptive practice in the settings of automatically generated questions is also discussed.
+The thesis suggests a design of a modular framework for practicing knowledge from articles on Wikipedia.
+The framework has been implemented and is publicly accessible through a~web interface.
 \end{ThesisAbstract}
+
+
+% Abstrakt cesky:
+% Práce se zabývá automatickým generováním otázek z textu.
+% Jsou popsány různé přístupy založené na metodách umělé inteligence a zpracování přirozeného jazyka
+% a je také diskutována možnost adaptabilního procvičování v případě automaticky vygenerovaných otázek.
+% V rámci práce je navržen modulární systém pro procvičování znalostí z článků na Wikipedii.
+% Tento systém byl implementován a je veřejně přístupný přes webové rozhraní.
+
 
 \begin{ThesisKeyWords}
 question generation, adaptive practice,
@@ -499,7 +512,7 @@ The aim of the \textit{named entity recognition} is to discover all named entiti
   A simple way to find if some word or phrase is a named entity is to try to look it up in a list of named entities. There are for example publicly available \textit{gazetteers} -- lists of well-known geographical locations. However, this method is quite limited as it is impossible to have complete lists of all named entities.
 (In particular there is infinitely many numeric expressions.)
 Another problem is ambiguity of words, e.g. \textit{Reading} is a town in the United Kingdom, but not in the sentence \textit{Reading is important for everyone's personal development.}
-  There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example, for each article on the Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
+  There is one exception when this method works great -- if there is a known list of terms which can appear in the text. For example, for each article on Wikipedia the list of terms can be built from internal links which appear in the article. I use this fact in the Smartoo (\autoref{sec:articles-parsing}).
 
 \item \textbf{Frequency counting}\\
   After identifying nouns and noun phrases in the text, their relative frequencies are calculated and these which exceed a given threshold are considered as terms.
