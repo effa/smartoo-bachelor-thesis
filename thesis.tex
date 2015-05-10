@@ -1881,12 +1881,12 @@ the ``Invalid'' and ``Irrelevant'' buttons under each generated question,
 the practice session final rating form (``bad'', ``so so'' or ``good'')
 and an optional ``Write to us'' button.
 
-During testing, 66 practice sessions were taken, with total of 566 questions
+During testing, 71 practice sessions were taken, with total of 616 questions
 (counting only the questions with some response to them, i.e. which were either answered or marked as invalid/irrelevant).
-From 544 questions with answers, 394 were answered correctly and 150 incorrectly,
+From 588 questions with answers, 424 were answered correctly and 164 incorrectly,
 resulting in overall 72 \% success rate.
-Thirty seven questions (7 \%) were marked as invalid or irrelevant.
-Concerning the practice session final ratings, 24 \% were rated as ``good'', 70 \% as ``so so'' and 6 \% as ``bad''.
+Fifty-one questions (8 \%) were marked as invalid or irrelevant.
+Concerning the practice session final ratings, 31 \% were rated as ``good'', 65 \% as ``so so'' and 4 \% as ``bad''.
 
 Tested version of Smartoo used 2 behaviors for knowledge building.
 %, 1 for exercise creating and grading and 6 for practicing.
@@ -1900,8 +1900,8 @@ The behavior using shorter maximum length (30 tokens) performed slightly better.
   \hline
       & max length & performance\\
   \hline
-  $1$ & $40$ & $0.699$\\
-  $2$ & $30$ & $0.738$\\
+  $1$ & $40$ & $0.701$\\
+  $2$ & $30$ & $0.771$\\
   \hline
 \end{tabular}
 \end{center}
@@ -1912,7 +1912,7 @@ The behavior using shorter maximum length (30 tokens) performed slightly better.
 Six different behaviors were used for practicers.
 They differ in 3 parameters: relevance weight, difficulty weight and repetitiveness weight.
 The used values and their performances are shown in \autoref{tbl:practicers-performances}.
-One observation we can made is that setting relevance or difficulty weight higher than repetitiveness weight (behaviors 2 and 3), decreases the performance.
+One observation we can made is that setting relevance or difficulty weight higher than repetitiveness weight (behaviors 2 and 3) decreases the performance.
 
 \begin{table}[h]
 \begin{center}
@@ -1920,12 +1920,12 @@ One observation we can made is that setting relevance or difficulty weight highe
   \hline
       & relevance & difficulty & repetitiveness & performance\\
   \hline
-  $1$ & $1.00$ & $1.00$ & $1.00$ & $0.781$\\
+  $1$ & $1.00$ & $1.00$ & $1.00$ & $0.782$\\
   $2$ & $1.25$ & $1.00$ & $1.00$ & $0.671$\\
   $3$ & $1.00$ & $1.25$ & $1.00$ & $0.629$\\
-  $4$ & $1.00$ & $1.00$ & $1.25$ & $0.718$\\
+  $4$ & $1.00$ & $1.00$ & $1.25$ & $0.766$\\
   $5$ & $1.25$ & $1.00$ & $1.25$ & $0.783$\\
-  $6$ & $1.00$ & $1.25$ & $1.25$ & $0.728$\\
+  $6$ & $1.00$ & $1.25$ & $1.25$ & $0.787$\\
   \hline
 \end{tabular}
 \end{center}
@@ -2042,6 +2042,9 @@ Simplified project structure:
 
 \multicolumn{2}{l}{\texttt{+ production}} & \\
 & \texttt{- settings.py} & django settings (database, caching, logging, etc.)\\
+
+\multicolumn{2}{l}{\texttt{+ data}} & \\
+& \texttt{- sessions.csv} & data about sessions\\
 
 \multicolumn{2}{l}{\texttt{+ requirements.txt}} & list of dependencies\\
 \multicolumn{2}{l}{\texttt{+ manage.py}} & script for django-related tasks\\
