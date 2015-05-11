@@ -1564,7 +1564,10 @@ By the term \textit{quasi fact} I mean some information usable for creating exer
 Exercises consist of presentation data and semantic information.
 \begin{myItemize}
   \item \textbf{presentation data}\\
-    Currently the only supported type of exercise is a multiple choice question. Presentation data for multiple choice question consists of a question string, a list of choice labels and a correct answer label (which must be one of the choice labels).
+    Currently the only supported type of exercise is a multiple choice question%
+    \footnote{Other types of exercises, e.g. matching pairs or questions requiring the user to type the answer, instead of just selecting from a list of choices,
+    bring nontrivial challenges and are planned for the future development.}.
+    Presentation data for multiple choice question consists of a question string, a list of choice labels and a correct answer label (which must be one of the choice labels).
   \item \textbf{semantic information}\\
     Semantic information is used for exercises grading. For this purpose, I decided to use a list of term pairs for which holds, that if the user confuses them, it can lead to an incorrect answer.
     For a multiple choice question with correct answer $A$ and distractors $B$, $C$ and $D$,
@@ -1589,9 +1592,9 @@ Guided by the results about distractors presented in \autoref{sec:distractors},
 the most similar terms to the correct answer are chosen.
 Terms similarity heuristics is based on the number of shared types
 $C(t_1, t_2) = |types(t_1) \cap types(t_2)|$:
-$$
+\begin{equation}\label{eq:terms-similarity}
 sim(t_1, t_2) = 2 \left( \frac{1}{1 + \exp({-|C(t_1, t_2)| / \kappa})} \right) - 1
-$$
+\end{equation}
 The constants $\kappa$ influences the speed of convergence to $1$.
 Terms without any shared type would have $0$ similarity and the more common types they have, the more close to $1$ the similarity is.
 
@@ -1648,11 +1651,11 @@ Relevance of the exercise is estimated as the \textit{cosine similarity} measure
 i.e. cosine of an angle between the article and the exercise represented as sparse vectors mapping terms to their frequency in the article or the exercise
 \cite[][121]{information-retrieval}.
 Cosine similarity between two documents (in our case one document is the article $A$ and another is the exercise $E$) is given by the following formula:
-$$
+\begin{equation}\label{eq:docs-similarity}
 similarity(A, E)
 = \frac{A \cdot E}{|A| |E|}
 = \frac{\sum_{i=1}^{n} A_i E_i}{\sqrt{\sum_{i=1}^{n} A_i^2}\sqrt{\sum_{i=1}^{n} E_i^2}}
-$$
+\end{equation}
 where $A_i$ ($E_i$) denotes numbers of occurrences of the $i$-th term in article (exercise).
 This measure is commonly used in the information retrieval for estimating similarity between two documents of arbitrary length. The cosine similarity is a real number between $0$ and $1$, the higher it is, the smaller is the angle between documents in the vector space and the more similar the documents are.
 In other words, the closer the grade is to 1, the more relevant the exercise is.
@@ -1729,7 +1732,7 @@ In \autoref{fig:knowledge-estimate}, an example of knowledge estimation process 
 
 \begin{table}[h]
 \begin{center}
-\begin{tabular}{| c | c | c | c | c | c | c |}
+\begin{tabular}{| c | c | c | c | c | c || c |}
   \hline
   & knowledge est. &  target & difficulty & probability est. & true probability & answer\\
   \hline
@@ -1975,7 +1978,7 @@ This would require reasonably good detection of named entities in the text.
 I would also like to generate different types of questions and exercises,
 for example
 asking for the cause (why something happens),
-open questions with short answers (e.g. who invented something),
+questions with short answers without choices (e.g. who invented something),
 matching pairs (scientist -- discovery,  event -- date, ...),
 what is on the picture,
 ordering time events, etc.
