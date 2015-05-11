@@ -1591,7 +1591,9 @@ As we deal with multiple choice question, we also need to select appropriate dis
 Guided by the results about distractors presented in \autoref{sec:distractors},
 the most similar terms to the correct answer are chosen.
 Terms similarity heuristics is based on the number of shared types
-$C(t_1, t_2) = |types(t_1) \cap types(t_2)|$:
+$C(t_1, t_2) = |types(t_1) \cap types(t_2)|$%
+\footnote{The number is not normalized by $|types(t_1) \cup types(t_2)|$, because it would made terms with a lot of types not similar to anything
+(e.g. Abraham Lincoln has over 50 types and most of them are very specific).}:
 \begin{equation}\label{eq:terms-similarity}
 sim(t_1, t_2) = 2 \left( \frac{1}{1 + \exp({-|C(t_1, t_2)| / \kappa})} \right) - 1
 \end{equation}
@@ -1657,7 +1659,8 @@ similarity(A, E)
 = \frac{\sum_{i=1}^{n} A_i E_i}{\sqrt{\sum_{i=1}^{n} A_i^2}\sqrt{\sum_{i=1}^{n} E_i^2}}
 \end{equation}
 where $A_i$ ($E_i$) denotes numbers of occurrences of the $i$-th term in article (exercise).
-This measure is commonly used in the information retrieval for estimating similarity between two documents of arbitrary length. The cosine similarity is a real number between $0$ and $1$, the higher it is, the smaller is the angle between documents in the vector space and the more similar the documents are.
+This measure is commonly used in the information retrieval for estimating similarity between two documents of arbitrary lengths.
+The cosine similarity is a real number between $0$ and $1$, the higher it is, the smaller is the angle between documents in the vector space and the more similar the documents are.
 In other words, the closer the grade is to 1, the more relevant the exercise is.
 
 
@@ -1967,7 +1970,8 @@ There is no doubt that despite the effort of the bachelor thesis,
 the question generation remained an open problem of the natural language processing.
 Evaluation showed clear limitations of used heuristic approaches.
 However, the system was developed with the importance of modularity and extensibility in mind.
-New, more sophisticated behaviors for knowledge building, questions creating, questions grading and adaptive practice may be implemented and easily integrated into the current system.
+I plan to publish a research paper about the framework, so that other people could use it to test their own ideas for question generation.
+New, more sophisticated behaviors for knowledge building, questions creating, questions grading and adaptive practice may be implemented and easily integrated into the system.
 
 Besides the implementation of advanced behaviors for knowledge extraction and questions creation using machine learning approaches, there are some other improvements I~would like to do in the future.
 For example, extend the system for the possibility of accepting a plain text, instead of Wikipedia articles.
