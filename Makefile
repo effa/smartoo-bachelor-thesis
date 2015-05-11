@@ -16,4 +16,4 @@ thesis:
 	done
 
 insert-spec: ${THESIS_SOURCE}.pdf
-	pdftk A=${THESIS_SOURCE}.pdf B=${SPECIFICATION} C=${DECLARATION} cat A1 B C A2-end output thesis_print.pdf
+	pdftk A=${THESIS_SOURCE}.pdf B=${SPECIFICATION} C=${DECLARATION} cat A1-2 B A2 C A2 A3-end output thesis_print.pdf
