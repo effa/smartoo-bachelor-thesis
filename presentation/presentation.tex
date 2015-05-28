@@ -26,6 +26,8 @@
 \usetheme{Arteffi}
 \def\topic{}
 
+\usepackage{caption}
+\captionsetup{labelformat=empty,aboveskip=5pt}
 
 \begin{document}
 
@@ -65,15 +67,21 @@
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
 \begin{frame}
-\frametitle{Architektura}
-\makebox[\textwidth][c]{\includegraphics[width=1.15\textwidth]{../images/architecture.pdf}}
+\frametitle{Komponenty}
+\begin{itemize}
+\item extrakce znalostí
+\item vytvoření otázek
+\item ohodnocení otázek
+\item adaptabilní procvičování
+\end{itemize}
+%\makebox[\textwidth][c]{\includegraphics[width=1.15\textwidth]{../images/architecture.pdf}}
 \end{frame}
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
-\begin{frame}
-\frametitle{Tok dat}
-\makebox[\textwidth][c]{\includegraphics[width=1.15\textwidth]{../images/data-flow-diagram.pdf}}
-\end{frame}
+%\begin{frame}
+%\frametitle{Tok dat}
+%\makebox[\textwidth][c]{\includegraphics[width=1.15\textwidth]{../images/data-flow-diagram.pdf}}
+%\end{frame}
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
 \begin{frame}
@@ -89,10 +97,10 @@
 \end{frame}
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
-\begin{frame}
-\frametitle{Pojem ve větě}
-\makebox[\textwidth][c]{\includegraphics[width=1.05\textwidth]{../images/quasi-fact-lincoln.pdf}}
-\end{frame}
+%\begin{frame}
+%\frametitle{Pojem ve větě}
+%\makebox[\textwidth][c]{\includegraphics[width=1.05\textwidth]{../images/quasi-fact-lincoln.pdf}}
+%\end{frame}
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
 \begin{frame}
@@ -134,15 +142,53 @@ Kritéria výběru otázky:
 \end{frame}
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
+%\begin{frame}
+%\frametitle{Evaluace}
+
+%\begin{columns}
+%\begin{column}{0.4\textwidth}
+%\begin{itemize}
+%\item 71 procvičování
+%\item 616 otázek
+%%\item průměrná úspěšnost 72 \%
+%%\item porovnání chování komponent
+%\end{itemize}
+%\end{column}
+
+%\begin{column}{0.6\textwidth}
+
+%\begin{figure}
+%\begin{tikzpicture}
+%\pie [text=legend, radius=1.6, color={lightBlue, myYellow, lightRed}] {91.7/ok , 5.5/irrelevant , 2.8/invalid}
+%\end{tikzpicture}
+%\caption{\hspace{-1.1cm}Hodnocení otázek}
+%\end{figure}
+
+%\begin{figure}
+%\begin{tikzpicture}
+%\pie [text=legend, radius=1.6, color={lightGreen, lightBlue, lightRed}] {31/good , 65/so so , 4/bad}
+%\end{tikzpicture}
+%\caption{\hspace{-0.1cm}Závěrečné hodnocení}
+%\end{figure}
+
+%\end{column}
+%\end{columns}
+
+%\end{frame}
+
+% ------------------------------------------------------------------------------
 \begin{frame}
 \frametitle{Evaluace}
+
 \begin{itemize}
 \item 71 procvičování
 \item 616 otázek
 \item průměrná úspěšnost 72 \%
 \item porovnání chování komponent
 \end{itemize}
+
 \end{frame}
+
 % ------------------------------------------------------------------------------
 % --------------------------- SLIDE --------------------------------------------
 \begin{frame}
@@ -185,6 +231,18 @@ Systém na generování otázek
 \begin{center}
 Děkuji za pozornost.
 \end{center}
+\end{frame}
+% ------------------------------------------------------------------------------
+% --------------------------- SLIDE --------------------------------------------
+\begin{frame}
+\frametitle{Posudky}
+\begin{itemize}
+\item rozpoznávání pojmenovaných entit
+\item rozpoznávání anaforických výrazů
+\item jiné jazyky (např. čeština)
+\item návody pro vytváření komponent
+\item propagace
+\end{itemize}
 \end{frame}
 % ------------------------------------------------------------------------------
 
